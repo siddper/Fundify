@@ -12,6 +12,35 @@ if (registerForm) {
     errorDiv.style.display = 'none';
     successDiv.textContent = '';
     successDiv.style.display = 'none';
+
+    // Custom validation
+    if (!name) {
+      errorDiv.textContent = 'Please enter your name.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (!email) {
+      errorDiv.textContent = 'Please enter your email address.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    // Simple email regex
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      errorDiv.textContent = 'Please enter a valid email address.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (!password) {
+      errorDiv.textContent = 'Please enter a password.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (password.length < 6) {
+      errorDiv.textContent = 'Password must be at least 6 characters.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
     try {
       const res = await fetch('http://127.0.0.1:5000/register', {
         method: 'POST',
@@ -51,6 +80,24 @@ if (loginForm) {
     errorDiv.style.display = 'none';
     successDiv.textContent = '';
     successDiv.style.display = 'none';
+
+    // Custom validation
+    if (!email) {
+      errorDiv.textContent = 'Please enter your email address.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      errorDiv.textContent = 'Please enter a valid email address.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (!password) {
+      errorDiv.textContent = 'Please enter your password.';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
     try {
       const res = await fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
