@@ -37,27 +37,149 @@
       </div>
       <div class="auth-footer">Already have an account? <a href="sign-in.html">Log in</a></div>
     </div>
-    <div class="auth-side-section">
+    <div class="auth-side-section hide-on-mobile">
       <div class="auth-side-bg"></div>
-      <div class="auth-side-content">
-        <div class="auth-side-tags">
-          <span>Community of students</span>
-          <span>Financial resources</span>
-        </div>
-        <div class="auth-side-quote">
-          I was able to reduce the time taken to manage my finances by 35% using Fundify.
-        </div>
-        <div class="auth-side-user">
-          <span class="auth-side-user-name">Sara Bright</span>
-          <span class="auth-side-user-role">Student</span>
-        </div>
-        <div class="auth-side-arrows">
-          <button>&larr;</button>
-          <button>&rarr;</button>
+      <div class="auth-side-content review-full" id="review-slider">
+        <h1 class="review-heading">Reviews</h1>
+        <div class="review-row review-centered" id="review-row">
+          <div class="review-info">
+            <span class="review-name" id="review-name">Onkar Ladhar</span>
+            <span class="review-stars" id="review-stars">
+              <span style="display:inline-block;vertical-align:middle;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 -960 960 960" width="30" fill="#FFD700">
+                  <path d="m314-698 110-142q11-14 26-21t31-7q16 0 30.5 7t25.5 21l110 142 168 55q23 8 36 26.5t13 41.5q0 11-3 21.5T851-533L743-382l4 162q0 31-21 52.5T676-146q-2 0-19-3l-177-49-177 49q-5 2-9.5 2.5t-9.5.5q-29 0-50.5-21.5T213-220l4-162-108-151q-7-10-10-20t-3-21q0-23 13-42t37-27l168-55Z"/>
+                </svg>
+              </span>
+            </span>
+            <div class="auth-side-quote" id="review-text">
+              The user experience is excellent, I loved the options for customization.
+            </div>
+            <div class="review-tags" id="review-tags"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
   <script src="auth.js"></script>
+  <script>
+  const reviews = [
+    {
+      text: 'The FundAI feature is really great, and allows for convenient analysis of transactions.',
+      name: 'Luca Mannino',
+      stars: 4,
+      tags: ['FundAI', 'Convenience']
+    },
+    {
+      text: 'The intuitive interface makes it easy for users to navigate between pages.',
+      name: 'Advik Managalarapu',
+      stars: 5,
+      tags: ['Interface', 'Navigation']
+    },
+    {
+      text: 'The user experience is excellent, I loved the options for customization.',
+      name: 'Onkar Ladhar',
+      stars: 5,
+      tags: ['UX', 'Customization']
+    }
+  ];
+  let reviewIndex = 0;
+  const reviewRow = document.getElementById('review-row');
+  const reviewText = document.getElementById('review-text');
+  const reviewName = document.getElementById('review-name');
+  const reviewStars = document.getElementById('review-stars');
+  const reviewTags = document.getElementById('review-tags');
+  function getStarsHTML(stars) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= Math.floor(stars)) {
+            // Filled star
+            html += '<span style="display:inline-block;vertical-align:middle;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#FFD700" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg></span>';
+        } else {
+            // Unfilled star (gray)
+            html += '<span style="display:inline-block;vertical-align:middle;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#e3e3e3" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/></svg></span>';
+        }
+    }
+    return html;
+  }
+  function showReview(idx) {
+    reviewRow.style.opacity = 0;
+    setTimeout(() => {
+      const r = reviews[idx];
+      reviewText.textContent = r.text;
+      reviewName.textContent = r.name;
+      reviewStars.innerHTML = getStarsHTML(r.stars);
+      reviewTags.innerHTML = r.tags.map(tag => `<span class='review-tag'>${tag}</span>`).join('');
+      reviewRow.style.opacity = 1;
+    }, 400);
+  }
+  function nextReview() {
+    reviewIndex = (reviewIndex + 1) % reviews.length;
+    showReview(reviewIndex);
+  }
+  setInterval(nextReview, 3000);
+  showReview(reviewIndex);
+  </script>
+  <style>
+  .review-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-width: 320px;
+    transition: opacity 0.7s cubic-bezier(.4,0,.2,1);
+    opacity: 1;
+  }
+  .review-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .review-name {
+    font-size: 1.18rem;
+    color: #fff;
+    font-weight: 400;
+    margin-bottom: 2px;
+  }
+  .review-stars {
+    color: #FFD700;
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+  .review-stars svg {
+    width: 30px;
+    height: 30px;
+    margin-right: 2px;
+  }
+  .auth-side-quote {
+    color: #fff;
+    font-size: 1.08rem;
+    font-weight: 400;
+    margin: 0;
+    text-shadow: none;
+    line-height: 1.5;
+  }
+  .review-heading {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+    letter-spacing: -1px;
+  }
+  .review-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .review-tag {
+    background: #23294a;
+    color: #4B61D1;
+    font-size: 0.9rem;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    user-select: none;
+    white-space: nowrap;
+  }
+  </style>
 </body>
 </html> 
