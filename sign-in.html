@@ -12,7 +12,9 @@
       <div class="auth-logo"></div>
       <h1 class="auth-title">Sign in</h1>
       <p class="auth-desc">Welcome back! Sign in to continue managing your finances with Fundify.</p>
-      <form class="auth-form">
+      <div id="login-success" class="auth-success" style="display:none;"></div>
+      <div id="login-error" class="auth-error" style="display:none;"></div>
+      <form class="auth-form" id="login-form">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="Your email" autocomplete="off">
         <label for="password">Password</label>
@@ -53,5 +55,6 @@
       </div>
     </div>
   </div>
+  <script src="auth.js"></script>
 </body>
 </html> 

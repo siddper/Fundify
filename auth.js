@@ -1,0 +1,78 @@
+// Register form handler
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = registerForm.querySelector('#name').value.trim();
+    const email = registerForm.querySelector('#email').value.trim();
+    const password = registerForm.querySelector('#password').value;
+    const errorDiv = document.getElementById('register-error');
+    const successDiv = document.getElementById('register-success');
+    errorDiv.textContent = '';
+    errorDiv.style.display = 'none';
+    successDiv.textContent = '';
+    successDiv.style.display = 'none';
+    try {
+      const res = await fetch('http://127.0.0.1:5000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        errorDiv.textContent = data.error || 'Registration failed.';
+        errorDiv.style.display = 'block';
+      } else {
+        errorDiv.style.display = 'none';
+        successDiv.textContent = 'Account created! Redirecting...';
+        successDiv.style.display = 'block';
+        setTimeout(() => {
+          successDiv.style.display = 'none';
+          window.location.href = 'sign-in.html';
+        }, 2000);
+      }
+    } catch (err) {
+      errorDiv.textContent = 'Server error. Please try again.';
+      errorDiv.style.display = 'block';
+    }
+  });
+}
+
+// Login form handler
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = loginForm.querySelector('#email').value.trim();
+    const password = loginForm.querySelector('#password').value;
+    const errorDiv = document.getElementById('login-error');
+    const successDiv = document.getElementById('login-success');
+    errorDiv.textContent = '';
+    errorDiv.style.display = 'none';
+    successDiv.textContent = '';
+    successDiv.style.display = 'none';
+    try {
+      const res = await fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        errorDiv.textContent = data.error || 'Login failed.';
+        errorDiv.style.display = 'block';
+      } else {
+        errorDiv.style.display = 'none';
+        successDiv.textContent = 'Signed in! Redirecting...';
+        successDiv.style.display = 'block';
+        setTimeout(() => {
+          successDiv.style.display = 'none';
+          window.location.href = 'dashboard.html';
+        }, 1500);
+      }
+    } catch (err) {
+      errorDiv.textContent = 'Server error. Please try again.';
+      errorDiv.style.display = 'block';
+    }
+  });
+} 

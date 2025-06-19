@@ -12,14 +12,16 @@
       <div class="auth-logo"></div>
       <h1 class="auth-title">Create an account</h1>
       <p class="auth-desc">Start exploring and utilizing all the resources that will help you elevate every financial decision you make.</p>
-      <form class="auth-form">
+      <div id="register-success" class="auth-success" style="display:none;"></div>
+      <div id="register-error" class="auth-error" style="display:none;"></div>
+      <form class="auth-form" id="register-form">
         <label for="name">Name</label>
         <input type="text" id="name" placeholder="Your name" autocomplete="off">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="Your email" autocomplete="off">
         <label for="password">Password</label>
         <input type="password" id="password" placeholder="Create a password" autocomplete="off">
-        <button type="submit" class="auth-btn">Create account</button>
+        <button type="submit" class="auth-btn" href="sign-in.html">Create account</button>
       </form>
       <div class="auth-divider">OR</div>
       <div class="auth-socials">
@@ -56,5 +58,6 @@
       </div>
     </div>
   </div>
+  <script src="auth.js"></script>
 </body>
 </html> 

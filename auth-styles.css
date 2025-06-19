@@ -291,4 +291,25 @@ body.auth-bg {
     border-radius: 0;
     padding: 28px 0;
   }
+}
+
+.auth-success {
+  color: #27c97a;
+  background: rgba(39, 201, 122, 0.08);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  display: none;
+  text-align: center;
+}
+.auth-error {
+  color: #ff4d4f;
+  background: rgba(255,77,79,0.08);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  display: none;
+  text-align: center;
 } 
