@@ -92,6 +92,7 @@ body.auth-bg {
   text-align: center;
   width: 100%;
   margin-top: 10px;
+
 }
 
 .auth-desc {
@@ -106,14 +107,14 @@ body.auth-bg {
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
 }
 
 .auth-form label {
   font-size: 1.08rem;
   color: #bfc6e0;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
   font-weight: 500;
 }
 
@@ -333,6 +334,12 @@ body.auth-bg {
   .auth-desc{
     text-align: center;
   }
+
+.auth-logo img{
+    width: 125px;
+    height: 125px;
+    user-select: none;
+}
 }
 
 @media (max-width: 900px) {
