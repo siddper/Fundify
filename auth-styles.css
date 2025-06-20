@@ -47,7 +47,7 @@ body.auth-bg {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: rgba(24, 24, 32, 0.85);
+  background: rgba(24, 27, 32, 0.85);
   border-radius: 32px;
   box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
   margin: 0;
@@ -55,13 +55,13 @@ body.auth-bg {
   transition: none !important;
   align-items: flex-start;
   padding: 64px 48px 64px 48px;
-  border: 1.5px solid rgba(75, 97, 209, 0.10);
+  border: 1.5px solid rgba(75, 135, 209, 0.1);
   backdrop-filter: blur(16px);
 }
 
 .auth-logo {
   font-size: 2.2rem;
-  color: #4B61D1;
+  color: #235FD6;
   margin-bottom: 0;
   font-weight: 700;
   letter-spacing: -1px;
@@ -120,13 +120,13 @@ body.auth-bg {
 
 .auth-form input {
   padding: 18px;
-  border: 1.5px solid rgba(75, 97, 209, 0.10);
+  border: 1.5px solid rgba(75, 122, 209, 0.1);
   border-radius: 12px;
   font-size: 1.08rem;
-  background: rgba(9, 9, 15, 0.95);
+  background: rgba(9, 11, 15, 0.95);
   color: #fff;
   transition: border 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 2px 8px 0 rgba(75, 97, 209, 0.1);
+  box-shadow: 0 2px 8px 0 rgba(75, 138, 209, 0.1);
   margin-top: 0;
   margin-bottom: 10px;
 }
@@ -136,7 +136,7 @@ body.auth-bg {
 }
 
 .auth-form input:focus {
-  border-color: #4B61D1;
+  border-color: #235FD6;
   outline: none;
 
 }
@@ -144,22 +144,22 @@ body.auth-bg {
 .auth-btn {
   margin-top: 22px;
   padding: 18px 0;
-  background: #4B61D1;
+  background: #235FD6;
   color: #fff;
   font-size: 1.18rem;
   font-weight: 600;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 2px 8px 0 rgba(75, 97, 209, 0.10);
+  box-shadow: 0 2px 8px 0 rgba(75, 133, 209, 0.1);
   transition: 0.2s ease;
   width: 100%;
   letter-spacing: 0.5px;
 }
 
 .auth-btn:hover {
-  background: #4255af;
-  box-shadow: 0 2px 8px 0 rgba(61, 78, 165, 0.1);
+  background: #1c4daf;
+  box-shadow: 0 2px 8px 0 rgba(61, 97, 165, 0.1);
 }
 
 .auth-divider {
@@ -189,34 +189,6 @@ body.auth-bg {
   width: 100%;
 }
 
-.auth-social {
-  width: 60px;
-  height: 60px;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  background: #101010;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  transition: border 0.18s cubic-bezier(0.4,0,0.2,1), background 0.18s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: none;
-  padding: 0;
-}
-.auth-social svg {
-  width: 28px;
-  height: 28px;
-  display: block;
-  margin: auto;
-  fill: white;
-}
-
-.auth-social:hover, .auth-social:focus {
-  border: 2px solid #4B61D1;
-  background: #0b0c10;
-}
-
 .auth-footer {
   text-align: center;
   font-size: 1.08rem;
@@ -225,14 +197,13 @@ body.auth-bg {
   width: 100%;
 }
 .auth-footer a {
-  color: #4B61D1;
+  color: #fff;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.18s cubic-bezier(0.4,0,0.2,1);
 }
-.auth-footer a:focus, .auth-footer a:hover {
-  color: #fff;
-  text-decoration: underline;
+.auth-footer a:hover {
+  color: #235FD6;
 }
 
 .auth-side-content {
@@ -257,7 +228,7 @@ body.auth-bg {
 }
 .auth-side-tags span {
   background: #23294a;
-  color: #4B61D1;
+  color: #235FD6;
   font-size: 1.05rem;
   padding: 7px 18px;
   border-radius: 10px;
@@ -269,7 +240,7 @@ body.auth-bg {
   font-size: 1.18rem;
   font-weight: 400;
   margin: 10px 0 0 0;
-  text-shadow: 0 2px 8px rgba(75, 97, 209, 0.18);
+  text-shadow: 0 2px 8px rgba(75, 131, 209, 0.18);
   line-height: 1.5;
 }
 
@@ -300,13 +271,13 @@ body.auth-bg {
   border-radius: 50%;
   width: 36px;
   height: 36px;
-  color: #4B61D1;
+  color: #235FD6;
   font-size: 1.2rem;
   cursor: pointer;
   transition: background 0.22s cubic-bezier(0.4,0,0.2,1), color 0.22s cubic-bezier(0.4,0,0.2,1), transform 0.18s cubic-bezier(0.4,0,0.2,1);
 }
 .auth-side-arrows button:focus {
-  background: #4B61D1;
+  background: #235FD6;
   color: #fff;
 }
 
@@ -459,7 +430,7 @@ body.auth-bg {
 /* Password feedback styles */
 .password-feedback {
   margin-top: 0;
-  background: #181c24;
+  background: #235FD6;
   border-radius: 10px;
   padding: 14px 18px 16px 18px;
   color: #e3e3e3;
@@ -469,7 +440,7 @@ body.auth-bg {
   gap: 6px;
   min-width: 220px;
   line-height: 25px;
-  border: 1.5px solid rgba(75, 97, 209, 0.10);
+  border: 1.5px solid rgba(75, 124, 209, 0.1);
 }
 .pw-strength {
   margin-bottom: 6px;
