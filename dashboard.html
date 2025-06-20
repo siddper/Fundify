@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundify Dashboard</title>
+  <link rel="stylesheet" href="auth-styles.css">
+  <link rel="stylesheet" href="nav.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="dashboard-bg">
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
+        <select class="sidebar-projects-dropdown">
+          <option>Default Project</option>
+          <option>Personal</option>
+          <option>School</option>
+        </select>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="active"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M192-144v-456l288-216 288 216v456H552v-264H408v264H192Z"/></svg></span>Dashboard</li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Fundify</span>
+      </div>
+      <div class="sidebar-resize-handle"></div>
+    </aside>
+    <main class="dashboard-main">
+      <header class="dashboard-topbar">
+        <span class="dashboard-title">Transactions</span>
+        <button class="dashboard-add-btn" id="openAddModal">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+        </button>
+      </header>
+      <div class="dashboard-controls">
+        <select class="sort-dropdown">
+          <option>Sort by: Date</option>
+          <option>Sort by: Amount</option>
+          <option>Sort by: Type</option>
+        </select>
+      </div>
+      <section class="dashboard-table-section">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" disabled></th>
+              <th>#</th>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Store/Source</th>
+              <th>Method</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>1</td>
+              <td>2024-06-01</td>
+              <td>Expense</td>
+              <td>$45.00</td>
+              <td>Grocery Store</td>
+              <td>Credit Card</td>
+            </tr>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>1</td>
+                <td>2024-06-01</td>
+                <td>Expense</td>
+                <td>$45.00</td>
+                <td>Grocery Store</td>
+                <td>Credit Card</td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td>1</td>
+                <td>2024-06-01</td>
+                <td>Expense</td>
+                <td>$45.00</td>
+                <td>Grocery Store</td>
+                <td>Credit Card</td>
+              </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+  <div class="modal-bg" id="addModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeAddModal" title="Close">&times;</button>
+      <h2>Add Transaction</h2>
+      <p>This is where you'll add a new transaction.<br>More fields coming soon!</p>
+    </div>
+  </div>
+  <script src="dashboard.js"></script>
+</body>
+</html>

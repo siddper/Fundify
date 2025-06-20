@@ -9,7 +9,7 @@ html, body {
 }
 
 body.auth-bg {
-  background: linear-gradient(135deg, #181c24 0%, #101014 100%);
+  background: linear-gradient(135deg, #181c24 0%, #101114 100%);
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -430,7 +430,7 @@ body.auth-bg {
 /* Password feedback styles */
 .password-feedback {
   margin-top: 0;
-  background: #235FD6;
+  background: #3242612b;
   border-radius: 10px;
   padding: 14px 18px 16px 18px;
   color: #e3e3e3;
@@ -439,7 +439,7 @@ body.auth-bg {
   flex-direction: column;
   gap: 6px;
   min-width: 220px;
-  line-height: 25px;
+  line-height: 24px;
   border: 1.5px solid rgba(75, 124, 209, 0.1);
 }
 .pw-strength {
@@ -468,4 +468,84 @@ body.auth-bg {
   padding-left: 2px;
 }
 .pw-rules li.ok { color: #27c97a; }
-.pw-rules li.bad { color: #ff4d4f; } 
+.pw-rules li.bad { color: #ff4d4f; }
+
+/* Dashboard Topbar and Add Button */
+.dashboard-topbar {
+  width: 100vw;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(24, 27, 32, 0.95);
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+  padding: 0 40px;
+  position: relative;
+  z-index: 2;
+}
+.dashboard-title {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+.dashboard-add-btn {
+  background: #235FD6;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 32px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(75, 133, 209, 0.1);
+  transition: 0.2s ease;
+  letter-spacing: 0.5px;
+}
+.dashboard-add-btn:hover {
+  background: #1c4daf;
+}
+
+/* Modal Styles */
+.modal-bg {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(16, 17, 20, 0.75);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.modal-bg.active {
+  display: flex;
+}
+.modal-content {
+  background: rgba(24, 27, 32, 0.98);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
+  padding: 48px 40px;
+  min-width: 340px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border: 1.5px solid rgba(75, 135, 209, 0.1);
+  backdrop-filter: blur(16px);
+}
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  color: #bfc6e0;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.18s;
+}
+.modal-close:hover {
+  color: #ff4d4f;
+} 

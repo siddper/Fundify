@@ -103,7 +103,7 @@ Fundify:
                * Method: Credit, Debit, Cash, or Check
                * Repeat: Yes, No, #, Gap
                * UI:
-               * Add button at top left, choose “Transaction”, “Quick Transaction (AI)”, “Preset”, “Quick Preset (AI)”
+               * Add button at top right, choose “Transaction”, “Quick Transaction (AI)”, “Preset”, “Quick Preset (AI)”
                * Quick commands show a textbox, AI interprets, and outputs a parsed result to be added
                * Also have microphone for voice input with clean UI (inspired by cursor’s UI)
                *                     * A pop-up appears that darkens the background
@@ -294,7 +294,7 @@ Navigation:
                                  *                                       * On phone, sidebar should hide and there should be at the top that hides or shows top bar
                                     *                                       *   
 
-Fundify:
+Dashboard:
                                        * Add transaction
                                        * Type: Withdrawal or Deposit
                                        * Date and Time (autofilled to current time)
