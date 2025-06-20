@@ -14,7 +14,7 @@ Other:
 
 
 Prompt:  
-Create a program that helps students manage their personal finances by tracking account balances, income and expenses. The program should allow users to input details about their income sources and expenses, including the amount, category, and date of each transaction. It should provide features to view the current balance, generate summaries of income and expenses over specified periods (e.g., weekly, monthly), and categorize expenses to show spending patterns. Additionally, the program should include functionality to update or delete existing entries and offer search and filter options to easily find specific transactions.
+Create a program that helps students manage their personal finances by tracking account balances, income and Withdrawals. The program should allow users to input details about their income sources and Withdrawals, including the amount, category, and date of each transaction. It should provide features to view the current balance, generate summaries of income and Withdrawals over specified periods (e.g., weekly, monthly), and categorize Withdrawals to show spending patterns. Additionally, the program should include functionality to update or delete existing entries and offer search and filter options to easily find specific transactions.
 
 
   
@@ -24,7 +24,7 @@ Create a program that helps students manage their personal finances by tracking 
 Amazon Forecast
 	
 
-Predict future expenses automatically
+Predict future Withdrawals automatically
 	
 
 
@@ -264,7 +264,7 @@ Other:
 
 
 Prompt:
-Create a program that helps students manage their personal finances by tracking account balances, income and expenses. The program should allow users to input details about their income sources and expenses, including the amount, category, and date of each transaction. It should provide features to view the current balance, generate summaries of income and expenses over specified periods (e.g., weekly, monthly), and categorize expenses to show spending patterns. Additionally, the program should include functionality to update or delete existing entries and offer search and filter options to easily find specific transactions.
+Create a program that helps students manage their personal finances by tracking account balances, income and Withdrawals. The program should allow users to input details about their income sources and Withdrawals, including the amount, category, and date of each transaction. It should provide features to view the current balance, generate summaries of income and Withdrawals over specified periods (e.g., weekly, monthly), and categorize Withdrawals to show spending patterns. Additionally, the program should include functionality to update or delete existing entries and offer search and filter options to easily find specific transactions.
 
 
   

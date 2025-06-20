@@ -112,6 +112,8 @@ if (loginForm) {
         errorDiv.style.display = 'none';
         successDiv.textContent = 'Signed in! Redirecting...';
         successDiv.style.display = 'block';
+        // Store user email in localStorage for dashboard API calls
+        localStorage.setItem('fundify_user_email', email);
         setTimeout(() => {
           successDiv.style.display = 'none';
           window.location.href = 'dashboard.html';

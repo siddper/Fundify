@@ -19,6 +19,17 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
 
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    type = db.Column(db.String(32), nullable=False)
+    date = db.Column(db.String(32), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    store = db.Column(db.String(120), nullable=False)
+    method = db.Column(db.String(32), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('transactions', lazy=True))
+
 def create_db():
     with app.app_context():
         db.create_all()
@@ -50,6 +61,43 @@ def login():
     if not user or not bcrypt.check_password_hash(user.password_hash, password):
         return jsonify({'success': False, 'error': 'Invalid email or password.'}), 401
     return jsonify({'success': True, 'user': {'name': user.name, 'email': user.email}})
+
+@app.route('/transactions', methods=['POST'])
+def add_transaction():
+    data = request.json
+    user_email = data.get('email')  # Or use user_id if you have authentication
+    user = User.query.filter_by(email=user_email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+
+    tx = Transaction(
+        user_id=user.id,
+        type=data.get('type'),
+        date=data.get('date'),
+        amount=float(data.get('amount')),
+        store=data.get('store'),
+        method=data.get('method')
+    )
+    db.session.add(tx)
+    db.session.commit()
+    return jsonify({'success': True, 'transaction_id': tx.id}), 201
+
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    user_email = request.args.get('email')
+    user = User.query.filter_by(email=user_email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    transactions = Transaction.query.filter_by(user_id=user.id).all()
+    tx_list = [{
+        'id': tx.id,
+        'type': tx.type,
+        'date': tx.date,
+        'amount': tx.amount,
+        'store': tx.store,
+        'method': tx.method
+    } for tx in transactions]
+    return jsonify({'success': True, 'transactions': tx_list})
 
 if __name__ == '__main__':
     create_db()

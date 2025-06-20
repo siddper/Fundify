@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fundify Dashboard</title>
+  <title>Dashboard</title>
+  <link rel="icon" type="image/png" href="fundifyIcon.png">
   <link rel="stylesheet" href="auth-styles.css">
   <link rel="stylesheet" href="nav.css">
   <link rel="stylesheet" href="dashboard.css">
@@ -37,11 +38,14 @@
         </button>
       </header>
       <div class="dashboard-controls">
-        <select class="sort-dropdown">
-          <option>Sort by: Date</option>
-          <option>Sort by: Amount</option>
-          <option>Sort by: Type</option>
-        </select>
+        <div class="custom-dropdown sort-dropdown" id="sort-dropdown">
+          <button type="button" class="dropdown-selected" id="sort-selected">Sort by default</button>
+          <ul class="dropdown-list" id="sort-list">
+            <li data-value="date">Default</li>
+            <li data-value="date">Date</li>
+            <li data-value="amount">Amount</li>
+          </ul>
+        </div>
       </div>
       <section class="dashboard-table-section">
         <table class="dashboard-table">
@@ -57,33 +61,6 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><input type="checkbox"></td>
-              <td>1</td>
-              <td>2024-06-01</td>
-              <td>Expense</td>
-              <td>$45.00</td>
-              <td>Grocery Store</td>
-              <td>Credit Card</td>
-            </tr>
-            <tr>
-                <td><input type="checkbox"></td>
-                <td>1</td>
-                <td>2024-06-01</td>
-                <td>Expense</td>
-                <td>$45.00</td>
-                <td>Grocery Store</td>
-                <td>Credit Card</td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td>1</td>
-                <td>2024-06-01</td>
-                <td>Expense</td>
-                <td>$45.00</td>
-                <td>Grocery Store</td>
-                <td>Credit Card</td>
-              </tr>
           </tbody>
         </table>
       </section>
@@ -92,8 +69,128 @@
   <div class="modal-bg" id="addModal">
     <div class="modal-content">
       <button class="modal-close" id="closeAddModal" title="Close">&times;</button>
-      <h2>Add Transaction</h2>
-      <p>This is where you'll add a new transaction.<br>More fields coming soon!</p>
+      <div class="add-options">
+        <button class="transaction-option">Add Transaction</button>
+        <button class="quick-transaction-option">Quick Transaction</button>
+        <button class="preset-option">Add Preset</button>
+        <button class="quick-preset-option">Quick Preset</button>
+      </div>
+      <div class="add-transaction-content">
+        <h2>Add Transaction</h2>
+        <form class="transaction-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="custom-type">Type</label>
+              <div class="custom-dropdown" id="custom-type-dropdown">
+                <button type="button" class="dropdown-selected" id="custom-type-selected">Withdrawal</button>
+                <ul class="dropdown-list" id="custom-type-list">
+                  <li data-value="Withdrawal">Withdrawal</li>
+                  <li data-value="Deposit">Deposit</li>
+                </ul>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="custom-date">Date</label>
+              <div class="custom-date-picker" id="custom-date-picker">
+                <input type="text" id="custom-date-input" placeholder="mm/dd/yyyy" readonly>
+                <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+                <div class="calendar-popup" id="calendar-popup"></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="amount">Amount</label>
+              <input type="number" name="amount" id="amount" placeholder="Amount" min="0" step="0.01" >
+            </div>
+            <div class="form-group">
+              <label for="custom-method">Method</label>
+              <div class="custom-dropdown" id="custom-method-dropdown">
+                <button type="button" class="dropdown-selected" id="custom-method-selected">Method</button>
+                <ul class="dropdown-list" id="custom-method-list">
+                  <li data-value="Credit Card">Credit Card</li>
+                  <li data-value="Debit Card">Debit Card</li>
+                  <li data-value="Cash">Cash</li>
+                  <li data-value="Check">Check</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="width:100%">
+              <label for="store">Store/Source</label>
+              <input type="text" name="store" id="store" placeholder="Store/Source" >
+            </div>
+          </div>
+          <button type="submit" class="modal-action-btn">Add Transaction</button>
+        </form>
+      </div>
+      <div class="quick-transaction-content">
+        <h2>Quick Transaction</h2>
+        <textarea class="quick-transaction-prompt"></textarea>
+        <button type="submit" class="modal-action-btn">Add Transaction</button>
+      </div>
+      <div class="add-preset-content">
+        <h2>Add Preset</h2>
+        <form class="preset-form">
+          <div class="form-row">
+            <div class="form-group" style="width:100%">
+              <label for="preset-name">Name</label>
+              <input type="text" name="presetName" id="preset-name" placeholder="Preset Name" >
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="custom-preset-type">Type</label>
+              <div class="custom-dropdown" id="custom-preset-type-dropdown">
+                <button type="button" class="dropdown-selected" id="custom-preset-type-selected">Withdrawal</button>
+                <ul class="dropdown-list" id="custom-preset-type-list">
+                  <li data-value="Withdrawal">Withdrawal</li>
+                  <li data-value="Deposit">Deposit</li>
+                </ul>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="custom-preset-date">Date</label>
+              <div class="custom-date-picker" id="custom-preset-date-picker">
+                <input type="text" id="custom-preset-date-input" placeholder="mm/dd/yyyy" readonly>
+                <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+                <div class="calendar-popup" id="custom-preset-calendar-popup"></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="preset-amount">Amount</label>
+              <input type="number" name="amount" id="preset-amount" placeholder="Amount" min="0" step="0.01" >
+            </div>
+            <div class="form-group">
+              <label for="custom-preset-method">Method</label>
+              <div class="custom-dropdown" id="custom-preset-method-dropdown">
+                <button type="button" class="dropdown-selected" id="custom-preset-method-selected">Method</button>
+                <ul class="dropdown-list" id="custom-preset-method-list">
+                  <li data-value="Credit Card">Credit Card</li>
+                  <li data-value="Debit Card">Debit Card</li>
+                  <li data-value="Cash">Cash</li>
+                  <li data-value="Check">Check</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="width:100%">
+              <label for="preset-store">Store/Source</label>
+              <input type="text" name="store" id="preset-store" placeholder="Store/Source" >
+            </div>
+          </div>
+          <button type="submit" class="modal-action-btn">Save Preset</button>
+        </form>
+      </div>
+      <div class="quick-preset-content">
+        <h2>Quick Preset</h2>
+        <textarea class="quick-preset-prompt"></textarea>
+        <button type="submit" class="modal-action-btn">Add Transaction</button>
+      </div>
     </div>
   </div>
   <script src="dashboard.js"></script>

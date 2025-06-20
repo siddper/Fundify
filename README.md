@@ -9,7 +9,7 @@ Built by students, for students — because we were tired of not knowing where o
 ## Features
 
 ### Transaction Management
-- Add deposits and withdrawals with full details (amount, date, source/store, payment method)
+- Add deposits and Withdrawals with full details (amount, date, source/store, payment method)
 - Set recurring transactions
 - Filter, sort, and search transactions (by keyword or AI)
 - Edit, duplicate, and delete entries
