@@ -6,7 +6,10 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5500"}})
+
+# More permissive CORS configuration for development
+CORS(app, origins=["http://127.0.0.1:5500"], supports_credentials=True)
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
@@ -50,4 +53,4 @@ def login():
 
 if __name__ == '__main__':
     create_db()
-    app.run(debug=True) 
+    app.run(debug=True, port=8000) 
