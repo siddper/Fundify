@@ -126,7 +126,7 @@ body.auth-bg {
   background: rgba(9, 9, 15, 0.95);
   color: #fff;
   transition: border 0.22s cubic-bezier(0.4,0,0.2,1), box-shadow 0.22s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 2px 8px 0 rgba(75, 97, 209, 0.04);
+  box-shadow: 0 2px 8px 0 rgba(75, 97, 209, 0.1);
   margin-top: 0;
   margin-bottom: 10px;
 }
@@ -138,7 +138,7 @@ body.auth-bg {
 .auth-form input:focus {
   border-color: #4B61D1;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(75, 97, 209, 0.15);
+
 }
 
 .auth-btn {
@@ -152,14 +152,14 @@ body.auth-bg {
   border-radius: 12px;
   cursor: pointer;
   box-shadow: 0 2px 8px 0 rgba(75, 97, 209, 0.10);
-  transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+  transition: 0.2s ease;
   width: 100%;
   letter-spacing: 0.5px;
 }
 
 .auth-btn:hover {
   background: #4255af;
-  box-shadow: 0 2px 8px 0 rgba(85, 110, 234, 0.4);
+  box-shadow: 0 2px 8px 0 rgba(61, 78, 165, 0.1);
 }
 
 .auth-divider {
