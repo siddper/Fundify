@@ -1213,6 +1213,149 @@ function setupCustomDatePickerForRow(pickerEl) {
     });
 }
 
+// --- Voice Recognition Logic ---
+const startVoiceBtn = document.getElementById('start-voice-recognition');
+const startVoiceBtnPreset = document.getElementById('start-voice-recognition-preset');
+const voiceUi = document.getElementById('voice-recognition-ui');
+const stopVoiceBtn = document.getElementById('stop-voice-recognition');
+const cancelVoiceBtn = document.getElementById('cancel-voice-recognition');
+const quickTransactionPromptEl = document.querySelector('.quick-transaction-prompt');
+const quickTransactionFormEl = document.querySelector('.quick-transaction-content form');
+const quickPresetPromptEl = document.querySelector('.quick-preset-prompt');
+const quickPresetFormEl = document.querySelector('.quick-preset-content form');
+const waveformContainer = document.getElementById('waveform-container');
+const voiceStatusText = document.getElementById('voice-status-text');
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let silenceTimer = null;
+let currentVoiceContext = {};
+let finalTranscriptForSession = '';
+
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+        voiceStatusText.textContent = 'Listening...';
+        clearTimeout(silenceTimer);
+        finalTranscriptForSession = '';
+    };
+
+    recognition.onresult = (event) => {
+        // We no longer update the input field here.
+        // We just build the transcript in the background and reset the silence timer.
+        let finalTranscript = '';
+        for (let i = 0; i < event.results.length; i++) {
+            const transcriptPart = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcriptPart + ' ';
+            }
+        }
+        finalTranscriptForSession = finalTranscript;
+        
+        // Reset silence timer on any speech
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            stopRecognition(true); // Auto-submit after 3s of silence
+        }, 3000);
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            voiceStatusText.textContent = 'Microphone access denied.';
+        } else if (event.error === 'network') {
+            voiceStatusText.textContent = 'Network error. Please check connection.';
+        } else {
+            voiceStatusText.textContent = 'Error. Please try again.';
+        }
+        clearTimeout(silenceTimer);
+        // Do not auto-close UI on error, so user can see the message.
+    };
+
+    recognition.onend = () => {
+        clearTimeout(silenceTimer);
+        voiceUi.classList.remove('active');
+    };
+}
+
+function startRecognition(context) {
+    if (!SpeechRecognition) {
+        alert("Sorry, your browser doesn't support voice recognition.");
+        return;
+    }
+    currentVoiceContext = context;
+    voiceUi.classList.add('active');
+    if (currentVoiceContext.promptEl) {
+        currentVoiceContext.promptEl.value = ''; // Clear previous text
+    }
+    voiceStatusText.textContent = "Listening..."; // Reset status text
+    try {
+        recognition.start();
+    } catch (e) {
+        console.error("Could not start recognition:", e);
+        voiceStatusText.textContent = 'Error starting.';
+    }
+}
+
+function stopRecognition(shouldSubmit) {
+    if (recognition) {
+        recognition.stop();
+    }
+    if (shouldSubmit && currentVoiceContext.promptEl) {
+        currentVoiceContext.promptEl.value = finalTranscriptForSession.trim();
+        if (currentVoiceContext.promptEl.value.trim() && currentVoiceContext.formEl) {
+            currentVoiceContext.formEl.querySelector('button[type="submit"]').click();
+        }
+    }
+}
+
+if (startVoiceBtn) {
+    startVoiceBtn.addEventListener('click', () => {
+        startRecognition({
+            promptEl: quickTransactionPromptEl,
+            formEl: quickTransactionFormEl
+        });
+    });
+}
+
+if (startVoiceBtnPreset) {
+    startVoiceBtnPreset.addEventListener('click', () => {
+        startRecognition({
+            promptEl: quickPresetPromptEl,
+            formEl: quickPresetFormEl
+        });
+    });
+}
+
+if(stopVoiceBtn) stopVoiceBtn.addEventListener('click', () => stopRecognition(true));
+if(cancelVoiceBtn) cancelVoiceBtn.addEventListener('click', () => stopRecognition(false));
+
+document.addEventListener('keydown', (e) => {
+    if (voiceUi.classList.contains('active')) {
+        if (e.code === 'Space') {
+            e.preventDefault();
+            stopRecognition(true);
+        }
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            stopRecognition(false);
+        }
+    }
+});
+
+// Generate waveform bars
+if (waveformContainer) {
+    for (let i = 0; i < 50; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'waveform-bar';
+        bar.style.animationDelay = `${Math.random() * -1.2}s`;
+        waveformContainer.appendChild(bar);
+    }
+}
+
 // On page load, fetch transactions
 fetchTransactions();
 fetchPresets();
