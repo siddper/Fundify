@@ -1786,7 +1786,8 @@ function setupCustomDatePickerForFilterModal() {
 }
 
 if (applyFilterBtn) {
-  applyFilterBtn.addEventListener('click', () => {
+  applyFilterBtn.addEventListener('click', (e) => {
+    e.preventDefault(); // <-- Add this line!
     const type = filterTypeSelected.dataset.value || 'date';
     let filter = { type };
     if (type === 'date') {
