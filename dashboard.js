@@ -2145,7 +2145,6 @@ if (capturePhotoBtn && cameraPreview && cameraCanvas && receiptPreview) {
       cameraStream = null;
     }
     cameraPreview.srcObject = null;
-    // Enable the Add Transaction (AI) button
     const aiBtn = document.querySelector('#receipt-scan-form .modal-action-btn[type="submit"]');
     if (aiBtn) aiBtn.disabled = false;
   });
@@ -2154,16 +2153,23 @@ if (capturePhotoBtn && cameraPreview && cameraCanvas && receiptPreview) {
 // --- Receipt Scan AI Submission Logic ---
 const receiptScanForm = document.getElementById('receipt-scan-form');
 if (receiptScanForm) {
-  const aiBtn = receiptScanForm.querySelector('.modal-action-btn[type="submit"]') || receiptScanForm.querySelector('.modal-action-btn');
-  let aiMsgContainer = receiptScanForm.querySelector('.ai-message-container');
+  const aiBtn = receiptScanForm.querySelector('.receipt-ai-btn');
+  const cancelBtn = receiptScanForm.querySelector('.receipt-cancel-btn');
+  let aiMsgContainer = receiptScanForm.querySelector('.receipt-status-message');
   if (!aiMsgContainer) {
     aiMsgContainer = document.createElement('div');
-    aiMsgContainer.className = 'ai-message-container';
-    aiMsgContainer.style.marginTop = '16px';
+    aiMsgContainer.className = 'ai-message-container receipt-status-message';
     aiBtn.parentElement.insertBefore(aiMsgContainer, aiBtn.nextSibling);
   }
   aiMsgContainer.style.display = 'block';
   aiMsgContainer.textContent = '';
+
+  // Cancel button closes modal
+  if (cancelBtn && modalBg) {
+    cancelBtn.addEventListener('click', () => {
+      modalBg.classList.remove('active');
+    });
+  }
 
   // Enable/disable button based on image selection
   function updateAiBtnState() {
@@ -2177,10 +2183,10 @@ if (receiptScanForm) {
   function setBtnLoading(loading, text) {
     if (loading) {
       aiBtn.disabled = true;
-      aiBtn.innerHTML = '<span class="spinner" style="display:inline-block;width:18px;height:18px;border:2px solid #fff;border-top:2px solid #235FD6;border-radius:50%;margin-right:8px;vertical-align:middle;animation:spin 0.7s linear infinite;"></span>' + (text || 'Processing...');
+      aiBtn.textContent = 'Add Transaction';
     } else {
       aiBtn.disabled = false;
-      aiBtn.textContent = text || 'Add Transaction (AI)';
+      aiBtn.textContent = 'Add Transaction';
     }
   }
 
@@ -2195,7 +2201,7 @@ if (receiptScanForm) {
   receiptScanForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     aiMsgContainer.style.display = 'block';
-    aiMsgContainer.className = 'ai-message-container';
+    aiMsgContainer.className = 'ai-message-container receipt-status-message';
     aiMsgContainer.textContent = 'Extracting text from receipt...';
     setBtnLoading(true, 'Extracting...');
 
@@ -2214,11 +2220,13 @@ if (receiptScanForm) {
         tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
         tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
       });
-      const promptText = text.trim();
+      let promptText = text.trim();
       const email = localStorage.getItem('fundify_user_email');
       if (!promptText || !email) {
         throw new Error('Could not extract text or user not logged in.');
       }
+      // Force type to Withdrawal by appending a clear instruction to the prompt
+      promptText += '\nType: Withdrawal';
       aiMsgContainer.textContent = 'Adding transaction...';
       setBtnLoading(true, 'Adding...');
       // Send to backend

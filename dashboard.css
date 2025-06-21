@@ -1535,3 +1535,135 @@ input[type=number]::-webkit-outer-spin-button {
 #camera-modal.active {
   display: flex;
 }
+
+/* --- Modern Receipt Scan Styles --- */
+.receipt-scan-modern-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 420px;
+}
+.receipt-scan-card {
+  background: #23262a;
+  border-radius: 8px;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
+  border: 1.5px solid var(--border);
+  padding: 36px 32px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.receipt-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 0;
+}
+.receipt-btn {
+  background: var(--accent);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background 0.18s;
+  width: 100%;
+  max-width: 180px;
+  margin: 0 auto;
+  display: block;
+}
+.receipt-btn:hover {
+  background: #1c4daf;
+}
+.camera-btn {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+.file-name-modern {
+  color: var(--text-muted);
+  font-size: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.receipt-or {
+  color: var(--text-muted);
+  font-size: 1.05em;
+  margin: 18px 0 10px 0;
+  text-align: center;
+  width: 100%;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.receipt-dropzone {
+  min-height: 140px;
+  width: 100%;
+  background: #18191a;
+  border: 2px dashed #35373b;
+  border-radius: 8px;
+  padding: 18px 0 18px 0;
+  margin: 0 0 18px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 1.1em;
+  transition: border-color 0.18s, background 0.18s;
+  box-sizing: border-box;
+}
+.receipt-dropzone img {
+  max-width: 90%;
+  max-height: 120px;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+.receipt-dropzone:hover {
+  border-color: var(--accent);
+  background: #23262a;
+}
+.receipt-scan-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.receipt-cancel-btn, .receipt-ai-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 0;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+.receipt-status-message {
+  margin-top: 18px;
+  width: 100%;
+  text-align: center;
+  font-size: 1.05em;
+  min-height: 24px;
+  display: block;
+}
+@media (max-width: 600px) {
+  .receipt-scan-card {
+    padding: 18px 6vw 18px 6vw;
+    max-width: 98vw;
+  }
+  .receipt-scan-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .receipt-btn {
+    max-width: 100%;
+    width: 100%;
+  }
+}

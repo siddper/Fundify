@@ -184,25 +184,21 @@
               </form>
             </div>
             <div id="receipt-scan-content" class="tab-pane">
-              <form id="receipt-scan-form">
-                <div class="form-group full-width">
-                  <label>Upload Receipt Image</label>
-                  <div class="custom-file-upload">
-                    <input type="file" id="receipt-upload" accept="image/*" style="display:none;" />
-                    <button type="button" class="modal-action-btn" id="custom-file-btn">Choose File</button>
-                    <span id="file-name" style="margin-left:12px;color:var(--text-muted);font-size:1em;">No file chosen</span>
+              <form id="receipt-scan-form" class="receipt-scan-modern-form">
+                <div class="receipt-scan-card">
+                  <div class="receipt-upload-row">
+                    <input type="file" id="receipt-upload" accept="image/jpeg, image/png" style="display:none;" />
+                    <button type="button" class="receipt-btn" id="custom-file-btn">Choose File</button>
+                    <span id="file-name" class="file-name-modern">No file chosen</span>
                   </div>
-                </div>
-                <div class="form-group full-width" style="text-align:center;">
-                  <span style="color:var(--text-muted);margin:8px 0;display:block;">or</span>
-                  <button type="button" class="modal-action-btn" id="start-receipt-camera" style="margin-bottom:12px;">Use Camera</button>
-                </div>
-                <div class="form-group full-width" style="text-align:center;">
-                  <div id="receipt-preview" style="min-height:120px;background:#23262a;border-radius:8px;padding:12px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.1em;">No image selected</div>
-                </div>
-                <div class="form-actions">
-                  <button type="button" class="modal-cancel-btn">Cancel</button>
-                  <button type="submit" class="modal-action-btn" disabled>Add Transaction (AI)</button>
+                  <div class="receipt-or">or</div>
+                  <button type="button" class="receipt-btn camera-btn" id="start-receipt-camera">Use Camera</button>
+                  <div id="receipt-preview" class="receipt-dropzone">No image selected</div>
+                  <div class="receipt-scan-actions">
+                    <button type="button" class="modal-cancel-btn receipt-cancel-btn">Cancel</button>
+                    <button type="submit" class="modal-action-btn receipt-ai-btn" disabled>Add Transaction</button>
+                  </div>
+                  <div class="ai-message-container receipt-status-message"></div>
                 </div>
               </form>
             </div>
