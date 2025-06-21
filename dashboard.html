@@ -44,12 +44,17 @@
         </button>
       </header>
       <div class="dashboard-controls">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search transactions...">
+        </div>
         <div class="custom-dropdown sort-dropdown" id="sort-dropdown">
-          <button type="button" class="dropdown-selected" id="sort-selected">Sort by default</button>
+          <button type="button" class="dropdown-selected" id="sort-selected">Sort by Default</button>
           <ul class="dropdown-list" id="sort-list">
             <li data-value="default">Default</li>
-            <li data-value="date">Date</li>
-            <li data-value="amount">Amount</li>
+            <li data-value="date_asc">Date: Oldest First</li>
+            <li data-value="date_desc">Date: Newest First</li>
+            <li data-value="amount_asc">Amount: Low to High</li>
+            <li data-value="amount_desc">Amount: High to Low</li>
           </ul>
         </div>
       </div>
@@ -129,8 +134,8 @@
                   <div class="custom-dropdown" id="custom-method-dropdown">
                     <button type="button" class="dropdown-selected" id="custom-method-selected">Method</button>
                     <ul class="dropdown-list" id="custom-method-list">
-                      <li data-value="Credit Card">Credit Card</li>
-                      <li data-value="Debit Card">Debit Card</li>
+                      <li data-value="Credit">Credit</li>
+                      <li data-value="Debit">Debit</li>
                       <li data-value="Cash">Cash</li>
                       <li data-value="Check">Check</li>
                     </ul>
@@ -190,8 +195,8 @@
                   <div class="custom-dropdown" id="custom-preset-method-dropdown">
                     <button type="button" class="dropdown-selected" id="custom-preset-method-selected">Method</button>
                     <ul class="dropdown-list" id="custom-preset-method-list">
-                      <li data-value="Credit Card">Credit Card</li>
-                      <li data-value="Debit Card">Debit Card</li>
+                      <li data-value="Credit">Credit</li>
+                      <li data-value="Debit">Debit</li>
                       <li data-value="Cash">Cash</li>
                       <li data-value="Check">Check</li>
                     </ul>

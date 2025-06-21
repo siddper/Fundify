@@ -265,7 +265,7 @@ function setupCustomDropdown(dropdownId, selectedId, listId) {
     li.addEventListener('click', (e) => {
       // For sort dropdown, prepend 'Sort by '
       if (dropdownId === 'sort-dropdown') {
-        selected.textContent = 'Sort by ' + li.textContent.toLowerCase();
+        selected.textContent = 'Sort by ' + li.textContent;
         sortTransactions(li.dataset.value);
       } else {
         selected.textContent = li.textContent;
@@ -642,15 +642,89 @@ function updateBalance() {
 function sortTransactions(sortBy = 'default') {
     let sortedTransactions = [...transactions];
 
-    if (sortBy === 'date') {
-        // Sort by date ascending (oldest first)
+    if (sortBy === 'date_asc') {
         sortedTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
-    } else if (sortBy === 'amount') {
-        // Sort by amount ascending (lowest first)
+    } else if (sortBy === 'date_desc') {
+        sortedTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortBy === 'amount_asc') {
         sortedTransactions.sort((a, b) => a.amount - b.amount);
+    } else if (sortBy === 'amount_desc') {
+        sortedTransactions.sort((a, b) => b.amount - a.amount);
     }
 
     renderTransactions(sortedTransactions);
+}
+
+function levenshteinDistance(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+    const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+    for (let i = 0; i <= a.length; i++) { matrix[0][i] = i; }
+    for (let j = 0; j <= b.length; j++) { matrix[j][0] = j; }
+    for (let j = 1; j <= b.length; j++) {
+        for (let i = 1; i <= a.length; i++) {
+            const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+            matrix[j][i] = Math.min(
+                matrix[j][i - 1] + 1,       // Insertion
+                matrix[j - 1][i] + 1,       // Deletion
+                matrix[j - 1][i - 1] + cost // Substitution
+            );
+        }
+    }
+    return matrix[b.length][a.length];
+}
+
+// Search functionality
+const searchInput = document.getElementById('search-input');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        const searchTerms = searchTerm.split(/\s+/).filter(Boolean);
+
+        const filteredTransactions = transactions.filter((tx, index) => {
+            if (!searchTerm) return true;
+
+            const fuzzyMatch = (textToSearch, pattern) => {
+                const text = String(textToSearch).toLowerCase();
+                if (text.includes(pattern)) return true;
+                const threshold = pattern.length > 5 ? 2 : 1;
+                return levenshteinDistance(text, pattern) <= threshold;
+            };
+
+            return searchTerms.every(term => {
+                if (term.startsWith('#')) {
+                    return String(index + 1).includes(term.substring(1));
+                }
+                if (term.startsWith('type:')) {
+                    return fuzzyMatch(tx.type, term.substring(5).trim());
+                }
+                if (term.startsWith('date:')) {
+                    return tx.date.toLowerCase().includes(term.substring(5).trim());
+                }
+                if (term.startsWith('amount:')) {
+                    return String(tx.amount).toLowerCase().includes(term.substring(7).trim());
+                }
+                if (term.startsWith('store:') || term.startsWith('source:')) {
+                    const prefixLen = term.startsWith('store:') ? 6 : 7;
+                    return fuzzyMatch(tx.store, term.substring(prefixLen).trim());
+                }
+                if (term.startsWith('method:')) {
+                    return fuzzyMatch(tx.method, term.substring(7).trim());
+                }
+
+                if (String(index + 1).includes(term)) return true;
+                if (tx.date.includes(term)) return true;
+                if (String(tx.amount).includes(term)) return true;
+                if (fuzzyMatch(tx.type, term)) return true;
+                if (fuzzyMatch(tx.store, term)) return true;
+                if (fuzzyMatch(tx.method, term)) return true;
+                
+                return false;
+            });
+        });
+        
+        renderTransactions(filteredTransactions);
+    });
 }
 
 // Fetch transactions from backend
@@ -694,11 +768,49 @@ async function deleteTransaction(transactionId) {
     }
 }
 
+async function duplicateTransaction(transactionId) {
+    const originalTx = transactions.find(tx => tx.id === transactionId);
+    if (!originalTx) {
+        alert('Could not find the transaction to duplicate.');
+        return;
+    }
+
+    const duplicatedTxPayload = {
+        ...originalTx,
+        email: localStorage.getItem('fundify_user_email')
+    };
+    delete duplicatedTxPayload.id; // Remove ID to allow DB to create a new one
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(duplicatedTxPayload)
+        });
+        const data = await res.json();
+        if (data.success && data.transaction) {
+            const originalIndex = transactions.findIndex(t => t.id === transactionId);
+            if (originalIndex !== -1) {
+                transactions.splice(originalIndex + 1, 0, data.transaction);
+                renderTransactions(); // Re-render with the new local array
+                updateBalance();
+            } else {
+                await fetchTransactions(); // Fallback if index isn't found
+            }
+        } else {
+            alert(data.error || 'Failed to duplicate transaction.');
+        }
+    } catch(err) {
+        alert('Server error while duplicating transaction.');
+    }
+}
+
 function renderTransactions(transactionsToRender = transactions) {
   const tbody = document.querySelector('.dashboard-table tbody');
   tbody.innerHTML = '';
   transactionsToRender.forEach((tx) => {
     const tr = document.createElement('tr');
+    tr.dataset.transactionId = tx.id;
     tr.innerHTML = `
       <td><input type="checkbox"></td>
       <td>${transactions.indexOf(tx) + 1}</td>
@@ -710,38 +822,277 @@ function renderTransactions(transactionsToRender = transactions) {
       <td class="transaction-menu-cell">
         <button class="transaction-menu-btn">⋮</button>
         <div class="transaction-menu-dropdown">
-          <button class="delete-tx-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>
-          Delete
-          </button>
+          <button class="edit-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v120q-23 5-43 16t-37 28L480-237v157H240Zm320 0v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm263-224 37-39-37-37-38 38 38 38ZM520-600h200L520-800l200 200-200-200v200Z"/></svg>Edit</button>
+          <button class="duplicate-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-160q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200H320Zm240-440h200L560-840v200Z"/></svg>Duplicate</button>
+          <button class="delete-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>Delete</button>
         </div>
       </td>
     `;
     
-    const menuBtn = tr.querySelector('.transaction-menu-btn');
-    const dropdown = tr.querySelector('.transaction-menu-dropdown');
-    const deleteBtn = tr.querySelector('.delete-tx-btn');
-
-    menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        // Close other dropdowns
-        document.querySelectorAll('.transaction-menu-dropdown.show').forEach(d => {
-            if (d !== dropdown) d.classList.remove('show');
-        });
-        dropdown.classList.toggle('show');
-    });
-
-    deleteBtn.addEventListener('click', () => {
-        deleteTransaction(tx.id);
-    });
-
     tbody.appendChild(tr);
   });
+}
+
+function cancelEdit(tr) {
+    if (!tr || !tr.classList.contains('editing')) return;
+    
+    // Restore the original HTML content of the cells
+    const originalValues = JSON.parse(tr.dataset.originalValues);
+    tr.cells[2].innerHTML = originalValues.date;
+    tr.cells[3].innerHTML = originalValues.type;
+    tr.cells[4].innerHTML = originalValues.amount;
+    tr.cells[5].innerHTML = originalValues.store;
+    tr.cells[6].innerHTML = originalValues.method;
+    tr.cells[7].innerHTML = originalValues.menu;
+
+    // Remove editing state and data attributes
+    tr.classList.remove('editing');
+    tr.removeAttribute('data-original-values');
+}
+
+function toggleEditMode(tr, transaction) {
+    const isEditing = tr.classList.contains('editing');
+
+    // First, cancel any other rows that are currently being edited.
+    document.querySelectorAll('tr.editing').forEach(otherTr => {
+        if (otherTr !== tr) {
+            cancelEdit(otherTr);
+        }
+    });
+
+    if (isEditing) {
+        cancelEdit(tr);
+        return;
+    }
+    
+    // Enter edit mode
+    tr.classList.add('editing');
+    tr.dataset.transactionId = transaction.id;
+
+    // Store original innerHTML
+    tr.dataset.originalValues = JSON.stringify({
+        date: tr.cells[2].innerHTML,
+        type: tr.cells[3].innerHTML,
+        amount: tr.cells[4].innerHTML,
+        store: tr.cells[5].innerHTML,
+        method: tr.cells[6].innerHTML,
+        menu: tr.cells[7].innerHTML,
+    });
+
+    // Replace cells with editable components
+    // Date (Cell 2)
+    tr.cells[2].innerHTML = `<div class="custom-date-picker edit-datepicker"><input type="text" class="edit-input" value="${transaction.date}" readonly><span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span><div class="calendar-popup"></div></div>`;
+    setupCustomDatePickerForRow(tr.cells[2].querySelector('.custom-date-picker'));
+
+    // Type (Cell 3)
+    tr.cells[3].innerHTML = `<div class="custom-dropdown edit-dropdown"><button type="button" class="dropdown-selected" data-value="${transaction.type}">${transaction.type}</button><ul class="dropdown-list"><li data-value="Withdrawal">Withdrawal</li><li data-value="Deposit">Deposit</li></ul></div>`;
+    setupCustomDropdownForRow(tr.cells[3].querySelector('.custom-dropdown'));
+    
+    // Amount (Cell 4)
+    tr.cells[4].innerHTML = `<input type="number" class="edit-input" value="${transaction.amount.toFixed(2)}" step="0.01">`;
+    
+    // Store/Source (Cell 5)
+    tr.cells[5].innerHTML = `<input type="text" class="edit-input" value="${transaction.store}">`;
+    
+    // Method (Cell 6)
+    tr.cells[6].innerHTML = `<div class="custom-dropdown edit-dropdown"><button type="button" class="dropdown-selected" data-value="${transaction.method}">${transaction.method}</button><ul class="dropdown-list"><li data-value="Credit">Credit</li><li data-value="Debit">Debit</li><li data-value="Cash">Cash</li><li data-value="Check">Check</li></ul></div>`;
+    setupCustomDropdownForRow(tr.cells[6].querySelector('.custom-dropdown'));
+    
+    tr.cells[7].innerHTML = ''; // Clear menu cell
+
+    tr.querySelectorAll('.edit-input').forEach(input => {
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') saveTransaction(tr, transaction.id);
+            if (e.key === 'Escape') cancelEdit(tr);
+        });
+    });
+
+    tr.cells[4].querySelector('input').focus();
+}
+
+async function saveTransaction(tr, transactionId) {
+    const dateInput = tr.cells[2].querySelector('.edit-input');
+    const typeSelect = tr.cells[3].querySelector('.dropdown-selected');
+    const amountInput = tr.cells[4].querySelector('input');
+    const storeInput = tr.cells[5].querySelector('input');
+    const methodSelect = tr.cells[6].querySelector('.dropdown-selected');
+
+    if (!dateInput.value || !amountInput.value || !storeInput.value) {
+        alert('All fields must be filled out.');
+        return;
+    }
+    
+    const updatedTx = {
+        date: dateInput.value,
+        type: typeSelect.dataset.value,
+        amount: parseFloat(amountInput.value),
+        store: storeInput.value,
+        method: methodSelect.dataset.value
+    };
+
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/transactions/${transactionId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedTx)
+        });
+        const data = await res.json();
+        if (data.success) {
+            await fetchTransactions();
+        } else {
+            alert(data.error || 'Failed to save transaction.');
+            cancelEdit(tr);
+        }
+    } catch(err) {
+        alert('Server error while saving transaction.');
+        cancelEdit(tr);
+    }
+}
+
+function setupCustomDropdownForRow(dropdownEl) {
+    const selected = dropdownEl.querySelector('.dropdown-selected');
+    const list = dropdownEl.querySelector('.dropdown-list');
+    
+    selected.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        const wasOpen = dropdownEl.classList.contains('open');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown.open').forEach(d => d.classList.remove('open'));
+        
+        if (!wasOpen) {
+            const selectedRect = selected.getBoundingClientRect();
+            list.style.top = `${selectedRect.bottom}px`;
+            list.style.left = `${selectedRect.left}px`;
+            list.style.width = `${selectedRect.width}px`;
+            dropdownEl.classList.add('open');
+        }
+    });
+
+    list.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', () => {
+            selected.textContent = li.textContent;
+            selected.dataset.value = li.dataset.value;
+            dropdownEl.classList.remove('open');
+        });
+    });
+}
+
+function setupCustomDatePickerForRow(pickerEl) {
+    const input = pickerEl.querySelector('input');
+    const popup = pickerEl.querySelector('.calendar-popup');
+
+    function formatDate(date) {
+        return `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+    }
+
+    function renderCalendar(currentDate) {
+        const year = currentDate.getFullYear(), month = currentDate.getMonth();
+        let html = `<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;'><button type='button' class='cal-prev'>&lt;</button><span style='font-weight:600;'>${currentDate.toLocaleString('default', { month: 'long' })} ${year}</span><button type='button' class='cal-next'>&gt;</button></div><div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.95em;color:#bfc6e0;'>${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => `<span>${d}</span>`).join('')}</div><div class='calendar-grid-days'>`;
+        const firstDay = new Date(year, month, 1);
+        for (let i = 0; i < firstDay.getDay(); i++) html += '<span></span>';
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        for (let d = 1; d <= lastDay; d++) {
+            const thisDate = new Date(year, month, d);
+            html += `<button type='button' class='cal-day' data-date='${formatDate(thisDate)}'>${d}</button>`;
+        }
+        html += "</div>";
+        popup.innerHTML = html;
+        popup.querySelector('.cal-prev').onclick = () => renderCalendar(new Date(year, month - 1, 1));
+        popup.querySelector('.cal-next').onclick = () => renderCalendar(new Date(year, month + 1, 1));
+        popup.querySelectorAll('.cal-day').forEach(btn => {
+            btn.onclick = () => {
+                input.value = btn.dataset.date;
+                pickerEl.classList.remove('open');
+            };
+        });
+    }
+
+    const toggle = () => {
+        const isOpen = pickerEl.classList.toggle('open');
+        if (isOpen) {
+            renderCalendar(input.value ? new Date(input.value) : new Date());
+            popup.style.display = 'flex';
+        } else {
+            popup.style.display = 'none';
+        }
+    };
+
+    input.addEventListener('click', e => e.stopPropagation());
+    pickerEl.querySelector('.calendar-icon').addEventListener('click', e => {
+        e.stopPropagation();
+        toggle();
+    });
 }
 
 // On page load, fetch transactions
 fetchTransactions();
 fetchPresets();
+
+const tableBody = document.querySelector('.dashboard-table tbody');
+if (tableBody) {
+    tableBody.addEventListener('click', (e) => {
+        const target = e.target;
+
+        const menuBtn = target.closest('.transaction-menu-btn');
+        if (menuBtn) {
+            e.stopPropagation();
+            const tr = menuBtn.closest('tr');
+            if (tr.classList.contains('editing')) return; // Don't open menu in edit mode
+            
+            const dropdown = tr.querySelector('.transaction-menu-dropdown');
+            const wasOpen = dropdown.classList.contains('show');
+
+            // Close all other menus
+            document.querySelectorAll('.transaction-menu-dropdown.show').forEach(d => {
+                d.classList.remove('show');
+            });
+            
+            if (!wasOpen) {
+                const btnRect = menuBtn.getBoundingClientRect();
+                dropdown.classList.add('show');
+                dropdown.style.top = `${btnRect.bottom}px`;
+                dropdown.style.left = `${btnRect.right - dropdown.offsetWidth}px`;
+            }
+            return;
+        }
+
+        const editBtn = target.closest('.edit-tx-btn');
+        if (editBtn) {
+            e.stopPropagation();
+            const tr = editBtn.closest('tr');
+            const transactionId = parseInt(tr.dataset.transactionId, 10);
+            const transaction = transactions.find(tx => tx.id === transactionId);
+            if (transaction) {
+                toggleEditMode(tr, transaction);
+            }
+            return;
+        }
+
+        const deleteBtn = target.closest('.delete-tx-btn');
+        if (deleteBtn) {
+            e.stopPropagation();
+            const tr = deleteBtn.closest('tr');
+            const transactionId = parseInt(tr.dataset.transactionId, 10);
+            if (!isNaN(transactionId)) {
+                deleteTransaction(transactionId);
+            }
+            return;
+        }
+
+        const duplicateBtn = target.closest('.duplicate-tx-btn');
+        if (duplicateBtn) {
+            e.stopPropagation();
+            const tr = duplicateBtn.closest('tr');
+            const transactionId = parseInt(tr.dataset.transactionId, 10);
+            if (!isNaN(transactionId)) {
+                duplicateTransaction(transactionId);
+            }
+            return;
+        }
+    });
+}
 
 const addTransactionForm = document.querySelector('.transaction-form');
 if (addTransactionForm) {
@@ -835,5 +1186,33 @@ document.addEventListener('click', (e) => {
     const openDropdown = document.querySelector('.transaction-menu-dropdown.show');
     if (openDropdown && !openDropdown.parentElement.contains(e.target)) {
         openDropdown.classList.remove('show');
+    }
+
+    // Close custom dropdowns in table rows
+    const openEditDropdown = document.querySelector('tr.editing .custom-dropdown.open');
+    if (openEditDropdown && !openEditDropdown.contains(e.target)) {
+        openEditDropdown.classList.remove('open');
+    }
+
+    // Close custom date pickers in table rows
+    const openEditDatepicker = document.querySelector('tr.editing .custom-date-picker.open');
+    if (openEditDatepicker && !openEditDatepicker.contains(e.target)) {
+        openEditDatepicker.classList.remove('open');
+        openEditDatepicker.querySelector('.calendar-popup').style.display = 'none';
+    }
+
+    // Cancel editing if clicking outside an editing row
+    const editingTr = document.querySelector('tr.editing');
+    if (editingTr && !editingTr.contains(e.target)) {
+        // Check if the click was inside a calendar popup that belongs to the row
+        let calendarClick = false;
+        if(e.target.closest('.calendar-popup')) {
+           if(editingTr.querySelector('.calendar-popup').contains(e.target.closest('.calendar-popup'))) {
+               calendarClick = true;
+           }
+        }
+        if(!calendarClick) {
+            cancelEdit(editingTr);
+        }
     }
 });

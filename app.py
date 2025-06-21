@@ -183,7 +183,7 @@ def quick_preset():
             - `date`: Must be in 'MM/DD/YYYY' format. Use today's date if not specified.
             - `amount`: Must be a number.
             - `store`: The merchant name or source of income.
-            - `method`: CRITICAL: This value MUST be one of: 'Credit Card', 'Debit Card', 'Cash', 'Check'. Map user terms like 'credit' or 'card' to 'Credit Card'. If no method is specified, use 'Unknown'.
+            - `method`: CRITICAL: This value MUST be one of: 'Credit', 'Debit', 'Cash', 'Check'. Map user terms like 'card' or 'credit card' to 'Credit'. Map 'debit card' to 'Debit'. If no method is specified, use 'Unknown'.
 
         2.  **CLARIFICATION NEEDED (`status: "clarification_needed"`)**:
             Use this status if the user's text looks like a transaction but is missing the `amount` or `store`.
@@ -293,7 +293,7 @@ def quick_transaction():
             - `date`: Must be in 'MM/DD/YYYY' format. Use today's date if not specified.
             - `amount`: Must be a number.
             - `store`: The merchant name or source of income.
-            - `method`: CRITICAL: This value MUST be one of: 'Credit Card', 'Debit Card', 'Cash', 'Check'. Map user terms like 'credit' or 'card' to 'Credit Card'. If no method is specified, use 'Unknown'.
+            - `method`: CRITICAL: This value MUST be one of: 'Credit', 'Debit', 'Cash', 'Check'. Map user terms like 'card' or 'credit card' to 'Credit'. Map 'debit card' to 'Debit'. If no method is specified, use 'Unknown'.
 
         2.  **CLARIFICATION NEEDED (`status: "clarification_needed"`)**:
             Use this status if the user's text looks like a transaction but is missing the `amount` or `store`.
@@ -375,7 +375,17 @@ def add_transaction():
     )
     db.session.add(tx)
     db.session.commit()
-    return jsonify({'success': True, 'transaction_id': tx.id}), 201
+    return jsonify({
+        'success': True, 
+        'transaction': {
+            'id': tx.id,
+            'type': tx.type,
+            'date': tx.date,
+            'amount': tx.amount,
+            'store': tx.store,
+            'method': tx.method
+        }
+    }), 201
 
 @app.route('/transactions', methods=['GET'])
 def get_transactions():
@@ -401,6 +411,27 @@ def delete_transaction(transaction_id):
         return jsonify({'success': False, 'error': 'Transaction not found.'}), 404
     
     db.session.delete(transaction)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/transactions/<int:transaction_id>', methods=['PUT'])
+def update_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({'success': False, 'error': 'Transaction not found.'}), 404
+
+    data = request.json
+    # Add validation for required fields
+    required_fields = ['type', 'date', 'amount', 'store', 'method']
+    if not all(field in data for field in required_fields):
+        return jsonify({'success': False, 'error': 'Missing required fields.'}), 400
+
+    transaction.type = data['type']
+    transaction.date = data['date']
+    transaction.amount = float(data['amount'])
+    transaction.store = data['store']
+    transaction.method = data['method']
+    
     db.session.commit()
     return jsonify({'success': True})
 
