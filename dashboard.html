@@ -113,31 +113,31 @@
   </div>
   <div class="modal-bg" id="addModal">
     <div class="modal-content">
-      <button class="modal-close" id="closeAddModal" title="Close">&times;</button>
-      <div class="modal-layout-grid">
-        <div class="modal-options-sidebar">
-            <div class="add-options">
-                <button class="transaction-option selected">
-                    <span class="option-title">Add Transaction</span>
-                    <span class="option-desc">Manually enter a new expense or deposit.</span>
-                </button>
-                <button class="quick-transaction-option">
-                    <span class="option-title">Quick Transaction</span>
-                    <span class="option-desc">Use AI to parse a transaction from text.</span>
-                </button>
-                <button class="preset-option">
-                    <span class="option-title">Add Preset</span>
-                    <span class="option-desc">Save a template for a frequent transaction.</span>
-                </button>
-                <button class="quick-preset-option">
-                    <span class="option-title">Quick Preset</span>
-                    <span class="option-desc">Use AI to create a new preset from text.</span>
-                </button>
-            </div>
+      <button class="modal-close" id="closeAddModal" title="Close">×</button>
+      <div class="modal-header">
+        <h2 id="modal-title">Add Transaction</h2>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tabs">
+            <button class="modal-tab-btn active" data-content-id="add-transaction-content">
+                <span class="option-title">Add Transaction</span>
+                <span class="option-desc">Manually enter an expense or deposit.</span>
+            </button>
+            <button class="modal-tab-btn" data-content-id="quick-transaction-content">
+                <span class="option-title">Quick Transaction</span>
+                <span class="option-desc">Use AI to parse a transaction from text.</span>
+            </button>
+            <button class="modal-tab-btn" data-content-id="add-preset-content">
+                <span class="option-title">Add Preset</span>
+                <span class="option-desc">Save a template for a frequent transaction.</span>
+            </button>
+            <button class="modal-tab-btn" data-content-id="quick-preset-content">
+                <span class="option-title">Quick Preset</span>
+                <span class="option-desc">Use AI to create a new preset from text.</span>
+            </button>
         </div>
-        <div class="modal-options-content">
-            <div class="add-transaction-content">
-              <h2>Add Transaction</h2>
+        <div class="modal-tab-content">
+            <div id="add-transaction-content" class="tab-pane active">
               <div id="presets-container"></div>
               <form class="transaction-form">
                 <div class="form-group">
@@ -184,12 +184,11 @@
                 </div>
               </form>
             </div>
-            <div class="quick-transaction-content">
+            <div id="quick-transaction-content" class="tab-pane">
               <form>
-                  <h2>Quick Transaction</h2>
                   <div class="quick-input-container">
                     <textarea class="quick-transaction-prompt" placeholder="e.g., spent $15.50 on lunch at Chipotle with my credit card"></textarea>
-                    <button type="button" class="mic-btn" id="start-voice-recognition"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-400q-50 0-85-35t-35-85v-240q0-50 35-85t85-35q50 0 85 35t35 85v240q0 50-35 85t-85 35Zm-40 280v-123q-104-14-172-93t-68-184h80q0 83 58.5 141.5T480-320q83 0 141.5-58.5T680-520h80q0 105-68 184t-172 93v123h-80Z"/></svg></button>
+                    <button type="button" class="mic-btn" id="start-voice-recognition"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M480-400q-50 0-85-35t-35-85v-240q0-50 35-85t85-35q50 0 85 35t35 85v240q0 50-35 85t-85 35Zm-40 280v-123q-104-14-172-93t-68-184h80q0 83 58.5 141.5T480-320q83 0 141.5-58.5T680-520h80q0 105-68 184t-172 93v123h-80Z"></path></svg></button>
                   </div>
                   <div class="ai-message-container"></div>
                   <div class="form-actions">
@@ -197,8 +196,7 @@
                   </div>
               </form>
             </div>
-            <div class="add-preset-content">
-              <h2>Add Preset</h2>
+            <div id="add-preset-content" class="tab-pane">
               <form class="preset-form">
                 <div class="form-group full-width">
                   <label for="preset-name">Name</label>
@@ -248,8 +246,7 @@
                 </div>
               </form>
             </div>
-            <div class="quick-preset-content">
-              <h2>Quick Preset</h2>
+            <div id="quick-preset-content" class="tab-pane">
               <form>
                 <div class="quick-input-container">
                   <textarea class="quick-preset-prompt" placeholder="e.g., Chipotle lunch for $20 with cash"></textarea>

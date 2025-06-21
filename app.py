@@ -125,7 +125,7 @@ def add_preset():
     
     return jsonify({
         'success': True, 
-        'preset': {
+        'presets': {
             'id': new_preset.id,
             'name': new_preset.name,
             'type': new_preset.type,
@@ -170,7 +170,7 @@ def quick_preset():
         
         system_prompt = f"""
         You are an intelligent preset parser. Your task is to analyze the user's text and extract preset details for a recurring transaction.
-        Your response MUST be a valid JSON object and nothing else. Today's date is {datetime.now().strftime('%m/%d/%Y')}.
+        Your response MUST be a valid JSON object and nothing else. Today is {datetime.now().strftime('%A, %m/%d/%Y')}.
 
         You must categorize the user's input into one of three statuses: "success", "clarification_needed", or "error".
 
@@ -239,7 +239,7 @@ def quick_preset():
 
             return jsonify({
                 'success': True, 
-                'preset': {
+                'presets': {
                     'id': new_preset.id,
                     'name': new_preset.name,
                     'type': new_preset.type,
@@ -277,11 +277,11 @@ def quick_transaction():
 
     try:
         client = groq.Groq(api_key=GROQ_API_KEY)
-        today_date = datetime.now().strftime('%m/%d/%Y')
+        today_date = datetime.now()
         
         system_prompt = f"""
         You are an intelligent transaction parser. Your task is to analyze the user's text and extract transaction details.
-        Your response MUST be a valid JSON object and nothing else. Today's date is {today_date}.
+        Your response MUST be a valid JSON object and nothing else. Today is {today_date.strftime('%A, %m/%d/%Y')}.
 
         You must categorize the user's input into one of three statuses: "success", "clarification_needed", or "error".
 

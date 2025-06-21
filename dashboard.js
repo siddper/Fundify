@@ -22,9 +22,9 @@ if (openBtn && closeBtn && modalBg) {
 }
 
 // Quick Transaction form handler
-const quickTransactionForm = document.querySelector('.quick-transaction-content form');
-const quickTransactionPrompt = document.querySelector('.quick-transaction-prompt');
-const aiMessageContainer = document.querySelector('.quick-transaction-content .ai-message-container');
+const quickTransactionForm = document.querySelector('#quick-transaction-content form');
+const quickTransactionPrompt = document.querySelector('#quick-transaction-content .quick-transaction-prompt');
+const aiMessageContainer = document.querySelector('#quick-transaction-content .ai-message-container');
 
 if (quickTransactionForm) {
   quickTransactionForm.addEventListener('submit', async (e) => {
@@ -85,9 +85,9 @@ if (quickTransactionPrompt && quickTransactionForm) {
 }
 
 // Quick Preset form handler
-const quickPresetForm = document.querySelector('.quick-preset-content form');
-const quickPresetPrompt = document.querySelector('.quick-preset-prompt');
-const quickPresetAiMessageContainer = document.querySelector('.quick-preset-content .ai-message-container');
+const quickPresetForm = document.querySelector('#quick-preset-content form');
+const quickPresetPrompt = document.querySelector('#quick-preset-content .quick-preset-prompt');
+const quickPresetAiMessageContainer = document.querySelector('#quick-preset-content .ai-message-container');
 
 if (quickPresetForm) {
   quickPresetForm.addEventListener('submit', async (e) => {
@@ -115,7 +115,7 @@ if (quickPresetForm) {
       if (data.success) {
         await fetchPresets();
         quickPresetForm.reset();
-        document.querySelector('.transaction-option').click();
+        document.querySelector('.modal-tab-btn[data-content-id="add-transaction-content"]').click();
       } else if (data.clarification_needed) {
         quickPresetAiMessageContainer.textContent = data.message;
         quickPresetAiMessageContainer.classList.add('clarification');
@@ -220,33 +220,44 @@ if (filterAddBtn) {
 }
 
 // Add-option selection logic
-const addOptionButtons = document.querySelectorAll('.add-options button');
-const modalContentDivs = {
-  'transaction-option': document.querySelector('.add-transaction-content'),
-  'quick-transaction-option': document.querySelector('.quick-transaction-content'),
-  'preset-option': document.querySelector('.add-preset-content'),
-  'quick-preset-option': document.querySelector('.quick-preset-content'),
-};
+const modalTabsContainer = document.querySelector('.modal-tabs');
+const modalTitle = document.getElementById('modal-title');
 
-function showOnlyContent(className) {
-  Object.values(modalContentDivs).forEach(div => {
-    if (div) div.style.display = 'none';
+if (modalTabsContainer) {
+  const tabButtons = modalTabsContainer.querySelectorAll('.modal-tab-btn');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Deactivate all buttons and panes
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+      
+      // Activate the clicked button and corresponding pane
+      btn.classList.add('active');
+      const contentId = btn.dataset.contentId;
+      document.getElementById(contentId).classList.add('active');
+
+      // Update modal title
+      const title = btn.querySelector('.option-title').textContent;
+      if (modalTitle) {
+        modalTitle.textContent = title;
+      }
+    });
   });
-  if (modalContentDivs[className]) {
-    modalContentDivs[className].style.display = 'block';
-  }
 }
 
-// Set default: Add Transaction
-let chosenOption = '';
-showOnlyContent('transaction-option');
-addOptionButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    addOptionButtons.forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    chosenOption = btn.textContent;
-    showOnlyContent(btn.classList[0]);
-  });
+// Set initial state based on the default active tab
+document.addEventListener('DOMContentLoaded', () => {
+    const activeTab = document.querySelector('.modal-tab-btn.active');
+    if (activeTab) {
+        const contentId = activeTab.dataset.contentId;
+        document.getElementById(contentId).classList.add('active');
+        const title = activeTab.querySelector('.option-title').textContent;
+        if (modalTitle) {
+            modalTitle.textContent = title;
+        }
+    }
 });
 
 // --- Custom Dropdown Logic ---
@@ -576,7 +587,7 @@ if (presetForm) {
                 presetForm.reset();
                 document.getElementById('custom-preset-type-selected').textContent = 'Withdrawal';
                 document.getElementById('custom-preset-method-selected').textContent = 'Method';
-                document.querySelector('.transaction-option').click();
+                document.querySelector('.modal-tab-btn[data-content-id="add-transaction-content"]').click();
             } else {
                 alert(data.error || 'Failed to save preset.');
             }
@@ -1219,10 +1230,6 @@ const startVoiceBtnPreset = document.getElementById('start-voice-recognition-pre
 const voiceUi = document.getElementById('voice-recognition-ui');
 const stopVoiceBtn = document.getElementById('stop-voice-recognition');
 const cancelVoiceBtn = document.getElementById('cancel-voice-recognition');
-const quickTransactionPromptEl = document.querySelector('.quick-transaction-prompt');
-const quickTransactionFormEl = document.querySelector('.quick-transaction-content form');
-const quickPresetPromptEl = document.querySelector('.quick-preset-prompt');
-const quickPresetFormEl = document.querySelector('.quick-preset-content form');
 const waveformContainer = document.getElementById('waveform-container');
 const voiceStatusText = document.getElementById('voice-status-text');
 
@@ -1315,8 +1322,8 @@ function stopRecognition(shouldSubmit) {
 if (startVoiceBtn) {
     startVoiceBtn.addEventListener('click', () => {
         startRecognition({
-            promptEl: quickTransactionPromptEl,
-            formEl: quickTransactionFormEl
+            promptEl: quickTransactionPrompt,
+            formEl: quickTransactionForm
         });
     });
 }
@@ -1324,8 +1331,8 @@ if (startVoiceBtn) {
 if (startVoiceBtnPreset) {
     startVoiceBtnPreset.addEventListener('click', () => {
         startRecognition({
-            promptEl: quickPresetPromptEl,
-            formEl: quickPresetFormEl
+            promptEl: quickPresetPrompt,
+            formEl: quickPresetForm
         });
     });
 }
