@@ -21,6 +21,140 @@ if (openBtn && closeBtn && modalBg) {
   });
 }
 
+// Quick Transaction form handler
+const quickTransactionForm = document.querySelector('.quick-transaction-content form');
+const quickTransactionPrompt = document.querySelector('.quick-transaction-prompt');
+const aiMessageContainer = document.querySelector('.quick-transaction-content .ai-message-container');
+
+if (quickTransactionForm) {
+  quickTransactionForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const promptText = quickTransactionPrompt.value;
+    const email = localStorage.getItem('fundify_user_email');
+    if (!promptText.trim() || !email) return;
+
+    // Reset and hide message container on new submission
+    aiMessageContainer.style.display = 'none';
+    aiMessageContainer.className = 'ai-message-container';
+
+    const submitBtn = quickTransactionForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+    quickTransactionPrompt.disabled = true;
+
+    try {
+      const res = await fetch('http://127.0.0.1:8000/quick-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptText, email: email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchTransactions();
+        quickTransactionForm.querySelector('.quick-transaction-prompt').value = '';
+        modalBg.classList.remove('active');
+      } else if (data.clarification_needed) {
+        aiMessageContainer.textContent = data.message;
+        aiMessageContainer.classList.add('clarification');
+        aiMessageContainer.style.display = 'block';
+      } else {
+        aiMessageContainer.textContent = data.error || 'Could not process transaction.';
+        aiMessageContainer.classList.add('error');
+        aiMessageContainer.style.display = 'block';
+      }
+    } catch (err) {
+      aiMessageContainer.textContent = 'A server error occurred. Please try again.';
+      aiMessageContainer.classList.add('error');
+      aiMessageContainer.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+      quickTransactionPrompt.disabled = false;
+    }
+  });
+}
+
+if (quickTransactionPrompt && quickTransactionForm) {
+  quickTransactionPrompt.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      quickTransactionForm.querySelector('button[type="submit"]').click();
+    }
+  });
+}
+
+// Quick Preset form handler
+const quickPresetForm = document.querySelector('.quick-preset-content form');
+const quickPresetPrompt = document.querySelector('.quick-preset-prompt');
+const quickPresetAiMessageContainer = document.querySelector('.quick-preset-content .ai-message-container');
+
+if (quickPresetForm) {
+  quickPresetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const promptText = quickPresetPrompt.value;
+    const email = localStorage.getItem('fundify_user_email');
+    if (!promptText.trim() || !email) return;
+
+    quickPresetAiMessageContainer.style.display = 'none';
+    quickPresetAiMessageContainer.className = 'ai-message-container';
+
+    const submitBtn = quickPresetForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+    quickPresetPrompt.disabled = true;
+
+    try {
+      const res = await fetch('http://127.0.0.1:8000/quick-preset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptText, email: email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchPresets();
+        quickPresetForm.reset();
+        document.querySelector('.transaction-option').click();
+      } else if (data.clarification_needed) {
+        quickPresetAiMessageContainer.textContent = data.message;
+        quickPresetAiMessageContainer.classList.add('clarification');
+        quickPresetAiMessageContainer.style.display = 'block';
+      } else {
+        quickPresetAiMessageContainer.textContent = data.error || 'Could not process preset.';
+        quickPresetAiMessageContainer.classList.add('error');
+        quickPresetAiMessageContainer.style.display = 'block';
+      }
+    } catch (err) {
+      quickPresetAiMessageContainer.textContent = 'A server error occurred. Please try again.';
+      quickPresetAiMessageContainer.classList.add('error');
+      quickPresetAiMessageContainer.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+      quickPresetPrompt.disabled = false;
+    }
+  });
+}
+
+if (quickPresetPrompt && quickPresetForm) {
+  quickPresetPrompt.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      quickPresetForm.querySelector('button[type="submit"]').click();
+    }
+  });
+}
+
+const modalCancelButtons = document.querySelectorAll('.modal-cancel-btn');
+if (modalCancelButtons.length > 0 && modalBg) {
+  modalCancelButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      modalBg.classList.remove('active');
+    });
+  });
+}
+
 // Sidebar manual resizing only, min width 100px
 const sidebar = document.querySelector('.sidebar');
 const resizeHandle = document.querySelector('.sidebar-resize-handle');
@@ -189,7 +323,7 @@ function setupCustomDatePicker() {
     </div>`;
     html += "<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.95em;color:#bfc6e0;'>";
     ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => html += `<span>${d}</span>`);
-    html += "</div><div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-top:2px;'>";
+    html += "</div><div class='calendar-grid-days'>";
     for (let i = 0; i < firstDay.getDay(); i++) html += '<span></span>';
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const thisDate = new Date(year, month, d);
@@ -266,7 +400,7 @@ function setupCustomPresetDatePicker() {
     </div>`;
     html += "<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.95em;color:#bfc6e0;'>";
     ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => html += `<span>${d}</span>`);
-    html += "</div><div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-top:2px;'>";
+    html += "</div><div class='calendar-grid-days'>";
     for (let i = 0; i < firstDay.getDay(); i++) html += '<span></span>';
     for (let d = 1; d <= lastDay.getDate(); d++) {
       const thisDate = new Date(year, month, d);
@@ -319,6 +453,174 @@ document.querySelectorAll('.calendar-popup').forEach(popup => {
   popup.addEventListener('click', e => e.stopPropagation());
 });
 
+// --- Preset Logic ---
+let presets = [];
+
+const presetsContainer = document.getElementById('presets-container');
+const presetForm = document.querySelector('.preset-form');
+
+async function fetchPresets() {
+    const email = localStorage.getItem('fundify_user_email');
+    if (!email) return;
+    try {
+        const res = await fetch('http://127.0.0.1:8000/presets?email=' + encodeURIComponent(email));
+        const data = await res.json();
+        if (data.success) {
+            presets = data.presets;
+            renderPresets();
+        }
+    } catch (err) {
+        console.error("Failed to fetch presets:", err);
+    }
+}
+
+async function deletePreset(presetId, index) {
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/presets/${presetId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if(data.success) {
+            presets.splice(index, 1);
+            renderPresets();
+        } else {
+            alert(data.error || 'Failed to delete preset.');
+        }
+    } catch (err) {
+        alert('Server error while deleting preset.');
+    }
+}
+
+function renderPresets() {
+  if (!presetsContainer) return;
+  presetsContainer.innerHTML = '';
+  if (presets.length === 0) {
+      presetsContainer.style.display = 'none';
+      return;
+  }
+  presetsContainer.style.display = 'flex';
+  presets.forEach((preset, index) => {
+    const presetButton = document.createElement('button');
+    presetButton.type = 'button';
+    presetButton.className = 'preset-chip';
+    presetButton.textContent = preset.name;
+    presetButton.dataset.index = index;
+    presetButton.addEventListener('click', () => {
+      applyPreset(index);
+    });
+    presetButton.addEventListener('dblclick', () => {
+        deletePreset(preset.id, index);
+    });
+    presetsContainer.appendChild(presetButton);
+  });
+}
+
+function applyPreset(index) {
+  const preset = presets[index];
+  if (!preset) return;
+
+  // Autofill the 'Add Transaction' form
+  const typeBtn = document.getElementById('custom-type-selected');
+  const dateInput = document.getElementById('custom-date-input');
+  const amountInput = document.getElementById('amount');
+  const storeInput = document.getElementById('store');
+  const methodBtn = document.getElementById('custom-method-selected');
+
+  typeBtn.textContent = preset.type;
+  dateInput.value = preset.date;
+  amountInput.value = preset.amount;
+  storeInput.value = preset.store;
+  methodBtn.textContent = preset.method;
+
+  // Remove any validation errors
+  [typeBtn, dateInput, amountInput, storeInput, methodBtn].forEach(el => {
+      if(el) el.classList.remove('incorrect');
+  });
+}
+
+if (presetForm) {
+    presetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('preset-name');
+        const typeBtn = document.getElementById('custom-preset-type-selected');
+        const dateInput = document.getElementById('custom-preset-date-input');
+        const amountInput = document.getElementById('preset-amount');
+        const methodBtn = document.getElementById('custom-preset-method-selected');
+        const storeInput = document.getElementById('preset-store');
+
+        const inputs = [nameInput, typeBtn, dateInput, amountInput, methodBtn, storeInput];
+        inputs.forEach(el => { if(el) el.classList.remove('incorrect')});
+        
+        let isValid = true;
+        if (!nameInput.value.trim()) { nameInput.classList.add('incorrect'); isValid = false; }
+        if (!amountInput.value.trim()) { amountInput.classList.add('incorrect'); isValid = false; }
+        if (!storeInput.value.trim()) { storeInput.classList.add('incorrect'); isValid = false; }
+        if (!dateInput.value.trim()) { dateInput.classList.add('incorrect'); isValid = false; }
+        if (methodBtn.textContent.trim() === 'Method') { methodBtn.classList.add('incorrect'); isValid = false; }
+
+        if (!isValid) return;
+
+        const newPresetPayload = {
+            name: nameInput.value.trim(),
+            type: typeBtn.textContent.trim(),
+            date: dateInput.value.trim(),
+            amount: amountInput.value.trim(),
+            method: methodBtn.textContent.trim(),
+            store: storeInput.value.trim(),
+            email: localStorage.getItem('fundify_user_email')
+        };
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/presets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPresetPayload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                await fetchPresets(); // Re-fetch to get the new list with ID
+                // Reset and switch back to the 'Add Transaction' view
+                presetForm.reset();
+                document.getElementById('custom-preset-type-selected').textContent = 'Withdrawal';
+                document.getElementById('custom-preset-method-selected').textContent = 'Method';
+                document.querySelector('.transaction-option').click();
+            } else {
+                alert(data.error || 'Failed to save preset.');
+            }
+        } catch (err) {
+            alert('A server error occurred while saving the preset.');
+        }
+    });
+
+    // Remove 'incorrect' class on input change
+    const nameInput = document.getElementById('preset-name');
+    const dateInput = document.getElementById('custom-preset-date-input');
+    const amountInput = document.getElementById('preset-amount');
+    const storeInput = document.getElementById('preset-store');
+    [nameInput, dateInput, amountInput, storeInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => input.classList.remove('incorrect'));
+        }
+    });
+
+    const typeBtn = document.getElementById('custom-preset-type-selected');
+    const typeList = document.getElementById('custom-preset-type-list');
+    if (typeList) {
+        typeList.querySelectorAll('li').forEach(li => {
+            li.addEventListener('click', () => typeBtn.classList.remove('incorrect'));
+        });
+    }
+
+    const methodBtn = document.getElementById('custom-preset-method-selected');
+    const methodList = document.getElementById('custom-preset-method-list');
+    if (methodList) {
+        methodList.querySelectorAll('li').forEach(li => {
+            li.addEventListener('click', () => methodBtn.classList.remove('incorrect'));
+        });
+    }
+}
+
 // --- Transaction List Logic ---
 let transactions = [];
 
@@ -364,6 +666,7 @@ function renderTransactions() {
 
 // On page load, fetch transactions
 fetchTransactions();
+fetchPresets();
 
 const addTransactionForm = document.querySelector('.transaction-form');
 if (addTransactionForm) {
@@ -451,4 +754,4 @@ if (addTransactionForm) {
     // Close modal
     if (modalBg) modalBg.classList.remove('active');
   });
-} 
+}

@@ -69,127 +69,148 @@
   <div class="modal-bg" id="addModal">
     <div class="modal-content">
       <button class="modal-close" id="closeAddModal" title="Close">&times;</button>
-      <div class="add-options">
-        <button class="transaction-option">Add Transaction</button>
-        <button class="quick-transaction-option">Quick Transaction</button>
-        <button class="preset-option">Add Preset</button>
-        <button class="quick-preset-option">Quick Preset</button>
-      </div>
-      <div class="add-transaction-content">
-        <h2>Add Transaction</h2>
-        <form class="transaction-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="custom-type">Type</label>
-              <div class="custom-dropdown" id="custom-type-dropdown">
-                <button type="button" class="dropdown-selected" id="custom-type-selected">Withdrawal</button>
-                <ul class="dropdown-list" id="custom-type-list">
-                  <li data-value="Withdrawal">Withdrawal</li>
-                  <li data-value="Deposit">Deposit</li>
-                </ul>
-              </div>
+      <div class="modal-layout-grid">
+        <div class="modal-options-sidebar">
+            <div class="add-options">
+                <button class="transaction-option selected">
+                    <span class="option-title">Add Transaction</span>
+                    <span class="option-desc">Manually enter a new expense or deposit.</span>
+                </button>
+                <button class="quick-transaction-option">
+                    <span class="option-title">Quick Transaction</span>
+                    <span class="option-desc">Use AI to parse a transaction from text.</span>
+                </button>
+                <button class="preset-option">
+                    <span class="option-title">Add Preset</span>
+                    <span class="option-desc">Save a template for a frequent transaction.</span>
+                </button>
+                <button class="quick-preset-option">
+                    <span class="option-title">Quick Preset</span>
+                    <span class="option-desc">Use AI to create a new preset from text.</span>
+                </button>
             </div>
-            <div class="form-group">
-              <label for="custom-date">Date</label>
-              <div class="custom-date-picker" id="custom-date-picker">
-                <input type="text" id="custom-date-input" placeholder="mm/dd/yyyy" readonly>
-                <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
-                <div class="calendar-popup" id="calendar-popup"></div>
-              </div>
+        </div>
+        <div class="modal-options-content">
+            <div class="add-transaction-content">
+              <h2>Add Transaction</h2>
+              <div id="presets-container"></div>
+              <form class="transaction-form">
+                <div class="form-group">
+                  <label for="custom-type">Type</label>
+                  <div class="custom-dropdown" id="custom-type-dropdown">
+                    <button type="button" class="dropdown-selected" id="custom-type-selected">Withdrawal</button>
+                    <ul class="dropdown-list" id="custom-type-list">
+                      <li data-value="Withdrawal">Withdrawal</li>
+                      <li data-value="Deposit">Deposit</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="custom-date">Date</label>
+                  <div class="custom-date-picker" id="custom-date-picker">
+                    <input type="text" id="custom-date-input" placeholder="mm/dd/yyyy" readonly>
+                    <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+                    <div class="calendar-popup" id="calendar-popup"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="amount">Amount</label>
+                  <input type="number" name="amount" id="amount" placeholder="Amount" min="0" step="0.01" >
+                </div>
+                <div class="form-group">
+                  <label for="custom-method">Method</label>
+                  <div class="custom-dropdown" id="custom-method-dropdown">
+                    <button type="button" class="dropdown-selected" id="custom-method-selected">Method</button>
+                    <ul class="dropdown-list" id="custom-method-list">
+                      <li data-value="Credit Card">Credit Card</li>
+                      <li data-value="Debit Card">Debit Card</li>
+                      <li data-value="Cash">Cash</li>
+                      <li data-value="Check">Check</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="form-group full-width">
+                  <label for="store">Store/Source</label>
+                  <input type="text" name="store" id="store" placeholder="Store/Source" >
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="modal-cancel-btn">Cancel</button>
+                  <button type="submit" class="modal-action-btn">Add Transaction</button>
+                </div>
+              </form>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="amount">Amount</label>
-              <input type="number" name="amount" id="amount" placeholder="Amount" min="0" step="0.01" >
+            <div class="quick-transaction-content">
+              <form>
+                  <h2>Quick Transaction</h2>
+                  <textarea class="quick-transaction-prompt" placeholder="e.g., spent $15.50 on lunch at Chipotle with my credit card"></textarea>
+                  <div class="ai-message-container"></div>
+                  <div class="form-actions">
+                    <button type="submit" class="modal-action-btn">Add Transaction</button>
+                  </div>
+              </form>
             </div>
-            <div class="form-group">
-              <label for="custom-method">Method</label>
-              <div class="custom-dropdown" id="custom-method-dropdown">
-                <button type="button" class="dropdown-selected" id="custom-method-selected">Method</button>
-                <ul class="dropdown-list" id="custom-method-list">
-                  <li data-value="Credit Card">Credit Card</li>
-                  <li data-value="Debit Card">Debit Card</li>
-                  <li data-value="Cash">Cash</li>
-                  <li data-value="Check">Check</li>
-                </ul>
-              </div>
+            <div class="add-preset-content">
+              <h2>Add Preset</h2>
+              <form class="preset-form">
+                <div class="form-group full-width">
+                  <label for="preset-name">Name</label>
+                  <input type="text" name="presetName" id="preset-name" placeholder="Preset Name" >
+                </div>
+                <div class="form-group">
+                  <label for="custom-preset-type">Type</label>
+                  <div class="custom-dropdown" id="custom-preset-type-dropdown">
+                    <button type="button" class="dropdown-selected" id="custom-preset-type-selected">Withdrawal</button>
+                    <ul class="dropdown-list" id="custom-preset-type-list">
+                      <li data-value="Withdrawal">Withdrawal</li>
+                      <li data-value="Deposit">Deposit</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="custom-preset-date">Date</label>
+                  <div class="custom-date-picker" id="custom-preset-date-picker">
+                    <input type="text" id="custom-preset-date-input" placeholder="mm/dd/yyyy" readonly>
+                    <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+                    <div class="calendar-popup" id="custom-preset-calendar-popup"></div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="preset-amount">Amount</label>
+                  <input type="number" name="amount" id="preset-amount" placeholder="Amount" min="0" step="0.01" >
+                </div>
+                <div class="form-group">
+                  <label for="custom-preset-method">Method</label>
+                  <div class="custom-dropdown" id="custom-preset-method-dropdown">
+                    <button type="button" class="dropdown-selected" id="custom-preset-method-selected">Method</button>
+                    <ul class="dropdown-list" id="custom-preset-method-list">
+                      <li data-value="Credit Card">Credit Card</li>
+                      <li data-value="Debit Card">Debit Card</li>
+                      <li data-value="Cash">Cash</li>
+                      <li data-value="Check">Check</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="form-group full-width">
+                  <label for="preset-store">Store/Source</label>
+                  <input type="text" name="store" id="preset-store" placeholder="Store/Source" >
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="modal-cancel-btn">Cancel</button>
+                  <button type="submit" class="modal-action-btn">Save Preset</button>
+                </div>
+              </form>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="width:100%">
-              <label for="store">Store/Source</label>
-              <input type="text" name="store" id="store" placeholder="Store/Source" >
+            <div class="quick-preset-content">
+              <h2>Quick Preset</h2>
+              <form>
+                <textarea class="quick-preset-prompt" placeholder="e.g., Chipotle lunch for $20 with cash"></textarea>
+                <div class="ai-message-container"></div>
+                <div class="form-actions">
+                  <button type="submit" class="modal-action-btn">Save Preset</button>
+                </div>
+              </form>
             </div>
-          </div>
-          <button type="submit" class="modal-action-btn">Add Transaction</button>
-        </form>
-      </div>
-      <div class="quick-transaction-content">
-        <h2>Quick Transaction</h2>
-        <textarea class="quick-transaction-prompt"></textarea>
-        <button type="submit" class="modal-action-btn">Add Transaction</button>
-      </div>
-      <div class="add-preset-content">
-        <h2>Add Preset</h2>
-        <form class="preset-form">
-          <div class="form-row">
-            <div class="form-group" style="width:100%">
-              <label for="preset-name">Name</label>
-              <input type="text" name="presetName" id="preset-name" placeholder="Preset Name" >
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="custom-preset-type">Type</label>
-              <div class="custom-dropdown" id="custom-preset-type-dropdown">
-                <button type="button" class="dropdown-selected" id="custom-preset-type-selected">Withdrawal</button>
-                <ul class="dropdown-list" id="custom-preset-type-list">
-                  <li data-value="Withdrawal">Withdrawal</li>
-                  <li data-value="Deposit">Deposit</li>
-                </ul>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="custom-preset-date">Date</label>
-              <div class="custom-date-picker" id="custom-preset-date-picker">
-                <input type="text" id="custom-preset-date-input" placeholder="mm/dd/yyyy" readonly>
-                <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
-                <div class="calendar-popup" id="custom-preset-calendar-popup"></div>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="preset-amount">Amount</label>
-              <input type="number" name="amount" id="preset-amount" placeholder="Amount" min="0" step="0.01" >
-            </div>
-            <div class="form-group">
-              <label for="custom-preset-method">Method</label>
-              <div class="custom-dropdown" id="custom-preset-method-dropdown">
-                <button type="button" class="dropdown-selected" id="custom-preset-method-selected">Method</button>
-                <ul class="dropdown-list" id="custom-preset-method-list">
-                  <li data-value="Credit Card">Credit Card</li>
-                  <li data-value="Debit Card">Debit Card</li>
-                  <li data-value="Cash">Cash</li>
-                  <li data-value="Check">Check</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group" style="width:100%">
-              <label for="preset-store">Store/Source</label>
-              <input type="text" name="store" id="preset-store" placeholder="Store/Source" >
-            </div>
-          </div>
-          <button type="submit" class="modal-action-btn">Save Preset</button>
-        </form>
-      </div>
-      <div class="quick-preset-content">
-        <h2>Quick Preset</h2>
-        <textarea class="quick-preset-prompt"></textarea>
-        <button type="submit" class="modal-action-btn">Add Transaction</button>
+        </div>
       </div>
     </div>
   </div>
