@@ -1239,6 +1239,13 @@ let silenceTimer = null;
 let currentVoiceContext = {};
 let finalTranscriptForSession = '';
 
+// Visualizer state
+let audioContext;
+let analyser;
+let mediaStreamSource;
+let visualizerFrameId;
+let audioStream;
+
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.continuous = true;
@@ -1280,11 +1287,13 @@ if (SpeechRecognition) {
         }
         clearTimeout(silenceTimer);
         // Do not auto-close UI on error, so user can see the message.
+        stopVisualizer();
     };
 
     recognition.onend = () => {
         clearTimeout(silenceTimer);
         voiceUi.classList.remove('active');
+        stopVisualizer();
     };
 }
 
@@ -1301,6 +1310,7 @@ function startRecognition(context) {
     voiceStatusText.textContent = "Listening..."; // Reset status text
     try {
         recognition.start();
+        startVisualizer();
     } catch (e) {
         console.error("Could not start recognition:", e);
         voiceStatusText.textContent = 'Error starting.';
@@ -1316,6 +1326,55 @@ function stopRecognition(shouldSubmit) {
         if (currentVoiceContext.promptEl.value.trim() && currentVoiceContext.formEl) {
             currentVoiceContext.formEl.querySelector('button[type="submit"]').click();
         }
+    }
+}
+
+async function startVisualizer() {
+    stopVisualizer(); // Clear previous visualizer if any
+    try {
+        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.minDecibels = -90;
+        analyser.maxDecibels = -10;
+        analyser.smoothingTimeConstant = 0.85;
+        mediaStreamSource = audioContext.createMediaStreamSource(audioStream);
+        mediaStreamSource.connect(analyser);
+        analyser.fftSize = 128;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        const waveformBars = waveformContainer.children;
+        const draw = () => {
+            visualizerFrameId = requestAnimationFrame(draw);
+            analyser.getByteFrequencyData(dataArray);
+            const barCount = waveformBars.length;
+            for (let i = 0; i < barCount; i++) {
+                const barHeight = (dataArray[i] / 255) * 100;
+                waveformBars[i].style.height = `${Math.max(5, barHeight)}%`;
+            }
+        };
+        draw();
+    } catch (err) {
+        console.error('Error setting up visualizer:', err);
+    }
+}
+
+function stopVisualizer() {
+    if (visualizerFrameId) {
+        cancelAnimationFrame(visualizerFrameId);
+        visualizerFrameId = null;
+    }
+    if (audioStream) {
+        audioStream.getTracks().forEach(track => track.stop());
+        audioStream = null;
+    }
+    if (audioContext && audioContext.state !== 'closed') {
+        audioContext.close().catch(console.error);
+    }
+    // Reset bars to a low state
+    const waveformBars = waveformContainer.children;
+    for(let bar of waveformBars) {
+        bar.style.height = '5%';
     }
 }
 
