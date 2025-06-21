@@ -1618,3 +1618,154 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// --- Filter Bar & Modal Logic ---
+const addFilterBtn = document.getElementById('add-filter-btn');
+const filterModal = document.getElementById('filter-modal');
+const closeFilterModalBtn = document.getElementById('close-filter-modal');
+const filterTypeSelect = document.getElementById('filter-type-select');
+const filterValueInputs = document.getElementById('filter-value-inputs');
+const applyFilterBtn = document.getElementById('apply-filter-btn');
+const filterChipsContainer = document.getElementById('filter-chips-container');
+
+let activeFilters = [];
+
+function openFilterModal() {
+  filterModal.classList.add('active');
+  renderFilterValueInputs();
+}
+function closeFilterModal() {
+  filterModal.classList.remove('active');
+}
+if (addFilterBtn) addFilterBtn.addEventListener('click', openFilterModal);
+if (closeFilterModalBtn) closeFilterModalBtn.addEventListener('click', closeFilterModal);
+if (filterTypeSelect) filterTypeSelect.addEventListener('change', renderFilterValueInputs);
+
+function renderFilterValueInputs() {
+  const type = filterTypeSelect.value;
+  let html = '';
+  if (type === 'date') {
+    html = `<select id="date-operator"><option value="on">On</option><option value="before">Before</option><option value="after">After</option></select> <input type="date" id="date-value">`;
+  } else if (type === 'type') {
+    html = `<select id="type-value"><option value="Withdrawal">Withdrawal</option><option value="Deposit">Deposit</option></select>`;
+  } else if (type === 'amount') {
+    html = `<select id="amount-operator"><option value="eq">=</option><option value="gt">&gt;</option><option value="lt">&lt;</option></select> <input type="number" id="amount-value" min="0" step="0.01">`;
+  } else if (type === 'store_source') {
+    html = `<input type="text" id="store-source-value" placeholder="Store or Source">`;
+  } else if (type === 'method') {
+    html = `<select id="method-value"><option value="Credit">Credit</option><option value="Debit">Debit</option><option value="Cash">Cash</option><option value="Check">Check</option></select>`;
+  }
+  filterValueInputs.innerHTML = html;
+}
+
+if (applyFilterBtn) {
+  applyFilterBtn.addEventListener('click', () => {
+    const type = filterTypeSelect.value;
+    let filter = { type };
+    if (type === 'date') {
+      filter.operator = document.getElementById('date-operator').value;
+      filter.value = document.getElementById('date-value').value;
+      if (!filter.value) return;
+    } else if (type === 'type') {
+      filter.value = document.getElementById('type-value').value;
+    } else if (type === 'amount') {
+      filter.operator = document.getElementById('amount-operator').value;
+      filter.value = document.getElementById('amount-value').value;
+      if (!filter.value) return;
+    } else if (type === 'store_source') {
+      filter.value = document.getElementById('store-source-value').value.trim();
+      if (!filter.value) return;
+    } else if (type === 'method') {
+      filter.value = document.getElementById('method-value').value;
+    }
+    activeFilters.push(filter);
+    renderFilterChips();
+    filterTransactions();
+    closeFilterModal();
+  });
+}
+
+function renderFilterChips() {
+  filterChipsContainer.innerHTML = '';
+  activeFilters.forEach((filter, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'filter-chip';
+    chip.innerHTML = filterToLabel(filter) + `<button class="chip-close" title="Remove">&times;</button>`;
+    chip.querySelector('.chip-close').addEventListener('click', () => {
+      activeFilters.splice(idx, 1);
+      renderFilterChips();
+      filterTransactions();
+    });
+    filterChipsContainer.appendChild(chip);
+  });
+}
+
+function filterToLabel(filter) {
+  if (filter.type === 'date') {
+    return `Date ${filter.operator} ${filter.value}`;
+  } else if (filter.type === 'type') {
+    return `Type: ${filter.value}`;
+  } else if (filter.type === 'amount') {
+    let op = filter.operator === 'eq' ? '=' : (filter.operator === 'gt' ? '>' : '<');
+    return `Amount ${op} ${filter.value}`;
+  } else if (filter.type === 'store_source') {
+    return `Store/Source: ${filter.value}`;
+  } else if (filter.type === 'method') {
+    return `Method: ${filter.value}`;
+  }
+  return '';
+}
+
+function filterTransactions() {
+  let filtered = [...transactions];
+  activeFilters.forEach(filter => {
+    if (filter.type === 'date') {
+      filtered = filtered.filter(tx => {
+        if (!tx.date) return false;
+        // Parse transaction date (MM/DD/YYYY) to YYYY-MM-DD
+        const [mm, dd, yyyy] = tx.date.split('/');
+        const txDateStr = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+        const txDate = new Date(txDateStr);
+        const filterDate = new Date(filter.value);
+
+        // Zero out time for both
+        txDate.setHours(0,0,0,0);
+        filterDate.setHours(0,0,0,0);
+
+        if (filter.operator === 'on') {
+          return txDate.getTime() === filterDate.getTime();
+        } else if (filter.operator === 'before') {
+          return txDate.getTime() < filterDate.getTime();
+        } else if (filter.operator === 'after') {
+          return txDate.getTime() > filterDate.getTime();
+        }
+        return true;
+      });
+    } else if (filter.type === 'type') {
+      filtered = filtered.filter(tx => tx.type === filter.value);
+    } else if (filter.type === 'amount') {
+      const val = parseFloat(filter.value);
+      if (isNaN(val)) return true;
+      if (filter.operator === 'eq') {
+        filtered = filtered.filter(tx => parseFloat(tx.amount) === val);
+      } else if (filter.operator === 'gt') {
+        filtered = filtered.filter(tx => parseFloat(tx.amount) > val);
+      } else if (filter.operator === 'lt') {
+        filtered = filtered.filter(tx => parseFloat(tx.amount) < val);
+      }
+    } else if (filter.type === 'store_source') {
+      filtered = filtered.filter(tx => tx.store && tx.store.toLowerCase().includes(filter.value.toLowerCase()));
+    } else if (filter.type === 'method') {
+      filtered = filtered.filter(tx => tx.method === filter.value);
+    }
+  });
+  renderTransactions(filtered);
+  updateBulkActionsUI();
+}
+
+// Re-filter when transactions are fetched
+const originalFetchTransactions = fetchTransactions;
+fetchTransactions = async function() {
+  await originalFetchTransactions.apply(this, arguments);
+  filterTransactions();
+};

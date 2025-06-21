@@ -69,6 +69,10 @@
             </ul>
           </div>
         </div>
+        <div class="filter-bar">
+          <div id="filter-chips-container"></div>
+          <button id="add-filter-btn" class="add-filter-btn" type="button">+ Add Filter</button>
+        </div>
       </div>
       <section class="dashboard-table-section">
         <table class="dashboard-table">
@@ -254,6 +258,27 @@
         </div>
         <button class="voice-ui-btn" id="stop-voice-recognition">Stop <kbd>Space</kbd></button>
         <button class="voice-ui-btn" id="cancel-voice-recognition">Cancel <kbd>Esc</kbd></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="filter-modal" class="filter-modal-bg">
+    <div class="filter-modal-content">
+      <button class="filter-modal-close" id="close-filter-modal" title="Close">&times;</button>
+      <h3>Add Filter</h3>
+      <div class="filter-type-row">
+        <label for="filter-type-select">Filter by:</label>
+        <select id="filter-type-select">
+          <option value="date">Date</option>
+          <option value="type">Type</option>
+          <option value="amount">Amount</option>
+          <option value="store_source">Store/Source</option>
+          <option value="method">Method</option>
+        </select>
+      </div>
+      <div id="filter-value-inputs"></div>
+      <div class="filter-modal-actions">
+        <button id="apply-filter-btn" class="modal-action-btn">Add Filter</button>
       </div>
     </div>
   </div>
