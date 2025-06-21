@@ -118,19 +118,36 @@ body.dashboard-bg {
 }
 
 #search-input {
+    width: 1175px;
+    padding-right: 48px;
     background: var(--main-bg);
     color: var(--text);
     border: 1.5px solid var(--border);
     border-radius: 8px;
-    padding: 13px 16px;
+    padding: 16px;
     font-size: 1em;
     font-family: 'Inter', sans-serif;
     transition: all 0.2s ease;
-    width: 1150px;
     outline: none;
+    box-shadow: none;
+    
 }
 
-#search-input:focus {
+.sort-dropdown .dropdown-selected {
+    background: var(--card-bg);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 1em;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    outline: none;
+    box-shadow: none;
+}
+
+#search-input:focus,
+.sort-dropdown .dropdown-selected:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
 }
@@ -138,6 +155,26 @@ body.dashboard-bg {
 #search-input::placeholder {
     color: var(--text-muted);
     opacity: 0.7;
+}
+
+.sort-dropdown {
+    width: auto;
+    min-width: 275px;
+}
+#sort-dropdown .dropdown-selected {
+    font-size: 1em;
+}
+#sort-dropdown .dropdown-list li {
+    font-size: 1em;
+}
+.sort-dropdown .dropdown-selected {
+    padding-right: 38px;
+}
+
+.search-sort-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .dashboard-controls {
@@ -148,23 +185,6 @@ body.dashboard-bg {
   background: var(--main-bg);
   box-sizing: border-box;
   justify-content: flex-end;
-}
-.sort-dropdown {
-  width: auto;
-  min-width: 180px;
-}
-.sort-dropdown li{
-  font-size: 0.9em;
-}
-.sort-dropdown .dropdown-selected {
-  border-width: 1.5px;
-  font-size: 0.85em;
-  background: var(--card-bg);
-  padding: 11px 16px;
-  padding-right: 38px;
-}
-.sort-dropdown:focus {
-  border-color: var(--accent);
 }
 
 .dashboard-table-section {
@@ -233,6 +253,10 @@ body.dashboard-bg {
   position: relative;
   transition: background-color 0.18s, border-color 0.18s;
   vertical-align: middle;
+}
+
+.dashboard-table th input[type="checkbox"] {
+  cursor: pointer;
 }
 
 .dashboard-table input[type="checkbox"]:checked {
@@ -874,6 +898,12 @@ input[type=number] {
     color: #fff;
 }
 
+.dashboard-table tr.editing .dropdown-list,
+.dashboard-table tr.editing .calendar-popup {
+    position: fixed; /* Position relative to the viewport */
+    z-index: 1011; /* Ensure it's on top */
+}
+
 /* In-row editing styles */
 .dashboard-table tr.editing {
     background-color: #2a2d31 !important;
@@ -893,7 +923,7 @@ input[type=number] {
     border: 1px solid transparent;
     color: var(--text);
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 12px 10px;
     font-size: 0.95rem;
     font-family: 'Inter', sans-serif;
     box-shadow: none;
@@ -925,4 +955,105 @@ input[type=number] {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.ai-search-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    padding: 6px;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.ai-search-btn:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.ai-search-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.ai-search-btn .loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #e3e3e3;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.dashboard-table tbody tr.selected {
+  background-color: #2a3b5c !important; /* A distinct selection color */
+}
+.dashboard-table tbody tr.selected:hover {
+    background-color: #304369 !important;
+}
+
+.bulk-actions-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 16px;
+    background-color: #1f2124;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+#selection-count {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.bulk-actions-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.bulk-action-btn {
+    background-color: var(--main-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bulk-action-btn:hover {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border-color: var(--text-muted);
+}
+
+.bulk-action-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+#sort-selected {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
 }

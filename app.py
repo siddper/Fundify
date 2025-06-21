@@ -435,6 +435,123 @@ def update_transaction(transaction_id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/transactions/bulk-delete', methods=['POST'])
+def bulk_delete_transactions():
+    data = request.json
+    ids_to_delete = data.get('ids')
+    if not ids_to_delete or not isinstance(ids_to_delete, list):
+        return jsonify({'success': False, 'error': 'A list of transaction IDs is required.'}), 400
+
+    try:
+        Transaction.query.filter(Transaction.id.in_(ids_to_delete)).delete(synchronize_session=False)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/transactions/bulk-copy', methods=['POST'])
+def bulk_copy_transactions():
+    data = request.json
+    ids_to_copy = data.get('ids')
+    if not ids_to_copy or not isinstance(ids_to_copy, list):
+        return jsonify({'success': False, 'error': 'A list of transaction IDs is required.'}), 400
+
+    try:
+        transactions_to_copy = Transaction.query.filter(Transaction.id.in_(ids_to_copy)).all()
+        new_transactions = []
+        for tx in transactions_to_copy:
+            new_tx = Transaction(
+                user_id=tx.user_id,
+                type=tx.type,
+                date=tx.date,
+                amount=tx.amount,
+                store=tx.store,
+                method=tx.method
+            )
+            db.session.add(new_tx)
+            new_transactions.append(new_tx)
+        
+        db.session.commit()
+
+        new_tx_list = [{
+            'id': tx.id,
+            'type': tx.type,
+            'date': tx.date,
+            'amount': tx.amount,
+            'store': tx.store,
+            'method': tx.method
+        } for tx in new_transactions]
+
+        return jsonify({'success': True, 'transactions': new_tx_list})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/ai-search', methods=['POST'])
+def ai_search():
+    if not GROQ_API_KEY:
+        return jsonify({'error': 'GROQ_API_KEY not configured'}), 500
+
+    data = request.json
+    query = data.get('query')
+    transactions = data.get('transactions')
+
+    if not query or not transactions:
+        return jsonify({'error': 'Query and transactions are required'}), 400
+
+    try:
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        
+        # Prepare a simplified string representation of transactions for the prompt
+        tx_string = ""
+        for i, tx in enumerate(transactions):
+            tx_string += f"ID: {tx['id']}, Date: {tx['date']}, Type: {tx['type']}, Amount: {tx['amount']}, Store/Source: {tx['store']}, Method: {tx['method']}\n"
+
+        system_prompt = f"""
+        You are a powerful AI search assistant embedded in a personal finance app. 
+        Your primary function is to parse a user's natural language query and identify the corresponding transactions from a provided list.
+
+        **User's Query:** "{query}"
+
+        **Transaction List:**
+        {tx_string}
+
+        **Your Task:**
+        1.  Analyze the user's query to extract key entities like names, dates, amounts, transaction types (deposit/withdrawal), and payment methods.
+        2.  Ignore conversational filler words (e.g., "show me", "find", "a transaction from"). Focus on the core concepts. For the query "a transaction from sid", the keyword is "sid". For "what did I buy at chipotle", the keyword is "chipotle".
+        3.  A transaction must match ALL the key concepts extracted from the query. For example, if the query is "sid deposit", you must find transactions where the `Store/Source` is "sid" AND the `Type` is "deposit".
+        4.  Your response MUST be a valid JSON object. This object must contain a single key, "matching_ids", which holds an array of the integer IDs of the transactions that precisely match the query's criteria.
+        5.  If no transactions match the criteria, or if the query is too ambiguous to be understood, return an empty array: `{{"matching_ids": []}}`.
+        6.  Do not provide explanations or any text other than the JSON object.
+
+        **Example:**
+        - Query: "lunch last week for $15"
+        - You identify transactions with "lunch" in the description/store, dated within the last 7 days, and with an amount of $15.
+        - Output: `{{"matching_ids": [id1, id2, ...]}}`
+        """
+
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt}
+            ],
+            model="llama3-8b-8192",
+            temperature=0,
+            max_tokens=1024,
+            response_format={"type": "json_object"},
+        )
+
+        ai_response_str = chat_completion.choices[0].message.content
+        ai_response = json.loads(ai_response_str)
+        
+        if "matching_ids" not in ai_response or not isinstance(ai_response["matching_ids"], list):
+             return jsonify({'error': 'AI response was in an invalid format.'}), 500
+
+        return jsonify(ai_response)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=8000) 

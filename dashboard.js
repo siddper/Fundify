@@ -261,6 +261,7 @@ function setupCustomDropdown(dropdownId, selectedId, listId) {
     dropdown.classList.toggle('open');
   });
 
+  
   list.querySelectorAll('li').forEach(li => {
     li.addEventListener('click', (e) => {
       // For sort dropdown, prepend 'Sort by '
@@ -614,6 +615,59 @@ if (presetForm) {
 
 // --- Transaction List Logic ---
 let transactions = [];
+let selectedTransactionIds = new Set();
+
+const bulkActionsContainer = document.getElementById('bulk-actions-container');
+const searchSortContainer = document.getElementById('search-sort-container');
+const selectionCountEl = document.getElementById('selection-count');
+const selectAllCheckbox = document.getElementById('select-all-checkbox');
+const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+const bulkCopyBtn = document.getElementById('bulk-copy-btn');
+
+function updateBulkActionsUI() {
+    const count = selectedTransactionIds.size;
+    if (count > 0) {
+        bulkActionsContainer.style.display = 'flex';
+        searchSortContainer.style.display = 'none';
+        selectionCountEl.textContent = `${count} selected`;
+    } else {
+        bulkActionsContainer.style.display = 'none';
+        searchSortContainer.style.display = 'flex';
+    }
+
+    const allVisibleCheckboxes = document.querySelectorAll('.dashboard-table tbody tr:not([style*="display: none"]) input[type="checkbox"]');
+    const allVisibleAndSelected = document.querySelectorAll('.dashboard-table tbody tr:not([style*="display: none"]) input[type="checkbox"]:checked');
+
+    if (allVisibleCheckboxes.length > 0 && allVisibleCheckboxes.length === allVisibleAndSelected.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else if (allVisibleAndSelected.length > 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+}
+
+function handleSelection(e) {
+    if (e.target.type !== 'checkbox') return;
+
+    const tr = e.target.closest('tr');
+    if (!tr) return;
+
+    const transactionId = parseInt(tr.dataset.transactionId, 10);
+    if (isNaN(transactionId)) return;
+
+    if (e.target.checked) {
+        selectedTransactionIds.add(transactionId);
+        tr.classList.add('selected');
+    } else {
+        selectedTransactionIds.delete(transactionId);
+        tr.classList.remove('selected');
+    }
+    updateBulkActionsUI();
+}
 
 function updateBalance() {
     const balanceAmountEl = document.getElementById('current-balance-amount');
@@ -725,7 +779,127 @@ if (searchInput) {
         
         renderTransactions(filteredTransactions);
     });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('ai-search-btn').click();
+        }
+    });
+
+    const aiSearchBtn = document.getElementById('ai-search-btn');
+    if (aiSearchBtn) {
+        aiSearchBtn.addEventListener('click', async () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('Please enter a search query first.');
+                return;
+            }
+
+            const originalBtnContent = aiSearchBtn.innerHTML;
+            aiSearchBtn.innerHTML = '<div class="loader"></div>'; // Simple loader
+            aiSearchBtn.disabled = true;
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/ai-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        transactions: transactions // Send the full list
+                    })
+                });
+
+                const data = await res.json();
+                
+                if (res.ok) {
+                    const matchingIds = new Set(data.matching_ids);
+                    const filtered = transactions.filter(tx => matchingIds.has(tx.id));
+                    renderTransactions(filtered);
+                } else {
+                    alert('AI search failed: ' + (data.error || 'Unknown error'));
+                    renderTransactions(transactions); // Show all on error
+                }
+
+            } catch (err) {
+                alert('An error occurred while contacting the AI search service.');
+                renderTransactions(transactions);
+            } finally {
+                aiSearchBtn.innerHTML = originalBtnContent;
+                aiSearchBtn.disabled = false;
+            }
+        });
+    }
 }
+
+// Bulk Actions Logic
+if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', () => {
+        const visibleCheckboxes = document.querySelectorAll('.dashboard-table tbody tr:not([style*="display: none"]) input[type="checkbox"]');
+        visibleCheckboxes.forEach(checkbox => {
+            const tr = checkbox.closest('tr');
+            const txId = parseInt(tr.dataset.transactionId, 10);
+            if (checkbox.checked !== selectAllCheckbox.checked) {
+                checkbox.checked = selectAllCheckbox.checked;
+                if (selectAllCheckbox.checked) {
+                    selectedTransactionIds.add(txId);
+                    tr.classList.add('selected');
+                } else {
+                    selectedTransactionIds.delete(txId);
+                    tr.classList.remove('selected');
+                }
+            }
+        });
+        updateBulkActionsUI();
+    });
+}
+
+async function handleBulkDelete() {
+    const ids = Array.from(selectedTransactionIds);
+    if (ids.length === 0) return;
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/transactions/bulk-delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        });
+        const data = await res.json();
+        if (data.success) {
+            selectedTransactionIds.clear();
+            await fetchTransactions();
+        } else {
+            alert('Bulk delete failed: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('An error occurred during bulk delete.');
+    }
+}
+
+async function handleBulkCopy() {
+    const ids = Array.from(selectedTransactionIds);
+    if (ids.length === 0) return;
+
+    try {
+        const res = await fetch('http://127.0.0.1:8000/transactions/bulk-copy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids: ids })
+        });
+        const data = await res.json();
+        if (data.success) {
+            selectedTransactionIds.clear();
+            await fetchTransactions();
+        } else {
+            alert('Bulk copy failed: ' + (data.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('An error occurred during bulk copy.');
+    }
+}
+
+if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', handleBulkDelete);
+if (bulkCopyBtn) bulkCopyBtn.addEventListener('click', handleBulkCopy);
 
 // Fetch transactions from backend
 async function fetchTransactions() {
@@ -738,6 +912,7 @@ async function fetchTransactions() {
       transactions = data.transactions;
       renderTransactions(); 
       updateBalance();
+      updateBulkActionsUI();
     } else {
       // Optionally show error
       transactions = [];
@@ -811,8 +986,14 @@ function renderTransactions(transactionsToRender = transactions) {
   transactionsToRender.forEach((tx) => {
     const tr = document.createElement('tr');
     tr.dataset.transactionId = tx.id;
+    
+    // Check if this transaction is selected
+    if (selectedTransactionIds.has(tx.id)) {
+        tr.classList.add('selected');
+    }
+
     tr.innerHTML = `
-      <td><input type="checkbox"></td>
+      <td><input type="checkbox" ${selectedTransactionIds.has(tx.id) ? 'checked' : ''}></td>
       <td>${transactions.indexOf(tx) + 1}</td>
       <td>${tx.date}</td>
       <td>${tx.type}</td>
@@ -823,7 +1004,7 @@ function renderTransactions(transactionsToRender = transactions) {
         <button class="transaction-menu-btn">⋮</button>
         <div class="transaction-menu-dropdown">
           <button class="edit-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v120q-23 5-43 16t-37 28L480-237v157H240Zm320 0v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q8 9 12.5 20t4.5 22q0 11-4 22.5T903-300L683-80H560Zm263-224 37-39-37-37-38 38 38 38ZM520-600h200L520-800l200 200-200-200v200Z"/></svg>Edit</button>
-          <button class="duplicate-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-160q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200H320Zm240-440h200L560-840v200Z"/></svg>Duplicate</button>
+          <button class="duplicate-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M160-40q-33 0-56.5-23.5T80-120v-560h80v560h440v80H160Zm160-160q-33 0-56.5-23.5T240-280v-560q0-33 23.5-56.5T320-920h280l240 240v400q0 33-23.5 56.5T760-200H320Zm240-440h200L560-840v200Z"/></svg>Copy</button>
           <button class="delete-tx-btn"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>Delete</button>
         </div>
       </td>
@@ -963,7 +1144,8 @@ function setupCustomDropdownForRow(dropdownEl) {
         
         if (!wasOpen) {
             const selectedRect = selected.getBoundingClientRect();
-            list.style.top = `${selectedRect.bottom}px`;
+            // Position the list relative to the viewport
+            list.style.top = `${selectedRect.bottom + 2}px`; // Add a small gap
             list.style.left = `${selectedRect.left}px`;
             list.style.width = `${selectedRect.width}px`;
             dropdownEl.classList.add('open');
@@ -1010,12 +1192,17 @@ function setupCustomDatePickerForRow(pickerEl) {
     }
 
     const toggle = () => {
-        const isOpen = pickerEl.classList.toggle('open');
-        if (isOpen) {
+        const wasOpen = pickerEl.classList.contains('open');
+
+        // Close all other pickers/dropdowns
+        document.querySelectorAll('.custom-date-picker.open, .custom-dropdown.open').forEach(el => el.classList.remove('open'));
+        
+        if (!wasOpen) {
             renderCalendar(input.value ? new Date(input.value) : new Date());
-            popup.style.display = 'flex';
-        } else {
-            popup.style.display = 'none';
+            const inputRect = input.getBoundingClientRect();
+            popup.style.top = `${inputRect.bottom + 2}px`;
+            popup.style.left = `${inputRect.left}px`;
+            pickerEl.classList.add('open');
         }
     };
 
@@ -1034,6 +1221,12 @@ const tableBody = document.querySelector('.dashboard-table tbody');
 if (tableBody) {
     tableBody.addEventListener('click', (e) => {
         const target = e.target;
+
+        // Handle checkbox clicks for selection
+        if (target.type === 'checkbox') {
+            handleSelection(e);
+            return; // Stop further processing for checkbox clicks
+        }
 
         const menuBtn = target.closest('.transaction-menu-btn');
         if (menuBtn) {
