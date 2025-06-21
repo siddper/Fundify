@@ -114,6 +114,14 @@
                 <span class="option-title">Receipt Scan</span>
                 <span class="option-desc">Scan a receipt and use AI to add a transaction.</span>
             </button>
+            <button class="modal-tab-btn" data-content-id="import-transactions-content">
+                <span class="option-title">Import Transactions</span>
+                <span class="option-desc">Import from CSV, JSON, or TXT file.</span>
+            </button>
+            <button class="modal-tab-btn" data-content-id="export-transactions-content">
+                <span class="option-title">Export Transactions</span>
+                <span class="option-desc">Export your transactions as CSV, JSON, or TXT.</span>
+            </button>
             <button class="modal-tab-btn" data-content-id="add-preset-content">
                 <span class="option-title">Add Preset</span>
                 <span class="option-desc">Save a template for a frequent transaction.</span>
@@ -200,6 +208,42 @@
                   </div>
                   <div class="ai-message-container receipt-status-message"></div>
                 </div>
+              </form>
+            </div>
+            <div id="import-transactions-content" class="tab-pane">
+              <form id="import-transactions-form" class="import-modal-card">
+                <h2 class="import-modal-title">Import transactions</h2>
+                <p class="import-modal-desc">Import a <b>.CSV</b>, <b>.JSON</b>, or <b>.TXT</b> file of your transactions.</p>
+                <div class="import-file-row">
+                  <input type="file" id="import-file" accept=".csv,.json,.txt" style="display:none;">
+                  <button type="button" id="custom-import-file-btn" class="import-file-btn">Choose File</button>
+                  <span id="import-file-name" class="import-file-name">No file chosen</span>
+                </div>
+                <div class="import-modal-actions">
+                  <button type="button" class="modal-cancel-btn">Cancel</button>
+                  <button type="submit" class="modal-action-btn">Import</button>
+                </div>
+                <div class="import-status-message ai-message-container"></div>
+              </form>
+            </div>
+            <div id="export-transactions-content" class="tab-pane">
+              <form id="export-transactions-form" class="import-export-form">
+                <div class="form-group full-width">
+                  <div class="export-format-desc">Export your transactions as a .CSV, .JSON, or .TXT file.</div>
+                  <div class="export-format-row">
+                    <div id="export-format-switch" class="export-format-switch">
+                      <button type="button" class="export-format-btn active" data-format="csv">CSV</button>
+                      <button type="button" class="export-format-btn" data-format="json">JSON</button>
+                      <button type="button" class="export-format-btn" data-format="txt">TXT</button>
+                    </div>
+                  </div>
+                </div>
+                <input type="hidden" id="export-format" value="csv">
+                <div class="export-modal-actions export-modal-actions-box">
+                  <button type="button" class="modal-cancel-btn">Cancel</button>
+                  <button type="submit" class="modal-action-btn">Export</button>
+                </div>
+                <div class="export-status-message ai-message-container"></div>
               </form>
             </div>
             <div id="add-preset-content" class="tab-pane">

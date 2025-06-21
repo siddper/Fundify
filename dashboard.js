@@ -2270,3 +2270,233 @@ if (receiptScanForm) {
     }
   });
 }
+
+// --- Export Transactions Logic ---
+const exportForm = document.getElementById('export-transactions-form');
+if (exportForm) {
+  const exportBtn = exportForm.querySelector('.modal-action-btn');
+  const cancelBtn = exportForm.querySelector('.modal-cancel-btn');
+  const statusMsg = exportForm.querySelector('.export-status-message');
+  const formatSelect = document.getElementById('export-format');
+
+  if (cancelBtn && modalBg) {
+    cancelBtn.addEventListener('click', () => {
+      modalBg.classList.remove('active');
+    });
+  }
+
+  exportForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    statusMsg.textContent = '';
+    if (!transactions || !Array.isArray(transactions) || transactions.length === 0) {
+      statusMsg.textContent = 'No transactions to export.';
+      statusMsg.classList.add('error');
+      return;
+    }
+    const format = formatSelect.value;
+    let dataStr = '';
+    let mime = 'text/plain';
+    let filename = 'transactions.' + format;
+    if (format === 'json') {
+      dataStr = JSON.stringify(transactions, null, 2);
+      mime = 'application/json';
+    } else if (format === 'csv') {
+      // CSV header
+      const header = Object.keys(transactions[0]).join(',');
+      const rows = transactions.map(tx => Object.values(tx).map(v => '"' + String(v).replace(/"/g, '""') + '"').join(','));
+      dataStr = header + '\n' + rows.join('\n');
+      mime = 'text/csv';
+    } else if (format === 'txt') {
+      dataStr = transactions.map(tx => Object.entries(tx).map(([k,v]) => `${k}: ${v}`).join(' | ')).join('\n');
+      mime = 'text/plain';
+    }
+    try {
+      const blob = new Blob([dataStr], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+      statusMsg.textContent = 'Exported successfully!';
+      statusMsg.classList.remove('error');
+      statusMsg.classList.add('success');
+    } catch (err) {
+      statusMsg.textContent = 'Failed to export file.';
+      statusMsg.classList.add('error');
+    }
+  });
+}
+
+// --- Import Transactions Logic ---
+const importForm = document.getElementById('import-transactions-form');
+console.log('[Import] importForm:', importForm);
+if (importForm) {
+  const importBtn = importForm.querySelector('.modal-action-btn');
+  const cancelBtn = importForm.querySelector('.modal-cancel-btn');
+  const statusMsg = importForm.querySelector('.import-status-message');
+  const fileInput = document.getElementById('import-file');
+
+  console.log('[Import] Found elements:', { importBtn, cancelBtn, statusMsg, fileInput });
+
+  if (cancelBtn && modalBg) {
+    cancelBtn.addEventListener('click', () => {
+      modalBg.classList.remove('active');
+    });
+  }
+
+  console.log('[Import] Adding submit event listener...');
+  importForm.addEventListener('submit', async function(e) {
+    console.log('[Import] Submit event fired!');
+    e.preventDefault();
+    console.log('[Import] File input files:', fileInput.files);
+    statusMsg.textContent = '';
+    statusMsg.classList.remove('error', 'success');
+    const file = fileInput.files && fileInput.files[0];
+    console.log('[Import] Selected file:', file);
+    if (!file) {
+      statusMsg.textContent = 'Please select a file to import.';
+      statusMsg.classList.add('error');
+      return;
+    }
+    
+    try {
+      const ext = file.name.split('.').pop().toLowerCase();
+      console.log('[Import] File extension:', ext);
+      
+      // Read file as text
+      const fileContent = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => resolve(event.target.result);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsText(file);
+      });
+      
+      console.log('[Import] File read successfully, length:', fileContent.length);
+      
+      // Parse the file content
+      let imported = [];
+      if (ext === 'json') {
+        imported = JSON.parse(fileContent);
+      } else if (ext === 'csv') {
+        const lines = fileContent.split(/\r?\n/).filter(Boolean);
+        const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, ''));
+        imported = lines.slice(1).map(line => {
+          const values = line.match(/("[^"]*"|[^,]+)/g).map(v => v.replace(/^"|"$/g, ''));
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = values[i]; });
+          return obj;
+        });
+      } else if (ext === 'txt') {
+        imported = fileContent.split(/\r?\n/).filter(Boolean).map(line => {
+          const obj = {};
+          line.split(' | ').forEach(pair => {
+            const [k, ...v] = pair.split(': ');
+            obj[k] = v.join(': ');
+          });
+          return obj;
+        });
+      } else {
+        throw new Error('Unsupported file type.');
+      }
+      
+      console.log('[Import] Parsed transactions:', imported);
+      if (!Array.isArray(imported) || imported.length === 0) throw new Error('No transactions found in file.');
+      
+      // Validate: must have at least type, date, amount, store, method
+      const valid = imported.every(tx => tx.type && tx.date && tx.amount && tx.store && tx.method);
+      if (!valid) throw new Error('Some transactions are missing required fields.');
+      
+      // Send each transaction to the backend
+      const email = localStorage.getItem('fundify_user_email');
+      if (!email) {
+        throw new Error('User not logged in.');
+      }
+      
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const tx of imported) {
+        try {
+          // Prepare transaction data
+          const transactionData = {
+            type: tx.type,
+            date: tx.date,
+            amount: typeof tx.amount === 'string' ? parseFloat(tx.amount.replace(/[^\d.\-]/g, '')) : tx.amount,
+            store: tx.store,
+            method: tx.method,
+            email: email
+          };
+          
+          // Remove id if present (let backend assign if needed)
+          if (transactionData.id) delete transactionData.id;
+          
+          // Send to backend
+          const res = await fetch('http://127.0.0.1:8000/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(transactionData)
+          });
+          
+          const data = await res.json();
+          if (data.success) {
+            successCount++;
+          } else {
+            errorCount++;
+            console.error('[Import] Failed to import transaction:', data.error);
+          }
+        } catch (err) {
+          errorCount++;
+          console.error('[Import] Error importing transaction:', err);
+        }
+      }
+      
+      // Refresh the transactions list
+      await fetchTransactions();
+      
+      // Show results
+      if (successCount > 0) {
+        statusMsg.textContent = `Successfully imported ${successCount} transaction${successCount !== 1 ? 's' : ''}${errorCount > 0 ? ` (${errorCount} failed)` : ''}!`;
+        statusMsg.classList.add('success');
+      } else {
+        statusMsg.textContent = `Import failed: ${errorCount} transaction${errorCount !== 1 ? 's' : ''} could not be imported.`;
+        statusMsg.classList.add('error');
+      }
+      
+      fileInput.value = '';
+      
+    } catch (err) {
+      console.error('[Import] Error processing file:', err);
+      statusMsg.textContent = 'Import failed: ' + err.message;
+      statusMsg.classList.add('error');
+    }
+  });
+  console.log('[Import] Submit event listener added successfully');
+}
+
+const exportFormatSwitch = document.getElementById('export-format-switch');
+const exportFormatInput = document.getElementById('export-format');
+if (exportFormatSwitch && exportFormatInput) {
+  exportFormatSwitch.addEventListener('click', (e) => {
+    if (e.target.classList.contains('export-format-btn')) {
+      exportFormatSwitch.querySelectorAll('.export-format-btn').forEach(btn => btn.classList.remove('active'));
+      e.target.classList.add('active');
+      exportFormatInput.value = e.target.dataset.format;
+    }
+  });
+}
+
+const importFileInput = document.getElementById('import-file');
+const importFileBtn = document.getElementById('custom-import-file-btn');
+const importFileName = document.getElementById('import-file-name');
+
+if (importFileBtn && importFileInput && importFileName) {
+  importFileBtn.addEventListener('click', () => importFileInput.click());
+  importFileInput.addEventListener('change', () => {
+    importFileName.textContent = importFileInput.files[0] ? importFileInput.files[0].name : 'No file chosen';
+  });
+}
