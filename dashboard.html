@@ -32,7 +32,13 @@
     </aside>
     <main class="dashboard-main">
       <header class="dashboard-topbar">
-        <span class="dashboard-title">Transactions</span>
+        <div class="topbar-left">
+          <span class="dashboard-title">Transactions</span>
+          <div class="current-balance">
+            <span class="balance-label">Balance:</span>
+            <span class="balance-amount" id="current-balance-amount">$0.00</span>
+          </div>
+        </div>
         <button class="dashboard-add-btn" id="openAddModal">
             <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
         </button>
@@ -41,7 +47,7 @@
         <div class="custom-dropdown sort-dropdown" id="sort-dropdown">
           <button type="button" class="dropdown-selected" id="sort-selected">Sort by default</button>
           <ul class="dropdown-list" id="sort-list">
-            <li data-value="date">Default</li>
+            <li data-value="default">Default</li>
             <li data-value="date">Date</li>
             <li data-value="amount">Amount</li>
           </ul>
@@ -58,6 +64,7 @@
               <th>Amount</th>
               <th>Store/Source</th>
               <th>Method</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>

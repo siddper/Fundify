@@ -179,11 +179,11 @@ def quick_preset():
             The JSON structure MUST be:
             `{{"status": "success", "data": {{"name": "...", "type": "...", "date": "...", "amount": ..., "store": "...", "method": "..."}}}}`
             - `name`: A short, descriptive name for the preset (e.g., "Monthly Rent", "Lunch at Chipotle"). You must infer a sensible name from the user's prompt.
-            - `type`: Must be 'Withdrawal' or 'Deposit'. Default to 'Withdrawal' if ambiguous.
+            - `type`: CRITICAL: This value MUST be either 'Withdrawal' or 'Deposit'. Do not use any other value. If the user implies spending money, use 'Withdrawal'. If they imply receiving money, use 'Deposit'.
             - `date`: Must be in 'MM/DD/YYYY' format. Use today's date if not specified.
             - `amount`: Must be a number.
             - `store`: The merchant name or source of income.
-            - `method`: Can be 'Credit Card', 'Debit Card', 'Cash', 'Check'. Default to 'Unknown' if not specified.
+            - `method`: CRITICAL: This value MUST be one of: 'Credit Card', 'Debit Card', 'Cash', 'Check'. Map user terms like 'credit' or 'card' to 'Credit Card'. If no method is specified, use 'Unknown'.
 
         2.  **CLARIFICATION NEEDED (`status: "clarification_needed"`)**:
             Use this status if the user's text looks like a transaction but is missing the `amount` or `store`.
@@ -289,11 +289,11 @@ def quick_transaction():
             Use this status if all required information (`type`, `date`, `amount`, `store`) is clearly present in the user's text.
             The JSON structure MUST be:
             `{{"status": "success", "data": {{"type": "...", "date": "...", "amount": ..., "store": "...", "method": "..."}}}}`
-            - `type`: Must be 'Withdrawal' or 'Deposit'. Default to 'Withdrawal' if ambiguous.
+            - `type`: CRITICAL: This value MUST be either 'Withdrawal' or 'Deposit'. Do not use any other value. If the user implies spending money, use 'Withdrawal'. If they imply receiving money, use 'Deposit'.
             - `date`: Must be in 'MM/DD/YYYY' format. Use today's date if not specified.
             - `amount`: Must be a number.
             - `store`: The merchant name or source of income.
-            - `method`: Can be 'Credit Card', 'Debit Card', 'Cash', 'Check'. Default to 'Unknown' if not specified.
+            - `method`: CRITICAL: This value MUST be one of: 'Credit Card', 'Debit Card', 'Cash', 'Check'. Map user terms like 'credit' or 'card' to 'Credit Card'. If no method is specified, use 'Unknown'.
 
         2.  **CLARIFICATION NEEDED (`status: "clarification_needed"`)**:
             Use this status if the user's text looks like a transaction but is missing the `amount` or `store`.
@@ -393,6 +393,16 @@ def get_transactions():
         'method': tx.method
     } for tx in transactions]
     return jsonify({'success': True, 'transactions': tx_list})
+
+@app.route('/transactions/<int:transaction_id>', methods=['DELETE'])
+def delete_transaction(transaction_id):
+    transaction = Transaction.query.get(transaction_id)
+    if not transaction:
+        return jsonify({'success': False, 'error': 'Transaction not found.'}), 404
+    
+    db.session.delete(transaction)
+    db.session.commit()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     create_db()

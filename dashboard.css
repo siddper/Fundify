@@ -54,6 +54,40 @@ body.dashboard-bg {
   width: 100%;
   max-width: 100%;
 }
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.current-balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: var(--main-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.balance-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.balance-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  transition: color 0.3s ease;
+}
+.balance-amount.safe {
+  color: #4caf50; /* Green */
+}
+.balance-amount.warning {
+  color: #ffc107; /* Yellow */
+}
+.balance-amount.danger {
+  color: #f44336; /* Red */
+}
 .dashboard-title {
   font-size: 1.3rem;
   font-weight: 600;
@@ -114,7 +148,7 @@ body.dashboard-bg {
   background: var(--card-bg);
   border-radius: 18px;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--border);
 }
 .dashboard-table th, .dashboard-table td {
@@ -127,6 +161,12 @@ body.dashboard-bg {
   background: var(--main-bg);
   font-weight: 600;
   border-bottom: 1.5px solid var(--border);
+}
+.dashboard-table th:last-child,
+.dashboard-table td:last-child {
+    width: 1%;
+    padding-left: 0;
+    padding-right: 20px;
 }
 .dashboard-table tr {
   border-bottom: 1px solid var(--border);
@@ -734,4 +774,70 @@ input[type=number] {
   color: var(--text);
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(35, 95, 214, 0.12);
+}
+
+.transaction-menu-cell {
+    position: relative;
+    text-align: right;
+}
+
+.transaction-menu-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 6px;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.transaction-menu-btn:hover {
+    background-color: var(--main-bg);
+    color: var(--text);
+}
+
+.transaction-menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 15px;
+    top: 40px;
+    background-color: #2a2d31;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    z-index: 10;
+    width: 120px;
+    overflow: hidden;
+}
+
+.transaction-menu-dropdown.show {
+    display: block;
+}
+
+.transaction-menu-dropdown button {
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.18s, color 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transaction-menu-dropdown button svg {
+    width: 18px;
+    height: 18px;
+    transition: fill 0.18s;
+}
+
+.transaction-menu-dropdown button:hover {
+    background-color: var(--accent);
+    color: #fff;
 }

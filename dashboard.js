@@ -219,15 +219,6 @@ if (filterAddBtn) {
   });
 }
 
-// Sort dropdown stub
-const sortDropdown = document.querySelector('.sort-dropdown');
-if (sortDropdown) {
-  sortDropdown.addEventListener('change', (e) => {
-    // Implement sorting logic here
-    // e.target.value
-  });
-}
-
 // Add-option selection logic
 const addOptionButtons = document.querySelectorAll('.add-options button');
 const modalContentDivs = {
@@ -275,9 +266,9 @@ function setupCustomDropdown(dropdownId, selectedId, listId) {
       // For sort dropdown, prepend 'Sort by '
       if (dropdownId === 'sort-dropdown') {
         selected.textContent = 'Sort by ' + li.textContent.toLowerCase();
+        sortTransactions(li.dataset.value);
       } else {
         selected.textContent = li.textContent;
-
       }
       selected.dataset.value = li.dataset.value;
       dropdown.classList.remove('open');
@@ -624,6 +615,44 @@ if (presetForm) {
 // --- Transaction List Logic ---
 let transactions = [];
 
+function updateBalance() {
+    const balanceAmountEl = document.getElementById('current-balance-amount');
+    if (!balanceAmountEl) return;
+
+    const balance = transactions.reduce((acc, tx) => {
+        if (tx.type === 'Deposit') {
+            return acc + parseFloat(tx.amount);
+        } else { // Withdrawal
+            return acc - parseFloat(tx.amount);
+        }
+    }, 0);
+
+    balanceAmountEl.textContent = `$${balance.toFixed(2)}`;
+
+    balanceAmountEl.classList.remove('safe', 'warning', 'danger');
+    if (balance > 100) {
+        balanceAmountEl.classList.add('safe');
+    } else if (balance > 0) {
+        balanceAmountEl.classList.add('warning');
+    } else {
+        balanceAmountEl.classList.add('danger');
+    }
+}
+
+function sortTransactions(sortBy = 'default') {
+    let sortedTransactions = [...transactions];
+
+    if (sortBy === 'date') {
+        // Sort by date ascending (oldest first)
+        sortedTransactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+    } else if (sortBy === 'amount') {
+        // Sort by amount ascending (lowest first)
+        sortedTransactions.sort((a, b) => a.amount - b.amount);
+    }
+
+    renderTransactions(sortedTransactions);
+}
+
 // Fetch transactions from backend
 async function fetchTransactions() {
   const email = localStorage.getItem('fundify_user_email');
@@ -633,33 +662,79 @@ async function fetchTransactions() {
     const data = await res.json();
     if (data.success) {
       transactions = data.transactions;
-      renderTransactions();
+      renderTransactions(); 
+      updateBalance();
     } else {
       // Optionally show error
       transactions = [];
       renderTransactions();
+      updateBalance();
     }
   } catch (err) {
     // Optionally show error
     transactions = [];
     renderTransactions();
+    updateBalance();
   }
 }
 
-function renderTransactions() {
+async function deleteTransaction(transactionId) {
+    try {
+        const res = await fetch(`http://127.0.0.1:8000/transactions/${transactionId}`, {
+            method: 'DELETE'
+        });
+        const data = await res.json();
+        if(data.success) {
+            await fetchTransactions(); // This will re-fetch, re-render, and update balance
+        } else {
+            alert(data.error || 'Failed to delete transaction.');
+        }
+    } catch (err) {
+        alert('Server error while deleting transaction.');
+    }
+}
+
+function renderTransactions(transactionsToRender = transactions) {
   const tbody = document.querySelector('.dashboard-table tbody');
   tbody.innerHTML = '';
-  transactions.forEach((tx, idx) => {
+  transactionsToRender.forEach((tx) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><input type="checkbox"></td>
-      <td>${idx + 1}</td>
+      <td>${transactions.indexOf(tx) + 1}</td>
       <td>${tx.date}</td>
       <td>${tx.type}</td>
       <td>$${parseFloat(tx.amount).toFixed(2)}</td>
       <td>${tx.store}</td>
       <td>${tx.method}</td>
+      <td class="transaction-menu-cell">
+        <button class="transaction-menu-btn">⋮</button>
+        <div class="transaction-menu-dropdown">
+          <button class="delete-tx-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>
+          Delete
+          </button>
+        </div>
+      </td>
     `;
+    
+    const menuBtn = tr.querySelector('.transaction-menu-btn');
+    const dropdown = tr.querySelector('.transaction-menu-dropdown');
+    const deleteBtn = tr.querySelector('.delete-tx-btn');
+
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Close other dropdowns
+        document.querySelectorAll('.transaction-menu-dropdown.show').forEach(d => {
+            if (d !== dropdown) d.classList.remove('show');
+        });
+        dropdown.classList.toggle('show');
+    });
+
+    deleteBtn.addEventListener('click', () => {
+        deleteTransaction(tx.id);
+    });
+
     tbody.appendChild(tr);
   });
 }
@@ -755,3 +830,10 @@ if (addTransactionForm) {
     if (modalBg) modalBg.classList.remove('active');
   });
 }
+
+document.addEventListener('click', (e) => {
+    const openDropdown = document.querySelector('.transaction-menu-dropdown.show');
+    if (openDropdown && !openDropdown.parentElement.contains(e.target)) {
+        openDropdown.classList.remove('show');
+    }
+});
