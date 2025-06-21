@@ -115,10 +115,12 @@ body.dashboard-bg {
 
 .search-container {
     position: relative;
+    flex-grow: 1;
 }
 
 #search-input {
-    width: 1175px;
+    width: 100%;
+    min-width: 1050px;
     padding-right: 48px;
     background: var(--main-bg);
     color: var(--text);
@@ -175,6 +177,7 @@ body.dashboard-bg {
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
 }
 
 .dashboard-controls {
@@ -184,7 +187,6 @@ body.dashboard-bg {
   padding: 18px 32px;
   background: var(--main-bg);
   box-sizing: border-box;
-  justify-content: flex-end;
 }
 
 .dashboard-table-section {
@@ -201,7 +203,7 @@ body.dashboard-bg {
   background: var(--card-bg);
   border-radius: 18px;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.18);
-  overflow: visible;
+  overflow: hidden;
   border: 1px solid var(--border);
 }
 .dashboard-table th, .dashboard-table td {
@@ -327,10 +329,11 @@ body.dashboard-bg {
   padding: 16px;
   background: #1f2124;
   display: flex;
+  border-radius: 20px;
   flex-direction: column;
 }
 .modal-options-content {
-  padding: 32px 24px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
 }
@@ -359,7 +362,7 @@ body.dashboard-bg {
   gap: 4px;
 }
 .add-options .option-title {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
 }
@@ -388,7 +391,7 @@ body.dashboard-bg {
   font-size: 1.6rem;
   font-weight: 800;
   margin-bottom: 18px;
-  margin-top: 0;
+  margin-top: 10px;
   letter-spacing: -0.5px;
   text-align: center;
 }
@@ -531,7 +534,7 @@ body.dashboard-bg {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 0px;
   padding-top: 8px;
   border-top: 1px solid var(--border);
 }
@@ -1003,6 +1006,14 @@ input[type=number] {
 }
 .dashboard-table tbody tr.selected:hover {
     background-color: #304369 !important;
+}
+
+.dashboard-table tbody tr.selected:last-child td:first-child {
+    border-bottom-left-radius: 18px;
+}
+
+.dashboard-table tbody tr.selected:last-child td:last-child {
+    border-bottom-right-radius: 18px;
 }
 
 .bulk-actions-container {
