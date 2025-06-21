@@ -1577,10 +1577,21 @@ if (addTransactionForm) {
     // Optionally, reset form
     addTransactionForm.reset();
     typeBtn.textContent = 'Withdrawal';
-    methodBtn.textContent = 'Method';
+    methodBtn.textContent = 'Credit';
+    methodBtn.dataset.value = 'Credit';
     dateInput.value = '';
     // Close modal
     if (modalBg) modalBg.classList.remove('active');
+  });
+}
+// Set default method to Credit when opening the modal
+if (openBtn && modalBg) {
+  openBtn.addEventListener('click', () => {
+    const methodBtn = document.getElementById('custom-method-selected');
+    if (methodBtn) {
+      methodBtn.textContent = 'Credit';
+      methodBtn.dataset.value = 'Credit';
+    }
   });
 }
 
