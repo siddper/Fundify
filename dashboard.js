@@ -1623,12 +1623,17 @@ document.addEventListener('click', (e) => {
 const addFilterBtn = document.getElementById('add-filter-btn');
 const filterModal = document.getElementById('filter-modal');
 const closeFilterModalBtn = document.getElementById('close-filter-modal');
-const filterTypeSelect = document.getElementById('filter-type-select');
+const filterTypeDropdown = document.getElementById('filter-type-dropdown');
+const filterTypeSelected = document.getElementById('filter-type-selected');
+const filterTypeList = document.getElementById('filter-type-list');
 const filterValueInputs = document.getElementById('filter-value-inputs');
 const applyFilterBtn = document.getElementById('apply-filter-btn');
 const filterChipsContainer = document.getElementById('filter-chips-container');
 
 let activeFilters = [];
+
+// Setup custom dropdown for filter type
+setupCustomDropdown('filter-type-dropdown', 'filter-type-selected', 'filter-type-list');
 
 function openFilterModal() {
   filterModal.classList.add('active');
@@ -1639,44 +1644,166 @@ function closeFilterModal() {
 }
 if (addFilterBtn) addFilterBtn.addEventListener('click', openFilterModal);
 if (closeFilterModalBtn) closeFilterModalBtn.addEventListener('click', closeFilterModal);
-if (filterTypeSelect) filterTypeSelect.addEventListener('change', renderFilterValueInputs);
+if (filterTypeSelected) filterTypeSelected.addEventListener('click', renderFilterValueInputs);
+if (filterTypeList) filterTypeList.querySelectorAll('li').forEach(li => {
+  li.addEventListener('click', renderFilterValueInputs);
+});
 
 function renderFilterValueInputs() {
-  const type = filterTypeSelect.value;
+  const type = filterTypeSelected.dataset.value || 'date';
   let html = '';
   if (type === 'date') {
-    html = `<select id="date-operator"><option value="on">On</option><option value="before">Before</option><option value="after">After</option></select> <input type="date" id="date-value">`;
+    html = `<div class="custom-dropdown" id="date-operator-dropdown">
+      <button type="button" class="dropdown-selected" id="date-operator-selected">On</button>
+      <ul class="dropdown-list" id="date-operator-list">
+        <li data-value="on">On</li>
+        <li data-value="before">Before</li>
+        <li data-value="after">After</li>
+      </ul>
+    </div>
+    <div class="custom-date-picker" id="filter-date-picker">
+      <input type="text" id="filter-date-input" placeholder="mm/dd/yyyy" readonly>
+      <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+      <div class="calendar-popup" id="filter-calendar-popup"></div>
+    </div>`;
   } else if (type === 'type') {
-    html = `<select id="type-value"><option value="Withdrawal">Withdrawal</option><option value="Deposit">Deposit</option></select>`;
+    html = `<div class="custom-dropdown" id="type-value-dropdown">
+      <button type="button" class="dropdown-selected" id="type-value-selected">Withdrawal</button>
+      <ul class="dropdown-list" id="type-value-list">
+        <li data-value="Withdrawal">Withdrawal</li>
+        <li data-value="Deposit">Deposit</li>
+      </ul>
+    </div>`;
   } else if (type === 'amount') {
-    html = `<select id="amount-operator"><option value="eq">=</option><option value="gt">&gt;</option><option value="lt">&lt;</option></select> <input type="number" id="amount-value" min="0" step="0.01">`;
+    html = `<div class="custom-dropdown" id="amount-operator-dropdown">
+      <button type="button" class="dropdown-selected" id="amount-operator-selected">=</button>
+      <ul class="dropdown-list" id="amount-operator-list">
+        <li data-value="eq">=</li>
+        <li data-value="gt">&gt;</li>
+        <li data-value="lt">&lt;</li>
+      </ul>
+    </div>
+    <input type="number" id="amount-value" min="0" step="0.01" placeholder="Amount">`;
   } else if (type === 'store_source') {
     html = `<input type="text" id="store-source-value" placeholder="Store or Source">`;
   } else if (type === 'method') {
-    html = `<select id="method-value"><option value="Credit">Credit</option><option value="Debit">Debit</option><option value="Cash">Cash</option><option value="Check">Check</option></select>`;
+    html = `<div class="custom-dropdown" id="method-value-dropdown">
+      <button type="button" class="dropdown-selected" id="method-value-selected">Credit</button>
+      <ul class="dropdown-list" id="method-value-list">
+        <li data-value="Credit">Credit</li>
+        <li data-value="Debit">Debit</li>
+        <li data-value="Cash">Cash</li>
+        <li data-value="Check">Check</li>
+      </ul>
+    </div>`;
   }
   filterValueInputs.innerHTML = html;
+  // Setup custom dropdowns and date picker for filter modal
+  if (type === 'date') {
+    setupCustomDropdown('date-operator-dropdown', 'date-operator-selected', 'date-operator-list');
+    setupCustomDatePickerForFilterModal();
+  } else if (type === 'type') {
+    setupCustomDropdown('type-value-dropdown', 'type-value-selected', 'type-value-list');
+  } else if (type === 'amount') {
+    setupCustomDropdown('amount-operator-dropdown', 'amount-operator-selected', 'amount-operator-list');
+  } else if (type === 'method') {
+    setupCustomDropdown('method-value-dropdown', 'method-value-selected', 'method-value-list');
+  }
+}
+
+function setupCustomDatePickerForFilterModal() {
+  const picker = document.getElementById('filter-date-picker');
+  const input = document.getElementById('filter-date-input');
+  const popup = document.getElementById('filter-calendar-popup');
+  if (!picker || !input || !popup) return;
+  function formatDate(date) {
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+  }
+  function renderCalendar(selectedDate) {
+    const today = new Date();
+    const year = selectedDate ? selectedDate.getFullYear() : today.getFullYear();
+    const month = selectedDate ? selectedDate.getMonth() : today.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    let html = `<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;'>
+      <button type='button' class='cal-prev'>&lt;</button>
+      <span style='font-weight:600;'>${firstDay.toLocaleString('default', { month: 'long' })} ${year}</span>
+      <button type='button' class='cal-next'>&gt;</button>
+    </div>`;
+    html += "<div style='display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:0.95em;color:#bfc6e0;'>";
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => html += `<span>${d}</span>`);
+    html += "</div><div class='calendar-grid-days'>";
+    for (let i = 0; i < firstDay.getDay(); i++) html += '<span></span>';
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const thisDate = new Date(year, month, d);
+      const isToday = thisDate.toDateString() === today.toDateString();
+      html += `<button type='button' class='cal-day' data-date='${formatDate(thisDate)}' style='background:${isToday ? '#23262a' : 'transparent'};color:${isToday ? 'var(--accent)' : 'var(--text)'};border-radius:6px;padding:6px 0;border:none;cursor:pointer;'>${d}</button>`;
+    }
+    html += "</div>";
+    popup.innerHTML = html;
+    popup.querySelector('.cal-prev').onclick = () => {
+      renderCalendar(new Date(year, month - 1, 1));
+    };
+    popup.querySelector('.cal-next').onclick = () => {
+      renderCalendar(new Date(year, month + 1, 1));
+    };
+    popup.querySelectorAll('.cal-day').forEach(btn => {
+      btn.onclick = () => {
+        input.value = btn.dataset.date;
+        input.classList.remove('incorrect');
+        picker.classList.remove('open');
+      };
+    });
+  }
+  input.addEventListener('click', (e) => {
+    e.stopPropagation();
+    picker.classList.toggle('open');
+    if (picker.classList.contains('open')) {
+      const val = input.value ? new Date(input.value) : new Date();
+      renderCalendar(val);
+    }
+  });
+  picker.querySelector('.calendar-icon').addEventListener('click', (e) => {
+    e.stopPropagation();
+    picker.classList.toggle('open');
+    if (picker.classList.contains('open')) {
+      const val = input.value ? new Date(input.value) : new Date();
+      renderCalendar(val);
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (!picker.contains(e.target)) {
+      picker.classList.remove('open');
+    }
+  });
 }
 
 if (applyFilterBtn) {
   applyFilterBtn.addEventListener('click', () => {
-    const type = filterTypeSelect.value;
+    const type = filterTypeSelected.dataset.value || 'date';
     let filter = { type };
     if (type === 'date') {
-      filter.operator = document.getElementById('date-operator').value;
-      filter.value = document.getElementById('date-value').value;
-      if (!filter.value) return;
+      const operator = document.getElementById('date-operator-selected').textContent.toLowerCase();
+      const value = document.getElementById('filter-date-input').value;
+      filter.operator = operator;
+      // Convert mm/dd/yyyy to yyyy-mm-dd for consistency
+      if (!value) return;
+      const [mm, dd, yyyy] = value.split('/');
+      filter.value = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
     } else if (type === 'type') {
-      filter.value = document.getElementById('type-value').value;
+      filter.value = document.getElementById('type-value-selected').textContent;
     } else if (type === 'amount') {
-      filter.operator = document.getElementById('amount-operator').value;
+      filter.operator = document.getElementById('amount-operator-selected').dataset.value;
       filter.value = document.getElementById('amount-value').value;
       if (!filter.value) return;
     } else if (type === 'store_source') {
       filter.value = document.getElementById('store-source-value').value.trim();
       if (!filter.value) return;
     } else if (type === 'method') {
-      filter.value = document.getElementById('method-value').value;
+      filter.value = document.getElementById('method-value-selected').textContent;
     }
     activeFilters.push(filter);
     renderFilterChips();
@@ -1687,6 +1814,12 @@ if (applyFilterBtn) {
 
 function renderFilterChips() {
   filterChipsContainer.innerHTML = '';
+  const filterBar = document.querySelector('.filter-bar');
+  if (activeFilters.length === 0) {
+    if (filterBar) filterBar.style.gap = '0px';
+  } else {
+    if (filterBar) filterBar.style.gap = '10px';
+  }
   activeFilters.forEach((filter, idx) => {
     const chip = document.createElement('div');
     chip.className = 'filter-chip';

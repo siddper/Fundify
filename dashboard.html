@@ -265,16 +265,19 @@
   <div id="filter-modal" class="filter-modal-bg">
     <div class="filter-modal-content">
       <button class="filter-modal-close" id="close-filter-modal" title="Close">&times;</button>
-      <h3>Add Filter</h3>
+      <h3 style="color: var(--text);">Add Filter</h3>
       <div class="filter-type-row">
-        <label for="filter-type-select">Filter by:</label>
-        <select id="filter-type-select">
-          <option value="date">Date</option>
-          <option value="type">Type</option>
-          <option value="amount">Amount</option>
-          <option value="store_source">Store/Source</option>
-          <option value="method">Method</option>
-        </select>
+        <label for="filter-type-select" style="color: var(--text);">Filter by:</label>
+        <div class="custom-dropdown" id="filter-type-dropdown">
+          <button type="button" class="dropdown-selected" id="filter-type-selected">Date</button>
+          <ul class="dropdown-list" id="filter-type-list">
+            <li data-value="date">Date</li>
+            <li data-value="type">Type</li>
+            <li data-value="amount">Amount</li>
+            <li data-value="store_source">Store/Source</li>
+            <li data-value="method">Method</li>
+          </ul>
+        </div>
       </div>
       <div id="filter-value-inputs"></div>
       <div class="filter-modal-actions">
