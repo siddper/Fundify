@@ -1653,19 +1653,21 @@ function renderFilterValueInputs() {
   const type = filterTypeSelected.dataset.value || 'date';
   let html = '';
   if (type === 'date') {
-    html = `<div class="custom-dropdown" id="date-operator-dropdown">
-      <button type="button" class="dropdown-selected" id="date-operator-selected">On</button>
-      <ul class="dropdown-list" id="date-operator-list">
-        <li data-value="on">On</li>
-        <li data-value="before">Before</li>
-        <li data-value="after">After</li>
-      </ul>
-    </div>
-    <div class="custom-date-picker" id="filter-date-picker">
-      <input type="text" id="filter-date-input" placeholder="mm/dd/yyyy" readonly>
-      <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
-      <div class="calendar-popup" id="filter-calendar-popup"></div>
-    </div>`;
+    html = `
+      <div class="custom-dropdown" id="date-operator-dropdown">
+        <button type="button" class="dropdown-selected" id="date-operator-selected">On</button>
+        <ul class="dropdown-list" id="date-operator-list">
+          <li data-value="on">On</li>
+          <li data-value="before">Before</li>
+          <li data-value="after">After</li>
+        </ul>
+      </div>
+      <div class="custom-date-picker" id="filter-date-picker">
+        <input type="text" id="filter-date-input" placeholder="mm/dd/yyyy" readonly>
+        <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+        <div class="calendar-popup" id="filter-calendar-popup"></div>
+      </div>
+    `;
   } else if (type === 'type') {
     html = `<div class="custom-dropdown" id="type-value-dropdown">
       <button type="button" class="dropdown-selected" id="type-value-selected">Withdrawal</button>
@@ -1675,15 +1677,17 @@ function renderFilterValueInputs() {
       </ul>
     </div>`;
   } else if (type === 'amount') {
-    html = `<div class="custom-dropdown" id="amount-operator-dropdown">
-      <button type="button" class="dropdown-selected" id="amount-operator-selected">=</button>
-      <ul class="dropdown-list" id="amount-operator-list">
-        <li data-value="eq">=</li>
-        <li data-value="gt">&gt;</li>
-        <li data-value="lt">&lt;</li>
-      </ul>
-    </div>
-    <input type="number" id="amount-value" min="0" step="0.01" placeholder="Amount">`;
+    html = `
+      <div class="custom-dropdown" id="amount-operator-dropdown">
+        <button type="button" class="dropdown-selected" id="amount-operator-selected">=</button>
+        <ul class="dropdown-list" id="amount-operator-list">
+          <li data-value="eq">=</li>
+          <li data-value="gt">&gt;</li>
+          <li data-value="lt">&lt;</li>
+        </ul>
+      </div>
+      <input type="number" id="amount-value" min="0" step="0.01" placeholder="Amount">
+    `;
   } else if (type === 'store_source') {
     html = `<input type="text" id="store-source-value" placeholder="Store or Source">`;
   } else if (type === 'method') {

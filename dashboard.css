@@ -1391,88 +1391,73 @@ input[type=number] {
 }
 .filter-modal-content {
   background: #23262a;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 8px 40px 0 rgba(0,0,0,0.38);
-  padding: 32px 32px 24px 32px;
-  min-width: 350px;
+  padding: 0;
+  min-width: 540px;
   max-width: 95vw;
   display: flex;
   flex-direction: column;
   position: relative;
   border: 1.5px solid var(--border);
 }
-.filter-modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 1.7rem;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.filter-modal-header {
+  padding: 28px 40px 0 40px;
+  border-bottom: 1px solid var(--border);
 }
-.filter-modal-close:hover {
-  color: #ff4d4f;
-}
-.filter-modal-content h3 {
+.filter-modal-header h3 {
   color: var(--text);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  margin-bottom: 18px;
-  margin-top: 0;
+  margin: 0;
 }
-.filter-type-row {
+.filter-modal-body {
+  padding: 32px 40px 32px 40px;
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
 }
-.filter-type-row label {
-  width: 100px;
+.filter-form-grid {
+  display: none;
 }
-#filter-type-select {
+.filter-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 100%;
+}
+.filter-inputs-container {
   background: #18191a;
-  color: var(--text);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 10px 16px;
-  outline: none;
-  transition: border 0.18s, box-shadow 0.18s;
-}
-#filter-type-select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(35,95,214,0.12);
-}
-#filter-value-inputs {
-  margin-bottom: 18px;
-}
-.filter-modal-actions {
+  border-radius: 12px;
+  padding: 28px 24px 28px 24px;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+  width: 100%;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0;
 }
-
-/* Filter Modal Input Styles */
+#filter-value-group, #filter-value-inputs {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
 .filter-modal-content input[type="text"],
 .filter-modal-content input[type="number"] {
   width: 100%;
-  background: #18191a;
+  background: #2a2d31;
   color: var(--text);
   border: 1.5px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
-  padding: 12px 40px 12px 14px;
+  padding: 12px 14px;
   outline: none;
   transition: border-color 0.18s, box-shadow 0.18s;
   font-family: 'Inter', Arial, sans-serif;
-  margin-bottom: 10px;
+  margin: 0;
+  box-shadow: none;
 }
 .filter-modal-content input[type="text"]:focus,
 .filter-modal-content input[type="number"]:focus {
@@ -1484,50 +1469,34 @@ input[type=number] {
   color: var(--text-muted);
   opacity: 0.7;
 }
-/* Custom date picker in filter modal */
-#filter-date-picker {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 10px;
-}
-#filter-date-input {
-  width: 100%;
-  background: #18191a;
-  color: var(--text);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 12px 40px 12px 14px;
-  outline: none;
-  transition: border-color 0.18s, box-shadow 0.18s;
-  font-family: 'Inter', Arial, sans-serif;
-}
-#filter-date-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(35,95,214,0.12);
-}
-#filter-date-input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.7;
-}
-#filter-date-picker .calendar-icon {
+.filter-modal-close {
   position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
+  top: 18px;
+  right: 24px;
   background: none;
   border: none;
-  padding: 0;
+  color: var(--text-muted);
+  font-size: 1.7rem;
   cursor: pointer;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
-  z-index: 2;
+  justify-content: center;
+  z-index: 10;
 }
-#filter-date-picker .calendar-icon svg {
-  width: 24px;
-  height: 24px;
-  display: block;
+.filter-modal-close:hover {
+  color: #ff4d4f;
+}
+
+.filter-inputs-container .custom-dropdown + input,
+.filter-inputs-container .custom-dropdown + .custom-date-picker {
+  margin-top: 8px;
+}
+
+.filter-modal-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
 }
