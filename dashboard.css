@@ -1497,3 +1497,41 @@ input[type=number]::-webkit-outer-spin-button {
   display: flex;
   justify-content: flex-end;
 }
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0;
+}
+#custom-file-btn.modal-action-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+#custom-file-btn.modal-action-btn:hover {
+  background: #1c4daf;
+}
+#file-name {
+  color: var(--text-muted);
+  font-size: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+#camera-modal.filter-modal-bg {
+  display: none;
+  z-index: 3000;
+  align-items: center;
+  justify-content: center;
+}
+#camera-modal.active {
+  display: flex;
+}

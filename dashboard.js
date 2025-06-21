@@ -2061,3 +2061,204 @@ fetchTransactions = async function() {
   await originalFetchTransactions.apply(this, arguments);
   filterTransactions();
 };
+
+// --- Receipt Scan UI Logic ---
+// Custom file upload button
+const fileBtn = document.getElementById('custom-file-btn');
+const fileInput = document.getElementById('receipt-upload');
+const fileNameSpan = document.getElementById('file-name');
+const receiptPreview = document.getElementById('receipt-preview');
+if (fileBtn && fileInput) {
+  fileBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files[0]) {
+      fileNameSpan.textContent = fileInput.files[0].name;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        receiptPreview.innerHTML = `<img src="${e.target.result}" alt="Receipt" style="max-width:100%;max-height:180px;border-radius:8px;" />`;
+        // After image is inserted, update button state
+        const img = receiptPreview.querySelector('img');
+        const aiBtn = document.querySelector('#receipt-scan-form .modal-action-btn[type="submit"]') || document.querySelector('#receipt-scan-form .modal-action-btn');
+        if (aiBtn) {
+          aiBtn.disabled = !img;
+          if (!img) {
+            aiBtn.disabled = false;
+          }
+        }
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      fileNameSpan.textContent = 'No file chosen';
+      receiptPreview.textContent = 'No image selected';
+    }
+  });
+}
+// Camera modal logic
+const cameraModal = document.getElementById('camera-modal');
+const startCameraBtn = document.getElementById('start-receipt-camera');
+const closeCameraBtn = document.getElementById('close-camera-btn');
+const capturePhotoBtn = document.getElementById('capture-photo-btn');
+const cameraPreview = document.getElementById('camera-preview');
+const cameraCanvas = document.getElementById('camera-canvas');
+let cameraStream = null;
+if (startCameraBtn && cameraModal) {
+  startCameraBtn.addEventListener('click', async () => {
+    cameraModal.style.display = 'flex';
+    cameraModal.classList.add('active');
+    // Start camera
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      cameraPreview.srcObject = cameraStream;
+      cameraPreview.play();
+    } catch (err) {
+      alert('Could not access camera.');
+      cameraModal.style.display = 'none';
+      cameraModal.classList.remove('active');
+    }
+  });
+}
+if (closeCameraBtn && cameraModal) {
+  closeCameraBtn.addEventListener('click', () => {
+    cameraModal.style.display = 'none';
+    cameraModal.classList.remove('active');
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    cameraPreview.srcObject = null;
+  });
+}
+if (capturePhotoBtn && cameraPreview && cameraCanvas && receiptPreview) {
+  capturePhotoBtn.addEventListener('click', () => {
+    cameraCanvas.width = cameraPreview.videoWidth;
+    cameraCanvas.height = cameraPreview.videoHeight;
+    cameraCanvas.getContext('2d').drawImage(cameraPreview, 0, 0);
+    const dataUrl = cameraCanvas.toDataURL('image/png');
+    receiptPreview.innerHTML = `<img src="${dataUrl}" alt="Receipt" style="max-width:100%;max-height:180px;border-radius:8px;" />`;
+    // Close camera after capture
+    if (cameraModal) {
+      cameraModal.style.display = 'none';
+      cameraModal.classList.remove('active');
+    }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    cameraPreview.srcObject = null;
+    // Enable the Add Transaction (AI) button
+    const aiBtn = document.querySelector('#receipt-scan-form .modal-action-btn[type="submit"]');
+    if (aiBtn) aiBtn.disabled = false;
+  });
+}
+
+// --- Receipt Scan AI Submission Logic ---
+const receiptScanForm = document.getElementById('receipt-scan-form');
+if (receiptScanForm) {
+  const aiBtn = receiptScanForm.querySelector('.modal-action-btn[type="submit"]') || receiptScanForm.querySelector('.modal-action-btn');
+  let aiMsgContainer = receiptScanForm.querySelector('.ai-message-container');
+  if (!aiMsgContainer) {
+    aiMsgContainer = document.createElement('div');
+    aiMsgContainer.className = 'ai-message-container';
+    aiMsgContainer.style.marginTop = '16px';
+    aiBtn.parentElement.insertBefore(aiMsgContainer, aiBtn.nextSibling);
+  }
+  aiMsgContainer.style.display = 'block';
+  aiMsgContainer.textContent = '';
+
+  // Enable/disable button based on image selection
+  function updateAiBtnState() {
+    const img = document.querySelector('#receipt-preview img');
+    aiBtn.disabled = !img;
+  }
+  receiptScanForm.addEventListener('change', updateAiBtnState);
+  receiptScanForm.addEventListener('input', updateAiBtnState);
+  updateAiBtnState();
+
+  function setBtnLoading(loading, text) {
+    if (loading) {
+      aiBtn.disabled = true;
+      aiBtn.innerHTML = '<span class="spinner" style="display:inline-block;width:18px;height:18px;border:2px solid #fff;border-top:2px solid #235FD6;border-radius:50%;margin-right:8px;vertical-align:middle;animation:spin 0.7s linear infinite;"></span>' + (text || 'Processing...');
+    } else {
+      aiBtn.disabled = false;
+      aiBtn.textContent = text || 'Add Transaction (AI)';
+    }
+  }
+
+  // Add spinner keyframes if not present
+  if (!document.getElementById('fundify-spinner-style')) {
+    const style = document.createElement('style');
+    style.id = 'fundify-spinner-style';
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  }
+
+  receiptScanForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    aiMsgContainer.style.display = 'block';
+    aiMsgContainer.className = 'ai-message-container';
+    aiMsgContainer.textContent = 'Extracting text from receipt...';
+    setBtnLoading(true, 'Extracting...');
+
+    // Get the image from preview (either file or camera)
+    const imgEl = document.querySelector('#receipt-preview img');
+    if (!imgEl) {
+      aiMsgContainer.textContent = 'Please select or capture a receipt image.';
+      aiMsgContainer.classList.add('error');
+      setBtnLoading(false);
+      return;
+    }
+    let imageDataUrl = imgEl.src;
+    try {
+      // Run Tesseract.js OCR
+      const { data: { text } } = await Tesseract.recognize(imageDataUrl, 'eng', {
+        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+        tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
+      });
+      const promptText = text.trim();
+      const email = localStorage.getItem('fundify_user_email');
+      if (!promptText || !email) {
+        throw new Error('Could not extract text or user not logged in.');
+      }
+      aiMsgContainer.textContent = 'Adding transaction...';
+      setBtnLoading(true, 'Adding...');
+      // Send to backend
+      const res = await fetch('http://127.0.0.1:8000/quick-transaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptText, email: email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        await fetchTransactions();
+        // Reset form
+        receiptScanForm.reset();
+        document.getElementById('file-name').textContent = 'No file chosen';
+        document.getElementById('receipt-preview').textContent = 'No image selected';
+        aiMsgContainer.textContent = 'Transaction added successfully!';
+        aiMsgContainer.classList.remove('error', 'clarification');
+        aiMsgContainer.classList.add('success');
+        setBtnLoading(false);
+        aiBtn.disabled = true;
+        setTimeout(() => {
+          aiMsgContainer.textContent = '';
+          if (modalBg) modalBg.classList.remove('active');
+        }, 1200);
+      } else if (data.clarification_needed) {
+        aiMsgContainer.textContent = data.message;
+        aiMsgContainer.classList.remove('error', 'success');
+        aiMsgContainer.classList.add('clarification');
+        setBtnLoading(false);
+      } else {
+        aiMsgContainer.textContent = data.error || 'Could not process transaction.';
+        aiMsgContainer.classList.remove('clarification', 'success');
+        aiMsgContainer.classList.add('error');
+        setBtnLoading(false);
+      }
+    } catch (err) {
+      aiMsgContainer.textContent = 'A server error occurred. Please try again.';
+      aiMsgContainer.classList.remove('clarification', 'success');
+      aiMsgContainer.classList.add('error');
+      setBtnLoading(false);
+    }
+  });
+}

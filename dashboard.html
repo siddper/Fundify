@@ -110,6 +110,10 @@
                 <span class="option-title">Quick Transaction</span>
                 <span class="option-desc">Use AI to parse a transaction from text.</span>
             </button>
+            <button class="modal-tab-btn" data-content-id="receipt-scan-content">
+                <span class="option-title">Receipt Scan</span>
+                <span class="option-desc">Scan a receipt and use AI to add a transaction.</span>
+            </button>
             <button class="modal-tab-btn" data-content-id="add-preset-content">
                 <span class="option-title">Add Preset</span>
                 <span class="option-desc">Save a template for a frequent transaction.</span>
@@ -177,6 +181,29 @@
                   <div class="form-actions">
                     <button type="submit" class="modal-action-btn">Add Transaction</button>
                   </div>
+              </form>
+            </div>
+            <div id="receipt-scan-content" class="tab-pane">
+              <form id="receipt-scan-form">
+                <div class="form-group full-width">
+                  <label>Upload Receipt Image</label>
+                  <div class="custom-file-upload">
+                    <input type="file" id="receipt-upload" accept="image/*" style="display:none;" />
+                    <button type="button" class="modal-action-btn" id="custom-file-btn">Choose File</button>
+                    <span id="file-name" style="margin-left:12px;color:var(--text-muted);font-size:1em;">No file chosen</span>
+                  </div>
+                </div>
+                <div class="form-group full-width" style="text-align:center;">
+                  <span style="color:var(--text-muted);margin:8px 0;display:block;">or</span>
+                  <button type="button" class="modal-action-btn" id="start-receipt-camera" style="margin-bottom:12px;">Use Camera</button>
+                </div>
+                <div class="form-group full-width" style="text-align:center;">
+                  <div id="receipt-preview" style="min-height:120px;background:#23262a;border-radius:8px;padding:12px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:1.1em;">No image selected</div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="modal-cancel-btn">Cancel</button>
+                  <button type="submit" class="modal-action-btn" disabled>Add Transaction (AI)</button>
+                </div>
               </form>
             </div>
             <div id="add-preset-content" class="tab-pane">
@@ -293,6 +320,24 @@
     </div>
   </div>
 
+  <!-- Camera Modal for Receipt Scan -->
+  <div id="camera-modal" class="filter-modal-bg" style="display:none;z-index:3000;">
+    <div class="filter-modal-content" style="max-width:480px;min-width:320px;">
+      <div class="filter-modal-header">
+        <h3>Scan Receipt with Camera</h3>
+      </div>
+      <div class="filter-modal-body" style="align-items:center;">
+        <video id="camera-preview" autoplay playsinline style="width:100%;max-width:400px;border-radius:10px;background:#18191a;"></video>
+        <canvas id="camera-canvas" style="display:none;"></canvas>
+        <div style="margin-top:18px;display:flex;gap:12px;justify-content:center;">
+          <button type="button" class="modal-action-btn" id="capture-photo-btn">Capture</button>
+          <button type="button" class="modal-cancel-btn" id="close-camera-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>
