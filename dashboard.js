@@ -1679,7 +1679,7 @@ function renderFilterValueInputs() {
   } else if (type === 'amount') {
     html = `
       <div class="custom-dropdown" id="amount-operator-dropdown">
-        <button type="button" class="dropdown-selected" id="amount-operator-selected">=</button>
+        <button type="button" class="dropdown-selected" id="amount-operator-selected" data-value="eq">=</button>
         <ul class="dropdown-list" id="amount-operator-list">
           <li data-value="eq">=</li>
           <li data-value="gt">&gt;</li>
@@ -1785,37 +1785,7 @@ function setupCustomDatePickerForFilterModal() {
   });
 }
 
-if (applyFilterBtn) {
-  applyFilterBtn.addEventListener('click', (e) => {
-    e.preventDefault(); // <-- Add this line!
-    const type = filterTypeSelected.dataset.value || 'date';
-    let filter = { type };
-    if (type === 'date') {
-      const operator = document.getElementById('date-operator-selected').textContent.toLowerCase();
-      const value = document.getElementById('filter-date-input').value;
-      filter.operator = operator;
-      // Convert mm/dd/yyyy to yyyy-mm-dd for consistency
-      if (!value) return;
-      const [mm, dd, yyyy] = value.split('/');
-      filter.value = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
-    } else if (type === 'type') {
-      filter.value = document.getElementById('type-value-selected').textContent;
-    } else if (type === 'amount') {
-      filter.operator = document.getElementById('amount-operator-selected').dataset.value;
-      filter.value = document.getElementById('amount-value').value;
-      if (!filter.value) return;
-    } else if (type === 'store_source') {
-      filter.value = document.getElementById('store-source-value').value.trim();
-      if (!filter.value) return;
-    } else if (type === 'method') {
-      filter.value = document.getElementById('method-value-selected').textContent;
-    }
-    activeFilters.push(filter);
-    renderFilterChips();
-    filterTransactions();
-    closeFilterModal();
-  });
-}
+let editingFilterIndex = null;
 
 function renderFilterChips() {
   filterChipsContainer.innerHTML = '';
@@ -1829,14 +1799,187 @@ function renderFilterChips() {
     const chip = document.createElement('div');
     chip.className = 'filter-chip';
     chip.innerHTML = filterToLabel(filter) + `<button class="chip-close" title="Remove">&times;</button>`;
-    chip.querySelector('.chip-close').addEventListener('click', () => {
+    chip.querySelector('.chip-close').addEventListener('click', (e) => {
+      e.stopPropagation();
       activeFilters.splice(idx, 1);
       renderFilterChips();
       filterTransactions();
     });
+    chip.addEventListener('click', (e) => {
+      if (e.target.classList.contains('chip-close')) return;
+      // Set editing index
+      editingFilterIndex = idx;
+      // Open modal and pre-fill
+      filterModal.classList.add('active');
+      filterTypeSelected.textContent =
+        filter.type === 'date' ? 'Date' :
+        filter.type === 'type' ? 'Type' :
+        filter.type === 'amount' ? 'Amount' :
+        filter.type === 'store_source' ? 'Store/Source' :
+        filter.type === 'method' ? 'Method' : '';
+      filterTypeSelected.dataset.value = filter.type;
+      renderFilterValueInputs();
+      setTimeout(() => {
+        if (filter.type === 'date') {
+          document.getElementById('date-operator-selected').textContent =
+            filter.operator.charAt(0).toUpperCase() + filter.operator.slice(1);
+          document.getElementById('date-operator-selected').dataset.value = filter.operator;
+          if (filter.value) {
+            const [yyyy, mm, dd] = filter.value.split('-');
+            document.getElementById('filter-date-input').value = `${mm}/${dd}/${yyyy}`;
+          }
+        } else if (filter.type === 'type') {
+          document.getElementById('type-value-selected').textContent = filter.value;
+          document.getElementById('type-value-selected').dataset.value = filter.value;
+        } else if (filter.type === 'amount') {
+          // Use a slightly longer timeout to ensure DOM is ready
+          setTimeout(() => {
+            const opBtn = document.getElementById('amount-operator-selected');
+            opBtn.textContent =
+              filter.operator === 'eq' ? '=' : (filter.operator === 'gt' ? '>' : '<');
+            opBtn.dataset.value = filter.operator;
+            // Update .selected class on dropdown list
+            const opList = document.getElementById('amount-operator-list');
+            if (opList) {
+              opList.querySelectorAll('li').forEach(li => {
+                li.classList.toggle('selected', li.dataset.value === filter.operator);
+              });
+            }
+            document.getElementById('amount-value').value = filter.value;
+          }, 50);
+        } else if (filter.type === 'store_source') {
+          document.getElementById('store-source-value').value = filter.value;
+        } else if (filter.type === 'method') {
+          document.getElementById('method-value-selected').textContent = filter.value;
+          document.getElementById('method-value-selected').dataset.value = filter.value;
+        }
+      }, 0);
+    });
     filterChipsContainer.appendChild(chip);
   });
 }
+
+if (applyFilterBtn) {
+  applyFilterBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const type = filterTypeSelected.dataset.value || 'date';
+    let filter = { type };
+    let valid = true;
+    // Remove previous error states
+    if (type === 'date') {
+      document.getElementById('date-operator-selected').classList.remove('incorrect');
+      document.getElementById('filter-date-input').classList.remove('incorrect');
+    } else if (type === 'type') {
+      document.getElementById('type-value-selected').classList.remove('incorrect');
+    } else if (type === 'amount') {
+      document.getElementById('amount-operator-selected').classList.remove('incorrect');
+      document.getElementById('amount-value').classList.remove('incorrect');
+    } else if (type === 'store_source') {
+      document.getElementById('store-source-value').classList.remove('incorrect');
+    } else if (type === 'method') {
+      document.getElementById('method-value-selected').classList.remove('incorrect');
+    }
+    if (type === 'date') {
+      const operatorBtn = document.getElementById('date-operator-selected');
+      const input = document.getElementById('filter-date-input');
+      const operator = operatorBtn.textContent.toLowerCase();
+      const value = input.value;
+      filter.operator = operator;
+      if (!value) {
+        input.classList.add('incorrect');
+        valid = false;
+      }
+      if (!valid) return;
+      const [mm, dd, yyyy] = value.split('/');
+      filter.value = `${yyyy}-${mm.padStart(2, '0')}-${dd.padStart(2, '0')}`;
+    } else if (type === 'type') {
+      const typeBtn = document.getElementById('type-value-selected');
+      filter.value = typeBtn.textContent;
+      if (!filter.value) {
+        typeBtn.classList.add('incorrect');
+        valid = false;
+      }
+      if (!valid) return;
+    } else if (type === 'amount') {
+      const opBtn = document.getElementById('amount-operator-selected');
+      const valInput = document.getElementById('amount-value');
+      let operator = opBtn.dataset.value;
+      if (!operator) operator = 'eq';
+      filter.operator = operator;
+      filter.value = valInput.value;
+      if (!filter.value) {
+        valInput.classList.add('incorrect');
+        valid = false;
+      }
+      if (!valid) return;
+    } else if (type === 'store_source') {
+      const storeInput = document.getElementById('store-source-value');
+      filter.value = storeInput.value.trim();
+      if (!filter.value) {
+        storeInput.classList.add('incorrect');
+        valid = false;
+      }
+      if (!valid) return;
+    } else if (type === 'method') {
+      const methodBtn = document.getElementById('method-value-selected');
+      filter.value = methodBtn.textContent;
+      if (!filter.value) {
+        methodBtn.classList.add('incorrect');
+        valid = false;
+      }
+      if (!valid) return;
+    }
+    if (editingFilterIndex !== null) {
+      activeFilters.splice(editingFilterIndex, 1);
+      editingFilterIndex = null;
+    }
+    activeFilters.push(filter);
+    renderFilterChips();
+    filterTransactions();
+    closeFilterModal();
+  });
+}
+
+// Remove .incorrect class on input/change for filter modal (robust event delegation)
+function setupFilterModalValidationListeners() {
+  // Use event delegation for all text/number inputs
+  const valueInputsContainer = document.getElementById('filter-value-inputs');
+  if (valueInputsContainer) {
+    valueInputsContainer.addEventListener('input', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        e.target.classList.remove('incorrect');
+      }
+    });
+    valueInputsContainer.addEventListener('change', (e) => {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        e.target.classList.remove('incorrect');
+      }
+    });
+  }
+  // Also handle dropdown buttons
+  const dateOpBtn = document.getElementById('date-operator-selected');
+  if (dateOpBtn) {
+    dateOpBtn.addEventListener('click', () => dateOpBtn.classList.remove('incorrect'));
+  }
+  const typeBtn = document.getElementById('type-value-selected');
+  if (typeBtn) {
+    typeBtn.addEventListener('click', () => typeBtn.classList.remove('incorrect'));
+  }
+  const amountOpBtn = document.getElementById('amount-operator-selected');
+  if (amountOpBtn) {
+    amountOpBtn.addEventListener('click', () => amountOpBtn.classList.remove('incorrect'));
+  }
+  const methodBtn = document.getElementById('method-value-selected');
+  if (methodBtn) {
+    methodBtn.addEventListener('click', () => methodBtn.classList.remove('incorrect'));
+  }
+}
+// Call this after rendering filter value inputs
+const origRenderFilterValueInputs = renderFilterValueInputs;
+renderFilterValueInputs = function() {
+  origRenderFilterValueInputs.apply(this, arguments);
+  setTimeout(setupFilterModalValidationListeners, 0);
+};
 
 function filterToLabel(filter) {
   if (filter.type === 'date') {
