@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --accent: #235FD6;
+  --sidebar-bg: #000;
+  --main-bg: #18191a;
+  --card-bg: #23262a;
+  --border: #23262a;
+  --text: #e3e3e3;
+  --text-muted: #bfc6e0;
+}
+
+body.summary-bg {
+    font-family: 'Inter', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--main-bg);
+}
+
+.summary-layout {
+  display: flex;
+  min-height: 100vh;
+  min-width: 0;
+}
+
+.summary-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--main-bg);
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    transition: margin 0.18s;
+}
+
+.summary-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--sidebar-bg);
+  height: 78px;
+  padding: 0 30px;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.summary-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.5px;
+}

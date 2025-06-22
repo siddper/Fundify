@@ -154,4 +154,18 @@
 }
 .sidebar-resize-handle:hover {
   background: var(--border);
+}
+.sidebar-nav a {
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  display: block;
+}
+.sidebar-nav a:visited,
+.sidebar-nav a:active,
+.sidebar-nav a:focus,
+.sidebar-nav a:hover {
+  text-decoration: none;
+  color: inherit;
+  background: none;
 } 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary | Fundify</title>
+    <link rel="icon" type="image/png" href="fundifyIcon.png">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="summary.css">
+</head>
+<body class="summary-bg">
+  <div class="summary-layout">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
+        <select class="sidebar-projects-dropdown">
+          <option>Default Project</option>
+          <option>Personal</option>
+          <option>School</option>
+        </select>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <a href="dashboard.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M192-144v-456l288-216 288 216v456H552v-264H408v264H192Z"/></svg></span>Dashboard</li>
+          </a>
+          <a href="summary.html">
+            <li class="active"><span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg></span>Summary</li>
+          </a>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Fundify</span>
+      </div>
+      <div class="sidebar-resize-handle"></div>
+    </aside>
+    <main class="summary-main">
+      <!-- Summary content goes here -->
+      <header class="summary-topbar">
+        <div class="topbar-left">
+          <span class="summary-title">Summary</span>
+        </div>
+      </header>
+
+
+      <script src="summary.js"></script>
+    </main>
+  </div>
+</body>
+</html>
