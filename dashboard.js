@@ -1502,6 +1502,26 @@ if (addTransactionForm) {
       method: methodBtn.textContent.trim(),
       email: localStorage.getItem('fundify_user_email')
     };
+
+    const isRepeating = document.getElementById('repeat-toggle').checked;
+    if (isRepeating) {
+        const repeatCountInput = document.getElementById('repeat-count');
+        const repeatGapInput = document.getElementById('repeat-gap');
+        const repeatCount = parseInt(repeatCountInput.value, 10);
+        const repeatGap = parseInt(repeatGapInput.value, 10);
+
+        if (repeatCount > 0 && repeatGap > 0) {
+            tx.is_repeating = true;
+            tx.repeat_count = repeatCount;
+            tx.repeat_gap_days = repeatGap;
+        } else {
+            // Optional: Add validation feedback for repeat fields
+            if (repeatCount <= 0) repeatCountInput.classList.add('incorrect');
+            if (repeatGap <= 0) repeatGapInput.classList.add('incorrect');
+            return;
+        }
+    }
+
     // Save to backend if logged in
     if (tx.email) {
       try {
@@ -1544,6 +1564,11 @@ if (openBtn && modalBg) {
     if (methodBtn) {
       methodBtn.textContent = 'Credit';
       methodBtn.dataset.value = 'Credit';
+    }
+    // Also reset the repeat toggle and hide options
+    if (repeatToggle && repeatOptionsContainer) {
+        repeatToggle.checked = false;
+        repeatOptionsContainer.style.display = 'none';
     }
   });
 }
@@ -2452,4 +2477,17 @@ if (importFileBtn && importFileInput && importFileName) {
   importFileInput.addEventListener('change', () => {
     importFileName.textContent = importFileInput.files[0] ? importFileInput.files[0].name : 'No file chosen';
   });
+}
+
+const repeatToggle = document.getElementById('repeat-toggle');
+const repeatOptionsContainer = document.getElementById('repeat-options-container');
+
+if (repeatToggle && repeatOptionsContainer) {
+    repeatToggle.addEventListener('change', function() {
+        if (this.checked) {
+            repeatOptionsContainer.style.display = 'grid';
+        } else {
+            repeatOptionsContainer.style.display = 'none';
+        }
+    });
 }

@@ -177,6 +177,26 @@
                   <label for="store">Store/Source</label>
                   <input type="text" name="store" id="store" placeholder="Store/Source" >
                 </div>
+
+                <div class="form-group full-width repeat-toggle-wrapper">
+                    <label for="repeat-toggle" class="repeat-toggle-label">Repeat Transaction</label>
+                    <label class="switch">
+                        <input type="checkbox" id="repeat-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+
+                <div id="repeat-options-container" class="full-width">
+                    <div class="form-group">
+                        <label for="repeat-count">Times to Repeat</label>
+                        <input type="number" id="repeat-count" min="1" value="1" placeholder="e.g., 4">
+                    </div>
+                    <div class="form-group">
+                        <label for="repeat-gap">Gap Between (days)</label>
+                        <input type="number" id="repeat-gap" min="1" value="7" placeholder="e.g., 30 for monthly">
+                    </div>
+                </div>
+
                 <div class="form-actions">
                   <button type="button" class="modal-cancel-btn">Cancel</button>
                   <button type="submit" class="modal-action-btn">Add Transaction</button>

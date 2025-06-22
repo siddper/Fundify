@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import groq
 from dotenv import load_dotenv
@@ -374,32 +374,57 @@ def quick_transaction():
 @app.route('/transactions', methods=['POST'])
 def add_transaction():
     data = request.json
-    user_email = data.get('email')  # Or use user_id if you have authentication
+    user_email = data.get('email')
     user = User.query.filter_by(email=user_email).first()
     if not user:
         return jsonify({'success': False, 'error': 'User not found.'}), 404
 
-    tx = Transaction(
-        user_id=user.id,
-        type=data.get('type'),
-        date=data.get('date'),
-        amount=float(data.get('amount')),
-        store=data.get('store'),
-        method=data.get('method')
-    )
-    db.session.add(tx)
-    db.session.commit()
-    return jsonify({
-        'success': True, 
-        'transaction': {
-            'id': tx.id,
-            'type': tx.type,
-            'date': tx.date,
-            'amount': tx.amount,
-            'store': tx.store,
-            'method': tx.method
-        }
-    }), 201
+    is_repeating = data.get('is_repeating', False)
+
+    try:
+        if is_repeating:
+            base_date_str = data.get('date')
+            if not base_date_str:
+                return jsonify({'success': False, 'error': 'Date is required for repeating transactions.'}), 400
+            
+            base_date = datetime.strptime(base_date_str, '%m/%d/%Y')
+            repeat_count = int(data.get('repeat_count', 1))
+            repeat_gap_days = int(data.get('repeat_gap_days', 1))
+
+            if repeat_count <= 0 or repeat_gap_days <= 0:
+                return jsonify({'success': False, 'error': 'Repeat count and gap must be positive numbers.'}), 400
+
+            for i in range(repeat_count):
+                current_date = base_date + timedelta(days=i * repeat_gap_days)
+                tx = Transaction(
+                    user_id=user.id,
+                    type=data.get('type'),
+                    date=current_date.strftime('%m/%d/%Y'),
+                    amount=float(data.get('amount')),
+                    store=data.get('store'),
+                    method=data.get('method')
+                )
+                db.session.add(tx)
+        else:
+            tx = Transaction(
+                user_id=user.id,
+                type=data.get('type'),
+                date=data.get('date'),
+                amount=float(data.get('amount')),
+                store=data.get('store'),
+                method=data.get('method')
+            )
+            db.session.add(tx)
+        
+        db.session.commit()
+        return jsonify({'success': True}), 201
+
+    except (ValueError, TypeError) as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': f'Invalid data provided: {e}'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/transactions', methods=['GET'])
 def get_transactions():
@@ -484,7 +509,6 @@ def bulk_copy_transactions():
                 method=tx.method
             )
             db.session.add(new_tx)
-            new_transactions.append(new_tx)
         
         db.session.commit()
 
