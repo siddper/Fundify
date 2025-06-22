@@ -345,3 +345,24 @@ body.summary-bg {
   color: var(--text-muted);
   margin-bottom: 2px;
 }
+
+.export-status-message:empty {
+  display: none;
+}
+.export-status-message {
+  display: inline-block;
+  margin-left: 18px;
+  margin-top: 0;
+  font-size: 1.01rem;
+  font-weight: 500;
+  min-width: 120px;
+  color: var(--text-muted);
+  vertical-align: middle;
+  transition: color 0.18s;
+}
+.export-status-message.success {
+  color: var(--accent);
+}
+.export-status-message.error {
+  color: #ff4d4f;
+}

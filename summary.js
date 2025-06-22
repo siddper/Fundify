@@ -463,10 +463,18 @@ function loadHtml2Canvas(cb) {
   script.onload = cb;
   document.body.appendChild(script);
 }
+function showExportStatus(msg, type) {
+  const el = document.getElementById('export-status-message');
+  el.textContent = msg;
+  el.className = 'export-status-message ' + (type || '');
+  if (msg) setTimeout(() => { el.textContent = ''; el.className = 'export-status-message'; }, 5000);
+}
 function exportSummaryAsImage(openInNewTab = true, sendToEmail = false) {
+  showExportStatus('', '');
   loadHtml2Canvas(() => {
-    const content = document.querySelector('.summary-content');
-    if (!content) return alert('Summary content not found.');
+    // Screenshot only the widgets area
+    const content = document.getElementById('summary-main-content');
+    if (!content) return showExportStatus('Summary content not found.', 'error');
     window.html2canvas(content, {backgroundColor: '#18191a'}).then(canvas => {
       const imgData = canvas.toDataURL('image/png');
       if (openInNewTab) {
@@ -474,7 +482,7 @@ function exportSummaryAsImage(openInNewTab = true, sendToEmail = false) {
         win.document.write('<iframe src="' + imgData + '" frameborder="0" style="width:100vw;height:100vh;"></iframe>');
       } else if (sendToEmail) {
         const email = localStorage.getItem('fundify_user_email');
-        if (!email) return alert('User email not found. Please log in.');
+        if (!email) return showExportStatus('User email not found. Please log in.', 'error');
         fetch('http://127.0.0.1:8000/export-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -482,10 +490,10 @@ function exportSummaryAsImage(openInNewTab = true, sendToEmail = false) {
         })
         .then(res => res.json())
         .then(data => {
-          if (data.success) alert('Summary sent to your email!');
-          else alert('Failed to send email: ' + (data.error || 'Unknown error'));
+          if (data.success) showExportStatus('Summary sent to your email!', 'success');
+          else showExportStatus('Failed to send email: ' + (data.error || 'Unknown error'), 'error');
         })
-        .catch(err => alert('Failed to send email: ' + err));
+        .catch(err => showExportStatus('Failed to send email: ' + err, 'error'));
       }
     });
   });

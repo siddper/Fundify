@@ -581,7 +581,7 @@ def export_email():
             return jsonify({'success': False, 'error': 'Invalid image data.'}), 400
         img_bytes = base64.b64decode(match.group(2))
         msg = Message('Your Fundify Summary Screenshot', recipients=[email])
-        msg.body = 'Attached is your Fundify summary screenshot.'
+        msg.body = 'Hello, Fundify user. Attached below is your Fundify Summary. It has key metrics, graphs, and statistics about your transactions.'
         msg.attach('fundify-summary.png', 'image/png', img_bytes)
         mail.send(msg)
         return jsonify({'success': True})
