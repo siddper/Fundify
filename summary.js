@@ -454,3 +454,41 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 50); // Small delay to allow chart to update
   }
 });
+
+// --- Export as Image/Email ---
+function loadHtml2Canvas(cb) {
+  if (window.html2canvas) return cb();
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+  script.onload = cb;
+  document.body.appendChild(script);
+}
+function exportSummaryAsImage(openInNewTab = true, sendToEmail = false) {
+  loadHtml2Canvas(() => {
+    const content = document.querySelector('.summary-content');
+    if (!content) return alert('Summary content not found.');
+    window.html2canvas(content, {backgroundColor: '#18191a'}).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      if (openInNewTab) {
+        const win = window.open();
+        win.document.write('<iframe src="' + imgData + '" frameborder="0" style="width:100vw;height:100vh;"></iframe>');
+      } else if (sendToEmail) {
+        const email = localStorage.getItem('fundify_user_email');
+        if (!email) return alert('User email not found. Please log in.');
+        fetch('http://127.0.0.1:8000/export-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, image: imgData })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) alert('Summary sent to your email!');
+          else alert('Failed to send email: ' + (data.error || 'Unknown error'));
+        })
+        .catch(err => alert('Failed to send email: ' + err));
+      }
+    });
+  });
+}
+document.getElementById('export-image-btn').addEventListener('click', () => exportSummaryAsImage(true, false));
+document.getElementById('export-email-btn').addEventListener('click', () => exportSummaryAsImage(false, true));

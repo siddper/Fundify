@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import groq
 from dotenv import load_dotenv
+from flask_mail import Mail, Message
 
 load_dotenv()
 
@@ -19,6 +20,15 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 # More permissive CORS configuration for development
 CORS(app, origins=["http://127.0.0.1:5500"], supports_credentials=True)
+
+# Flask-Mail config
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # fundifyteam@gmail.com
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # App password or Gmail password
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', 'fundifyteam@gmail.com')
+mail = Mail(app)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -555,6 +565,28 @@ def ai_search():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/export-email', methods=['POST'])
+def export_email():
+    data = request.json
+    email = data.get('email')
+    image_data = data.get('image')
+    if not email or not image_data:
+        return jsonify({'success': False, 'error': 'Missing email or image.'}), 400
+    try:
+        # image_data is a data URL: 'data:image/png;base64,...'
+        import base64, re
+        match = re.match(r'data:image/(png|jpg|jpeg);base64,(.*)', image_data)
+        if not match:
+            return jsonify({'success': False, 'error': 'Invalid image data.'}), 400
+        img_bytes = base64.b64decode(match.group(2))
+        msg = Message('Your Fundify Summary Screenshot', recipients=[email])
+        msg.body = 'Attached is your Fundify summary screenshot.'
+        msg.attach('fundify-summary.png', 'image/png', img_bytes)
+        mail.send(msg)
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     create_db()

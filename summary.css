@@ -155,7 +155,7 @@ body.summary-bg {
 
 .summary-toggle-switch {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   margin-bottom: 32px;
   justify-content: flex-end;
   align-items: center;
@@ -176,6 +176,24 @@ body.summary-bg {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
+}
+
+.summary-export-btn {
+  background: var(--card-bg);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1.01rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  outline: none;
+}
+.summary-export-btn:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 @media (max-width: 1200px) {

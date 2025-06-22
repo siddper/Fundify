@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="nav.css">
     <link rel="stylesheet" href="summary.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body class="summary-bg">
   <div class="summary-layout">
@@ -47,6 +48,8 @@
             <button class="summary-toggle-btn active" data-range="week">This Week</button>
             <button class="summary-toggle-btn" data-range="month">This Month</button>
             <button class="summary-toggle-btn" data-range="year">This Year</button>
+            <button id="export-image-btn" class="summary-export-btn" type="button">Export as Image</button>
+            <button id="export-email-btn" class="summary-export-btn" type="button">Export to Email</button>
           </div>
           <div class="summary-widgets-row">
             <div class="summary-widget">
