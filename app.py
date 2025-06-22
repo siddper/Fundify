@@ -288,24 +288,28 @@ def quick_transaction():
         1.  **SUCCESS (`status: "success"`)**:
             Use this status if all required information (`type`, `date`, `amount`, `store`) is clearly present in the user's text.
             The JSON structure MUST be:
-            `{{"status": "success", "data": {{"type": "...", "date": "...", "amount": ..., "store": "...", "method": "..."}}}}`
-            - `type`: CRITICAL: This value MUST be either 'Withdrawal' or 'Deposit'. Do not use any other value. If the user implies spending money, use 'Withdrawal'. If they imply receiving money, use 'Deposit'.
+            {{"status": "success", "data": {{"type": "...", "date": "...", "amount": ..., "store": "...", "method": "..."}}}}
+            - `type`: CRITICAL: This value MUST be exactly either 'Withdrawal' or 'Deposit'. Do not use any other value, and do NOT include any variations, synonyms, or brand names. If the user implies spending money, use 'Withdrawal'. If they imply receiving money, use 'Deposit'. Do NOT use any other words or phrases.
             - `date`: Must be in 'MM/DD/YYYY' format. Use today's date if not specified.
             - `amount`: Must be a number.
             - `store`: The merchant name or source of income.
-            - `method`: CRITICAL: This value MUST be one of: 'Credit', 'Debit', 'Cash', 'Check'. Map user terms like 'card' or 'credit card' to 'Credit'. Map 'debit card' to 'Debit'. If no method is specified, use 'Unknown'.
+            - `method`: CRITICAL: This value MUST be exactly one of: 'Credit', 'Debit', 'Cash', 'Check'. 
+              - You MUST NEVER use any other value, and you MUST NEVER use any card brands (such as 'Visa', 'Mastercard', 'Amex', 'Discover', etc.) or any other variations. 
+              - If the receipt or text mentions a card brand, you MUST map it to 'Credit' (for credit cards) or 'Debit' (for debit cards), but you MUST NOT use the brand name itself. 
+              - If the method is not clear, use your best reasoning to choose from ONLY these four options. 
+              - If you are unsure, default to 'Credit' for card payments, but NEVER use a brand name.
 
         2.  **CLARIFICATION NEEDED (`status: "clarification_needed"`)**:
             Use this status if the user's text looks like a transaction but is missing the `amount` or `store`.
             You MUST ask a friendly question to get the missing information.
             The JSON structure MUST be:
-            `{{"status": "clarification_needed", "message": "A friendly question asking for the missing details."}}`
+            {{"status": "clarification_needed", "message": "A friendly question asking for the missing details."}}
             - **Do not** guess or fill in missing `amount` or `store`. You must ask for clarification.
 
         3.  **ERROR (`status: "error"`)**:
             Use this status if the user's input is ambiguous, nonsensical, or cannot be interpreted as a financial transaction (e.g., "hello there", "what is the weather").
             The JSON structure MUST be:
-            `{{"status": "error", "message": "I couldn't understand that as a transaction. Could you please rephrase it?"}}`
+            {{"status": "error", "message": "I couldn't understand that as a transaction. Could you please rephrase it?"}}
         """
 
         chat_completion = client.chat.completions.create(

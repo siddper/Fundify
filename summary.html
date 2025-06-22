@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="auth-styles.css">
     <link rel="stylesheet" href="nav.css">
     <link rel="stylesheet" href="summary.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="summary-bg">
   <div class="summary-layout">
@@ -36,14 +37,93 @@
       <div class="sidebar-resize-handle"></div>
     </aside>
     <main class="summary-main">
-      <!-- Summary content goes here -->
       <header class="summary-topbar">
         <div class="topbar-left">
           <span class="summary-title">Summary</span>
         </div>
       </header>
-
-
+      <div class="summary-content">
+        <div class="summary-toggle-switch">
+            <button class="summary-toggle-btn active" data-range="week">This Week</button>
+            <button class="summary-toggle-btn" data-range="month">This Month</button>
+            <button class="summary-toggle-btn" data-range="year">This Year</button>
+          </div>
+          <div class="summary-widgets-row">
+            <div class="summary-widget">
+              <div class="summary-widget-title">Total Transactions</div>
+              <div class="summary-widget-value" id="total-transactions">--</div>
+              <div class="summary-widget-desc">Number of transactions recorded</div>
+            </div>
+            <div class="summary-widget">
+              <div class="summary-widget-title">Total Spent</div>
+              <div class="summary-widget-value" id="total-spent">--</div>
+              <div class="summary-widget-desc">Sum of all withdrawals</div>
+            </div>
+            <div class="summary-widget">
+              <div class="summary-widget-title">Total Deposited</div>
+              <div class="summary-widget-value" id="total-deposited">--</div>
+              <div class="summary-widget-desc">Sum of all deposits</div>
+            </div>
+            <div class="summary-widget">
+              <div class="summary-widget-title">Analytics</div>
+              <div class="summary-widget-desc">Withdrawals vs Deposits</div>
+              <canvas id="analytics-doughnut" width="120" height="120"></canvas>
+            </div>
+            <div class="summary-widget">
+              <div class="summary-widget-title">Summary Statistics</div>
+              <div class="summary-stats-row">
+                <span>Withdrawals:</span>
+                <ul class="summary-stats-list">
+                  <li>• Mean: <span id="withdrawal-mean">--</span></li>
+                  <li>• Median: <span id="withdrawal-median">--</span></li>
+                  <li>• Min: <span id="withdrawal-min">--</span></li>
+                  <li>• Max: <span id="withdrawal-max">--</span></li>
+                  <li>• Std Dev: <span id="withdrawal-std">--</span></li>
+                </ul>
+              </div>
+              <div class="summary-stats-row">
+                <span>Deposits:</span>
+                <ul class="summary-stats-list">
+                  <li>• Mean: <span id="deposit-mean">--</span></li>
+                  <li>• Median: <span id="deposit-median">--</span></li>
+                  <li>• Min: <span id="deposit-min">--</span></li>
+                  <li>• Max: <span id="deposit-max">--</span></li>
+                  <li>• Std Dev: <span id="deposit-std">--</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="summary-widgets-row">
+            <div class="summary-widget summary-widget-large">
+              <div class="summary-widget-title">Cash Flow Over Time</div>
+              <canvas id="cashflow-line-chart" height="120"></canvas>
+            </div>
+            <div class="summary-widget summary-widget-large">
+              <div class="summary-widget-title">Spending by Method</div>
+              <canvas id="method-doughnut-chart" height="120"></canvas>
+            </div>
+          </div>
+          <div class="summary-widgets-row">
+            <div class="summary-widget summary-widget-large">
+              <div class="summary-widget-title">Spending Over Time</div>
+              <canvas id="spending-line-chart"></canvas>
+            </div>
+            <div class="summary-widget summary-widget-large">
+              <div class="summary-widget-title">Category Breakdown</div>
+              <canvas id="category-bar-chart"></canvas>
+            </div>
+          </div>
+          <div class="summary-widgets-row">
+            <div class="summary-widget summary-widget-large">
+              <div class="summary-widget-title">Top Stores</div>
+              <canvas id="top-stores-bar-chart"></canvas>
+            </div>
+            <div class="summary-widget summary-widget-large">
+                <div class="summary-widget-title">Weekly Trends</div>
+                <canvas id="weekly-trends-line-chart"></canvas>
+            </div>
+          </div>
+      </div>
       <script src="summary.js"></script>
     </main>
   </div>
