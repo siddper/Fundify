@@ -187,7 +187,6 @@ body.summary-bg {
   font-size: 1.01rem;
   font-weight: 600;
   cursor: pointer;
-  margin-left: 12px;
   transition: background 0.18s, color 0.18s, border 0.18s;
   outline: none;
 }
