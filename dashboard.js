@@ -1145,6 +1145,7 @@ function setupCustomDatePickerForRow(pickerEl) {
         }
         html += "</div>";
         popup.innerHTML = html;
+        popup.addEventListener('click', e => e.stopPropagation());
         popup.querySelector('.cal-prev').onclick = () => renderCalendar(new Date(year, month - 1, 1));
         popup.querySelector('.cal-next').onclick = () => renderCalendar(new Date(year, month + 1, 1));
         popup.querySelectorAll('.cal-day').forEach(btn => {
@@ -1737,6 +1738,7 @@ function setupCustomDatePickerForFilterModal() {
     }
     html += "</div>";
     popup.innerHTML = html;
+    popup.addEventListener('click', e => e.stopPropagation());
     popup.querySelector('.cal-prev').onclick = () => {
       renderCalendar(new Date(year, month - 1, 1));
     };

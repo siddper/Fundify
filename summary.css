@@ -58,8 +58,7 @@ body.summary-bg {
   padding: 0 30px;
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
   position: sticky;
-  top: 0;
-  z-index: 10;
+  top: 0;  z-index: 10;
   width: 100%;
   max-width: 100%;
 }

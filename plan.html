@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan | Fundify</title>
+    <link rel="icon" type="image/png" href="fundifyIcon.png">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="plan.css">
+</head>
+<body class="plan-bg">
+  <div class="plan-layout">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
+        <select class="sidebar-projects-dropdown">
+          <option>Default Project</option>
+          <option>Personal</option>
+          <option>School</option>
+        </select>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <a href="dashboard.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M192-144v-456l288-216 288 216v456H552v-264H408v264H192Z"/></svg></span>Dashboard</li>
+          </a>
+          <a href="summary.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg></span>Summary</li>
+          </a>
+          <a href="plan.html">
+            <li class="active"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 5-5 23-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Z"/></svg></span>Plan</li>
+          </a>
+          <a href="score.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg></span>Score</li>
+          </a>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Fundify</span>
+      </div>
+    </aside>
+    <main class="plan-main">
+      <header class="plan-topbar">
+        <div class="topbar-left">
+          <span class="plan-title">Plan</span>
+        </div>
+      </header>
+      <section class="plan-content">
+        <div class="plan-widgets-row">
+          <div class="plan-widget" id="budget-widget">
+            <div class="plan-widget-title">Monthly Budget</div>
+            <form id="budget-form" class="budget-form">
+              <input type="number" id="budget-input" class="budget-input" placeholder="Set your monthly budget" min="0" step="0.01">
+              <button type="submit" class="budget-save-btn">Save</button>
+            </form>
+            <div class="budget-progress-container">
+              <div class="budget-progress-label">Progress:</div>
+              <div class="budget-progress-bar-bg">
+                <div class="budget-progress-bar" id="budget-progress-bar"></div>
+                <div class="budget-tooltip" id="budget-tooltip">Spent: $0.00 | Remaining: $0.00</div>
+              </div>
+            </div>
+          </div>
+          <div class="plan-widget" id="goal-widget">
+            <div class="plan-widget-title">Monthly Goal</div>
+            <form id="goal-form" class="budget-form">
+              <input type="number" id="goal-input" class="budget-input" placeholder="Set your monthly goal" min="0" step="0.01">
+              <button type="submit" class="budget-save-btn">Save</button>
+            </form>
+            <div class="goal-progress-container">
+              <div class="goal-progress-label">Progress:</div>
+              <div class="goal-progress-bar-bg">
+                <div class="goal-progress-bar" id="goal-progress-bar"></div>
+                <div class="goal-tooltip" id="goal-tooltip">Made: $0.00 | Remaining: $0.00</div>
+              </div>
+            </div>
+          </div>
+          <div class="plan-widget" id="ai-suggestions-widget">
+            <div class="plan-widget-title">Smart Suggestions</div>
+            <div class="ai-suggestions-desc" style="color: #bfc6e0; font-size: 1.01rem; margin-bottom: 18px;">Predictive budgeting: based on your trends, you will be <span id="ai-predictive-budget" style="color: #ff4d4f; font-weight: 700;">$0.00 under budget</span></div>
+            <div class="ai-suggestions-section-title">Budget Insights</div>
+            <ul class="ai-suggestions-list" id="ai-budget-list">
+              <li><span class="ai-suggestion-label">Max daily spend to stay within budget:</span> <span id="ai-max-daily-spend" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Days you can spend $0 and still be under budget:</span> <span id="ai-zero-days" class="ai-suggestion-value">0</span></li>
+              <li><span class="ai-suggestion-label">Largest single expense this month:</span> <span id="ai-largest-expense" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Average daily spend so far:</span> <span id="ai-avg-daily-spend" class="ai-suggestion-value">$0.00</span></li>
+            </ul>
+            <div class="ai-suggestions-section-title">Goal Insights</div>
+            <ul class="ai-suggestions-list" id="ai-goal-list">
+              <li><span class="ai-suggestion-label">Min daily earn to reach goal:</span> <span id="ai-min-daily-earn" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Projected total earned by end of month:</span> <span id="ai-projected-earned" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Amount left to earn to hit goal:</span> <span id="ai-left-to-earn" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Largest single deposit this month:</span> <span id="ai-largest-deposit" class="ai-suggestion-value">$0.00</span></li>
+              <li><span class="ai-suggestion-label">Average daily earning so far:</span> <span id="ai-avg-daily-earn" class="ai-suggestion-value">$0.00</span></li>
+            </ul>
+          </div>
+          <div class="plan-widget" id="what-if-widget">
+            <div class="plan-widget-title">What-If Scenarios</div>
+            <div class="what-if-slider-row">
+              <label for="whatif-spend-slider">If you spend <span id="whatif-spend-value">$0.00</span> per day for the rest of the month:</label>
+              <input type="range" min="0" max="500" step="1" value="0" id="whatif-spend-slider" class="what-if-slider">
+            </div>
+            <div class="what-if-slider-row">
+              <label for="whatif-earn-slider">If you earn <span id="whatif-earn-value">$0.00</span> per day for the rest of the month:</label>
+              <input type="range" min="0" max="500" step="1" value="0" id="whatif-earn-slider" class="what-if-slider">
+            </div>
+            <div class="what-if-results" id="whatif-results"></div>
+          </div>
+          <div class="plan-widget" id="heatmap-widget">
+            <div class="plan-widget-title">Spending Heatmap</div>
+            <div id="heatmap-calendar"></div>
+            <div class="heatmap-legend">
+              <span class="legend-label">Low</span>
+              <span class="legend-color" style="background:#232e4a;"></span>
+              <span class="legend-color" style="background:#235FD6;"></span>
+              <span class="legend-color" style="background:#1c4daf;"></span>
+              <span class="legend-color" style="background:#0d1a3a;"></span>
+              <span class="legend-label">High</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script src="plan.js"></script>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score | Fundify</title>
+    <link rel="icon" type="image/png" href="fundifyIcon.png">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="score.css">
+</head>
+<body class="score-bg">
+  <div class="score-layout">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
+        <select class="sidebar-projects-dropdown">
+          <option>Default Project</option>
+          <option>Personal</option>
+          <option>School</option>
+        </select>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <a href="dashboard.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M192-144v-456l288-216 288 216v456H552v-264H408v264H192Z"/></svg></span>Dashboard</li>
+          </a>
+          <a href="summary.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg></span>Summary</li>
+          </a>
+          <a href="plan.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 5-5 23-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Z"/></svg></span>Plan</li>
+          </a>
+          <a href="score.html">
+            <li class="active"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg></span>Score</li>
+          </a>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Fundify</span>
+      </div>
+    </aside>
+    <main class="score-main">
+      <header class="score-topbar">
+        <div class="topbar-left">
+          <span class="score-title">Score</span>
+        </div>
+      </header>
+      <script src="score.js"></script>
+    </main>
+  </div>
+</body>
+</html>
