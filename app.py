@@ -612,6 +612,105 @@ def export_email():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/ai-explain-score', methods=['POST'])
+def ai_explain_score():
+    if not GROQ_API_KEY:
+        return jsonify({'error': 'GROQ_API_KEY not configured'}), 500
+    data = request.json
+    transactions = data.get('transactions', [])
+    score = data.get('score')
+    positives = data.get('positives', [])
+    negatives = data.get('negatives', [])
+    advice = data.get('advice', [])
+    try:
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        tx_string = ''
+        for tx in transactions[:30]:  # Limit to 30 for prompt size
+            tx_string += f"Date: {tx.get('date')}, Type: {tx.get('type')}, Amount: {tx.get('amount')}, Store: {tx.get('store')}, Method: {tx.get('method')}\n"
+        prompt = f"""
+        You are a financial assistant. The user has a Fundify Score of {score} out of 100, calculated from their recent transactions and financial behavior. Here are the key factors:
+        Positives: {positives}
+        Negatives: {negatives}
+        Advice: {advice}
+        Here are some of their recent transactions:
+        {tx_string}
+
+        In 3-5 sentences, explain in plain English why their score is what it is. Focus on the most important factors, and avoid repeating the full lists verbatim. Make it friendly and easy to understand.
+
+        Respond ONLY with a valid JSON object: {{"explanation": "your explanation here"}}
+        """
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are a helpful financial assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            model="llama3-8b-8192",
+            temperature=0.5,
+            max_tokens=256,
+            top_p=1,
+            stop=None,
+            stream=False,
+            response_format={"type": "json_object"},
+        )
+        ai_response_str = chat_completion.choices[0].message.content
+        try:
+            ai_response = json.loads(ai_response_str)
+            explanation = ai_response.get('explanation') or ai_response_str
+        except Exception:
+            explanation = ai_response_str
+        return jsonify({'explanation': explanation})
+    except Exception as e:
+        print('AI endpoint error (explain-score):', e)
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/ai-recommendations', methods=['POST'])
+def ai_recommendations():
+    if not GROQ_API_KEY:
+        return jsonify({'error': 'GROQ_API_KEY not configured'}), 500
+    data = request.json
+    transactions = data.get('transactions', [])
+    score = data.get('score')
+    positives = data.get('positives', [])
+    negatives = data.get('negatives', [])
+    advice = data.get('advice', [])
+    try:
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        tx_string = ''
+        for tx in transactions[:30]:
+            tx_string += f"Date: {tx.get('date')}, Type: {tx.get('type')}, Amount: {tx.get('amount')}, Store: {tx.get('store')}, Method: {tx.get('method')}\n"
+        prompt = f"""
+        You are a financial AI coach. The user has a Fundify Score of {score} out of 100. Here are their key positives: {positives}. Here are their negatives: {negatives}. Here is some advice: {advice}.
+        Here are some of their recent transactions:
+        {tx_string}
+
+        Based on this, give 3-4 highly actionable, personalized recommendations to help them improve their score and financial health. Be specific and friendly. Do not repeat the advice list verbatim; add new, creative, or more detailed suggestions. These should be concise and effective, 1 sentence only
+
+        Respond ONLY with a valid JSON object: {{"recommendations": ["recommendation 1", "recommendation 2", ...]}}
+        """
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are a helpful financial coach."},
+                {"role": "user", "content": prompt}
+            ],
+            model="llama3-8b-8192",
+            temperature=0.7,
+            max_tokens=256,
+            top_p=1,
+            stop=None,
+            stream=False,
+            response_format={"type": "json_object"},
+        )
+        ai_response_str = chat_completion.choices[0].message.content
+        try:
+            ai_response = json.loads(ai_response_str)
+            recommendations = ai_response.get('recommendations') or ai_response_str
+        except Exception:
+            recommendations = ai_response_str
+        return jsonify({'recommendations': recommendations})
+    except Exception as e:
+        print('AI endpoint error (recommendations):', e)
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=8000) 

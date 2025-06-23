@@ -342,12 +342,98 @@ document.addEventListener('DOMContentLoaded', () => {
     return { score, positives, negatives, advice };
   }
 
-  function renderScore({ score, positives, negatives, advice }) {
+  // --- Explain My Score & AI Recommendations ---
+  async function fetchGroqExplanation(transactions, score, positives, negatives, advice) {
+    // Use Groq or OpenAI to generate a natural language explanation
+    // This is a placeholder for your actual Groq API call
+    // You should replace this with your backend endpoint that calls Groq
+    const res = await fetch('http://127.0.0.1:8000/ai-explain-score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transactions,
+        score,
+        positives,
+        negatives,
+        advice
+      })
+    });
+    const data = await res.json();
+    return data.explanation || 'Could not generate explanation.';
+  }
+
+  async function fetchGroqRecommendations(transactions, score, positives, negatives, advice) {
+    // Use Groq or OpenAI to generate actionable recommendations
+    // This is a placeholder for your actual Groq API call
+    // You should replace this with your backend endpoint that calls Groq
+    const res = await fetch('http://127.0.0.1:8000/ai-recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        transactions,
+        score,
+        positives,
+        negatives,
+        advice
+      })
+    });
+    const data = await res.json();
+    return data.recommendations || 'No additional recommendations.';
+  }
+
+  function drawScoreProgress(score) {
+    const canvas = document.getElementById('score-progress');
+    if (!canvas) return;
+    // Make the gauge taller and more elegant
+    canvas.width = 220;
+    canvas.height = 130;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // --- Elegant Fundify gradient arc (blue to green, no red) ---
+    // Draw left (blue)
+    ctx.beginPath();
+    ctx.arc(110, 110, 95, Math.PI, Math.PI * 1.5, false);
+    const grad1 = ctx.createLinearGradient(15, 110, 110, 15);
+    grad1.addColorStop(0, '#235FD6'); // Fundify Blue
+    grad1.addColorStop(1, '#235FD6'); // Fundify Blue
+    ctx.strokeStyle = grad1;
+    ctx.lineWidth = 22;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(35,95,214,0.10)';
+    ctx.shadowBlur = 6;
+    ctx.stroke();
+    // Draw right (blue to green)
+    ctx.beginPath();
+    ctx.arc(110, 110, 95, Math.PI * 1.5, 0, false);
+    const grad2 = ctx.createLinearGradient(110, 15, 205, 110);
+    grad2.addColorStop(0, '#235FD6'); // Fundify Blue
+    grad2.addColorStop(1, '#22c55e'); // Green
+    ctx.strokeStyle = grad2;
+    ctx.lineWidth = 22;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(34,197,94,0.10)';
+    ctx.shadowBlur = 6;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // --- Progress arc (overlay, accent color) ---
+    const percent = Math.max(0, Math.min(1, score / 100));
+    ctx.beginPath();
+    ctx.arc(110, 110, 95, Math.PI, Math.PI + Math.PI * percent, false);
+    ctx.strokeStyle = 'var(--accent)';
+    ctx.lineWidth = 16;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'var(--accent)';
+    ctx.shadowBlur = 10;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  function renderScore({ score, positives, negatives, advice }, transactions) {
     scoreValueEl.textContent = score;
+    drawScoreProgress(score);
     positivesEl.innerHTML = '';
     negativesEl.innerHTML = '';
     adviceEl.innerHTML = '';
-    // Only show the most important insights (max 5 per section)
     const importantPositives = positives.slice(0, 5);
     const importantNegatives = negatives.slice(0, 5);
     const importantAdvice = advice.slice(0, 5);
@@ -366,10 +452,59 @@ document.addEventListener('DOMContentLoaded', () => {
       li.textContent = a;
       adviceEl.appendChild(li);
     });
+    // Fetch and display AI recommendations
+    const aiRecEl = document.getElementById('score-ai-recommendations');
+    aiRecEl.textContent = 'Loading...';
+    fetchGroqRecommendations(transactions, score, positives, negatives, advice).then(recs => {
+      aiRecEl.innerHTML = '';
+      if (Array.isArray(recs)) {
+        recs.forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = r;
+          aiRecEl.appendChild(li);
+        });
+      } else {
+        aiRecEl.textContent = recs;
+      }
+    });
+  }
+
+  // Explain My Score modal logic
+  const explainBtn = document.getElementById('explain-score-btn');
+  const explainModal = document.getElementById('explain-score-modal');
+  const explainText = document.getElementById('explain-score-text');
+  const closeExplain = document.getElementById('close-explain-score');
+  let lastScoreData = null;
+  let lastTransactions = null;
+  if (explainBtn && explainModal && explainText && closeExplain) {
+    explainBtn.addEventListener('click', async () => {
+      explainModal.style.display = 'flex';
+      explainText.textContent = 'Loading...';
+      if (lastScoreData && lastTransactions) {
+        const explanation = await fetchGroqExplanation(
+          lastTransactions,
+          lastScoreData.score,
+          lastScoreData.positives,
+          lastScoreData.negatives,
+          lastScoreData.advice
+        );
+        explainText.textContent = explanation;
+      } else {
+        explainText.textContent = 'No score data available.';
+      }
+    });
+    closeExplain.addEventListener('click', () => {
+      explainModal.style.display = 'none';
+    });
+    explainModal.addEventListener('click', (e) => {
+      if (e.target === explainModal) explainModal.style.display = 'none';
+    });
   }
 
   fetchTransactions().then(transactions => {
     const analysis = analyzeTransactions(transactions);
-    renderScore(analysis);
+    lastScoreData = analysis;
+    lastTransactions = transactions;
+    renderScore(analysis, transactions);
   });
 });

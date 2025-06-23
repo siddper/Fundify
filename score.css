@@ -98,12 +98,105 @@ body.score-bg {
     transform: translateY(-1.5px);
     cursor: pointer;
 }
+.score-progress-container {
+  position: relative;
+  width: 220px;
+  height: 130px;
+  margin: 0 auto 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#score-progress {
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 1;
+}
 .score-value {
-  font-size: 3.2rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38px;
+  z-index: 2;
+  font-size: 4.2rem;
   font-weight: 700;
   color: var(--accent);
-  margin-bottom: 8px;
-  letter-spacing: -1px;
+  margin-bottom: 0;
+  letter-spacing: -1.5px;
+  text-align: center;
+  width: 100%;
+}
+.explain-score-btn {
+  margin-top: 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.explain-score-btn:hover {
+  background: #1c4daf;
+}
+.explain-score-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(16, 17, 20, 0.75);
+  z-index: 1000;
+}
+.explain-score-content {
+  background: #23262a;
+  border-radius: 18px;
+  padding: 44px 38px;
+  max-width: 750px;
+  width: 96vw;
+  color: var(--text);
+  position: relative;
+  box-shadow: 0 12px 48px 0 rgba(0,0,0,0.38);
+  font-size: 1.18rem;
+  line-height: 2;
+}
+.close-explain-score {
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  font-size: 2.3rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.18s;
+}
+.close-explain-score:hover {
+  color: #ff4d4f;
+}
+.score-feedback-title.ai-recommendations {
+  color: var(--accent);
+  margin-top: 32px;
+  font-size: 1.18rem;
+  font-weight: 600;
+}
+#score-ai-recommendations {
+  margin-top: 0;
+  color: var(--text);
+  font-size: 1rem;
+  background: #23262a;
+  border-radius: 8px;
+  padding: 0 24px;
+  min-height: 32px;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
+  line-height: 2.2;
+  margin-bottom: 10px;
+}
+#score-ai-recommendations li {
+    transition: background 0.18s, color 0.18s, padding-left 0.18s;
+    border-radius: 8px;
+    padding-left: 0;
+    cursor: pointer;
 }
 .score-label {
   font-size: 1.15rem;
@@ -170,7 +263,7 @@ body.score-bg {
   cursor: pointer;
   padding-left: 0;
 }
-.score-feedback-list li:hover {
+.score-feedback-list li:hover, #score-ai-recommendations li:hover {
   background: rgba(35,95,214,0.10);
   color: var(--accent);
   padding-left: 10px;

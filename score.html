@@ -48,8 +48,19 @@
       </header>
       <section class="score-section">
         <div id="score-card" class="score-card">
-          <div class="score-value">--</div>
+          <div class="score-progress-container">
+            <canvas id="score-progress" width="180" height="90"></canvas>
+            <div class="score-value">--</div>
+          </div>
           <div class="score-label">Your Fundify Score</div>
+          <button id="explain-score-btn" class="explain-score-btn">Explain My Score</button>
+        </div>
+        <div id="explain-score-modal" class="explain-score-modal" style="display:none;">
+          <div class="explain-score-content">
+            <span id="close-explain-score" class="close-explain-score">&times;</span>
+            <h4>Why is my score this?</h4>
+            <div id="explain-score-text">Loading...</div>
+          </div>
         </div>
         <div class="score-feedback-fullrow">
           <div class="score-feedback-title positive">Positives</div>
@@ -59,9 +70,11 @@
           <div class="score-feedback-title negative">Negatives</div>
           <ul id="score-negatives" class="score-feedback-list"></ul>
         </div>
-        <div class="score-feedback-fullrow">
+        <div class="score-feedback-fullrow" style="margin-bottom: 25px;">
           <div class="score-feedback-title advice">Advice</div>
           <ul id="score-advice" class="score-feedback-list"></ul>
+          <div class="score-feedback-title ai-recommendations">AI Recommendations</div>
+          <div id="score-ai-recommendations" class="score-ai-recommendations"></div>
         </div>
       </section>
       <script src="score.js"></script>
