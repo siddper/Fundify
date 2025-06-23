@@ -178,12 +178,15 @@
                   <input type="text" name="store" id="store" placeholder="Store/Source" >
                 </div>
 
-                <div class="form-group full-width repeat-toggle-wrapper">
-                    <label for="repeat-toggle" class="repeat-toggle-label">Repeat Transaction</label>
-                    <label class="switch">
-                        <input type="checkbox" id="repeat-toggle">
-                        <span class="slider round"></span>
-                    </label>
+                <div class="form-group" id="repeat-toggle-wrapper-div">
+                  <label class="repeat-toggle-label" for="repeat-toggle">Repeat Transaction</label>
+                  <div class="form-group full-width repeat-toggle-wrapper">
+                      <label for="repeat-toggle" class="repeat-toggle-label">Repeat Transaction</label>
+                      <label class="switch">
+                          <input type="checkbox" id="repeat-toggle">
+                          <span class="slider round"></span>
+                      </label>
+                  </div>
                 </div>
 
                 <div id="repeat-options-container" class="full-width">
@@ -395,7 +398,7 @@
         <canvas id="camera-canvas" style="display:none;"></canvas>
         <div style="margin-top:18px;display:flex;gap:12px;justify-content:center;">
           <button type="button" class="modal-action-btn" id="capture-photo-btn">Capture</button>
-          <button type="button" class="modal-cancel-btn" id="close-camera-btn">Cancel</button>
+          <button type="button" class="camera-cancel-btn" id="close-camera-btn">Cancel</button>
         </div>
       </div>
     </div>
