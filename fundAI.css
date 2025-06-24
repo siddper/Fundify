@@ -145,10 +145,11 @@ body.fundAI-bg {
   border-radius: 8px;
   border-bottom-right-radius: 8px;
   display: block;
-  width: 100%;
-  max-width: 100%;
+  width: fit-content;
+  max-width: 70%;
   word-wrap: break-word;
-  box-sizing: border-box;
+  word-break: break-word;
+  margin-left: auto;
 }
 
 .ai-message .message-content p {
@@ -294,4 +295,23 @@ body.fundAI-bg {
   .message-content {
     max-width: calc(100% - 40px);
   }
+}
+
+.clear-chat-btn {
+    background: var(--card-bg);
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 1.01rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 2px;
+    transition: background 0.18s, color 0.18s, border 0.18s;
+    outline: none;
+}
+
+.clear-chat-btn:hover{
+    background: var(--accent);
+    color: #fff;
 }

@@ -11,6 +11,10 @@ class FundAIChat {
         this.initializeEventListeners();
         this.loadUserTransactions();
         this.loadChatHistory();
+        this.clearChatButton = document.getElementById('clearChatButton');
+        if (this.clearChatButton) {
+            this.clearChatButton.addEventListener('click', () => this.clearChat());
+        }
     }
 
     getUserEmail() {
@@ -225,6 +229,12 @@ class FundAIChat {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    clearChat() {
+        this.chatHistory = [];
+        this.saveChatHistory();
+        this.loadChatHistory();
     }
 }
 
