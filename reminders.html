@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders | Fundify</title>
+    <link rel="icon" type="image/png" href="fundifyIcon.png">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="auth-styles.css">
+    <link rel="stylesheet" href="reminders.css">
+</head>
+<body class="reminders-bg">
+  <div class="reminders-layout">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
+        <select class="sidebar-projects-dropdown">
+          <option>Default Project</option>
+          <option>Personal</option>
+          <option>School</option>
+        </select>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <a href="dashboard.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M192-144v-456l288-216 288 216v456H552v-264H408v264H192Z"/></svg></span>Dashboard</li>
+          </a>
+          <a href="reminders.html">
+            <li class="active"><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M280-400v-80h400v80H280Zm0 160v-80h280v80H280ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>Reminders</li>
+          </a>
+          <a href="summary.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg></span>Summary</li>
+          </a>
+          <a href="plan.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 5-5 23-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Z"/></svg></span>Plan</li>
+          </a>
+          <a href="score.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M295-119q-36-1-68.5-18.5T165-189q-40-48-62.5-114.5T80-440q0-83 31.5-156T197-723q54-54 127-85.5T480-840q83 0 156 32t127 87q54 55 85.5 129T880-433q0 77-25 144t-71 113q-28 28-59 42.5T662-119q-18 0-36-4.5T590-137l-56-28q-12-6-25.5-9t-28.5-3q-15 0-28.5 3t-25.5 9l-56 28q-19 10-37.5 14.5T295-119Zm185-241q33 0 56.5-23.5T560-440q0-8-1.5-16t-4.5-16l50-67q10 13 17.5 27.5T634-480h82q-15-88-81.5-144T480-680q-88 0-155 56.5T244-480h82q14-54 57-87t97-33q17 0 32 3t29 9l-51 69q-2 0-5-.5t-5-.5q-33 0-56.5 23.5T400-440q0 33 23.5 56.5T480-360Z"/></svg></span>Score</li>
+          </a>
+          <a href="fundAI.html">
+            <li><span class="sidebar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M160-360q-50 0-85-35t-35-85q0-50 35-85t85-35v-80q0-33 23.5-56.5T240-760h120q0-50 35-85t85-35q50 0 85 35t35 85h120q33 0 56.5 23.5T800-680v80q50 0 85 35t35 85q0 50-35 85t-85 35v160q0 33-23.5 56.5T720-120H240q-33 0-56.5-23.5T160-200v-160Zm200-80q25 0 42.5-17.5T420-500q0-25-17.5-42.5T360-560q-25 0-42.5 17.5T300-500q0 25 17.5 42.5T360-440Zm240 0q25 0 42.5-17.5T660-500q0-25-17.5-42.5T600-560q-25 0-42.5 17.5T540-500q0 25 17.5 42.5T600-440ZM320-280h320v-80H320v80Z"/></svg></span>FundAI</li>
+          </a>
+
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <span>Fundify</span>
+      </div>
+    </aside>
+    <main class="reminders-main">
+      <header class="reminders-topbar">
+        <div class="topbar-left">
+          <span class="reminders-title">Reminders</span>
+        </div>
+        <button class="reminders-add-btn" id="openAddModal">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+        </button>
+      </header>
+      <div id="reminders-container" class="reminders-container"></div>
+      <!-- Add Reminder Modal -->
+      <div class="modal-bg" id="addModal">
+        <div class="modal add-reminder-modal">
+          <div class="modal-header">
+            <span class="modal-title">Add Reminder</span>
+            <button class="modal-close-btn" id="closeAddModal">&times;</button>
+          </div>
+          <form id="add-reminder-form" class="add-reminder-form">
+            <div class="modal-field">
+              <label for="reminder-amount">Amount</label>
+              <input type="number" id="reminder-amount" name="amount" min="0" step="0.01" required>
+            </div>
+            <div class="modal-field" style="width:100%;">
+              <label for="reminder-date">Date</label>
+              <div class="custom-date-picker" id="reminder-date-picker" style="width:100%;">
+                <input type="text" id="reminder-date-input" name="date" placeholder="mm/dd/yyyy" readonly required>
+                <span class="calendar-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Z"/></svg></span>
+                <div class="calendar-popup" id="reminder-calendar-popup"></div>
+              </div>
+            </div>
+            <div class="modal-field" style="width:100%;">
+              <label for="reminder-time">Time</label>
+              <div class="custom-time-picker" id="reminder-time-picker" style="width:100%;">
+                <input type="text" id="reminder-time-input" name="time" placeholder="hh:mm" readonly required>
+                <span class="clock-icon"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227T480-800q-134 0-227 93T160-480q0 134 93 227t227 93Zm40-160h40v-200h-120v40h80v160Zm-40-240Z"/></svg></span>
+                <div class="time-popup" id="reminder-time-popup"></div>
+              </div>
+            </div>
+            <div class="modal-field">
+              <label for="reminder-description">Description</label>
+              <textarea id="reminder-description" name="description" rows="2" maxlength="200" required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-cancel-btn" id="cancelAddModal">Cancel</button>
+              <button type="submit" class="modal-action-btn">Add Reminder</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <script src="reminders.js"></script>
+    </main>
+  </div>
+</body>
+</html>
