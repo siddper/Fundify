@@ -54,11 +54,12 @@ body.summary-bg {
   align-items: center;
   justify-content: space-between;
   background: var(--sidebar-bg);
-  height: 78px;
-  padding: 0 30px;
+  height: 78px !important;
+  padding: 30px;
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.18);
   position: sticky;
-  top: 0;  z-index: 10;
+  top: 0;
+  z-index: 10;
   width: 100%;
   max-width: 100%;
 }
@@ -186,6 +187,7 @@ body.summary-bg {
   font-size: 1.01rem;
   font-weight: 600;
   cursor: pointer;
+  margin-left: 2px;
   transition: background 0.18s, color 0.18s, border 0.18s;
   outline: none;
 }

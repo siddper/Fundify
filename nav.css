@@ -87,7 +87,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   border-radius: 8px;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   cursor: pointer;
   transition: background 0.18s, color 0.18s, padding 0.18s, opacity 0.18s, width 0.18s;
   white-space: nowrap;

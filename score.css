@@ -96,7 +96,6 @@ body.score-bg {
     box-shadow: 0 4px 18px 0 rgba(35,95,214,0.13), 0 1px 4px 0 rgba(0,0,0,0.13);
     border-color: var(--accent);
     transform: translateY(-1.5px);
-    cursor: pointer;
 }
 .score-progress-container {
   position: relative;
@@ -137,6 +136,7 @@ body.score-bg {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s;
+  margin-bottom: 10px;
 }
 .explain-score-btn:hover {
   background: #1c4daf;
@@ -231,7 +231,7 @@ body.score-bg {
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 4px;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
   padding-left: 18px;
 }
 

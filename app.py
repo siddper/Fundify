@@ -683,7 +683,7 @@ def ai_recommendations():
         Here are some of their recent transactions:
         {tx_string}
 
-        Based on this, give 3-4 highly actionable, personalized recommendations to help them improve their score and financial health. Be specific and friendly. Do not repeat the advice list verbatim; add new, creative, or more detailed suggestions. These should be concise and effective, 1 sentence only
+        Based on this, give 3-4 highly actionable, personalized recommendations to help them improve their score and financial health. Be specific and friendly. Do not repeat the advice list verbatim; add new, creative, or more detailed suggestions. These should be very short, concise, and effective, 1 sentence only
 
         Respond ONLY with a valid JSON object: {{"recommendations": ["recommendation 1", "recommendation 2", ...]}}
         """
@@ -710,6 +710,87 @@ def ai_recommendations():
     except Exception as e:
         print('AI endpoint error (recommendations):', e)
         return jsonify({'error': str(e)}), 500
+
+@app.route('/fundai-chat', methods=['POST'])
+def fundai_chat():
+    if not GROQ_API_KEY:
+        return jsonify({'success': False, 'error': 'GROQ_API_KEY not configured'}), 500
+    
+    data = request.json
+    user_message = data.get('message')
+    user_email = data.get('email')
+    transactions = data.get('transactions', [])
+
+    if not user_message or not user_email:
+        return jsonify({'success': False, 'error': 'Message and email are required.'}), 400
+
+    user = User.query.filter_by(email=user_email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+
+    try:
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        
+        # Prepare transaction data for context
+        tx_context = ""
+        if transactions:
+            tx_context = "Here are your recent transactions:\n"
+            for tx in transactions[-20:]:  # Last 20 transactions for context
+                tx_context += f"- {tx['date']}: {tx['type']} ${tx['amount']} at {tx['store']} ({tx['method']})\n"
+        else:
+            tx_context = "You don't have any transactions recorded yet."
+
+        system_prompt = f"""
+        You are FundAI, a helpful and friendly financial assistant for the Fundify app. You have access to the user's transaction data and can provide personalized financial insights.
+
+        **Your Capabilities:**
+        - Analyze spending patterns and trends
+        - Provide budgeting advice
+        - Answer questions about specific transactions
+        - Help with financial planning
+        - Explain financial concepts in simple terms
+        - Identify potential areas for saving money
+        - Suggest ways to improve financial health
+
+        **User's Transaction Data:**
+        {tx_context}
+
+        **Guidelines:**
+        - Be conversational, friendly, and helpful
+        - Provide specific, actionable advice when possible
+        - Use the transaction data to give personalized insights
+        - Keep responses concise but informative (2-4 sentences typically)
+        - If asked about data you don't have, politely explain what information would be needed
+        - Focus on being helpful rather than judgmental
+        - Use simple, clear language
+
+        **Response Format:**
+        Respond naturally as a helpful financial assistant. Do not use JSON format - just provide a conversational response.
+        """
+
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            model="llama3-8b-8192",
+            temperature=0.7,
+            max_tokens=512,
+            top_p=1,
+            stop=None,
+            stream=False,
+        )
+
+        ai_response = chat_completion.choices[0].message.content
+        
+        return jsonify({
+            'success': True,
+            'response': ai_response
+        })
+
+    except Exception as e:
+        print('FundAI chat error:', e)
+        return jsonify({'success': False, 'error': f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     create_db()

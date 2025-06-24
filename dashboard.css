@@ -19,6 +19,7 @@ body.dashboard-bg {
   margin: 0;
   padding: 0;
   background: var(--main-bg);
+  overflow: scroll;
 }
 
 .dashboard-layout {
