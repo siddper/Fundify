@@ -113,11 +113,12 @@ body.fundAI-bg {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: var(--accent);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 .user-message .message-avatar {
-  background: #fff;
+  background: var(--card-bg);
   border: 1px solid var(--border);
 }
 
