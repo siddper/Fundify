@@ -475,10 +475,8 @@ if ('Notification' in window && Notification.permission !== 'granted') {
 // Helper to check if two date+time strings match current time (to the minute)
 function isReminderDue(reminder) {
   const now = new Date();
-  // Parse reminder date (mm/dd/yyyy)
   const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
-  // Parse reminder time (hh:mm AM/PM)
-  const timeMatch = reminder.time.match(/(\d{1,2}):(\d{2}) (AM|PM)/);
+  const timeMatch = reminder.time.match(/(\\d{1,2}):(\\d{2}) (AM|PM)/);
   if (!timeMatch) return false;
   let [_, h, m, ampm] = timeMatch;
   h = Number(h);
@@ -486,22 +484,10 @@ function isReminderDue(reminder) {
   if (ampm === 'PM' && h !== 12) h += 12;
   if (ampm === 'AM' && h === 12) h = 0;
   const reminderDate = new Date(yyyy, mm - 1, dd, h, m);
-  // Debug log
-  console.log('isReminderDue:', {
-    now: now.toString(),
-    reminderDate: reminderDate.toString(),
-    nowYear: now.getFullYear(), reminderYear: reminderDate.getFullYear(),
-    nowMonth: now.getMonth(), reminderMonth: reminderDate.getMonth(),
-    nowDate: now.getDate(), reminderDay: reminderDate.getDate(),
-    nowHour: now.getHours(), reminderHour: reminderDate.getHours(),
-    nowMinute: now.getMinutes(), reminderMinute: reminderDate.getMinutes()
-  });
-  // Compare to now (to the minute)
-  return now.getFullYear() === reminderDate.getFullYear() &&
-    now.getMonth() === reminderDate.getMonth() &&
-    now.getDate() === reminderDate.getDate() &&
-    now.getHours() === reminderDate.getHours() &&
-    now.getMinutes() === reminderDate.getMinutes();
+  // Only compare up to the minute
+  reminderDate.setSeconds(0, 0);
+  now.setSeconds(0, 0);
+  return reminderDate <= now;
 }
 
 // Track notified reminders to avoid duplicate notifications
