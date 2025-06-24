@@ -225,11 +225,11 @@ body.reminders-bg {
   position: relative;
   font-size: 1.15rem;
   transition: 0.25s ease;
-  border: 1px transparent;
+  border: 1px solid transparent;
 }
 .reminder-card:hover{
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(35,95,214,0.35);
+  box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
   cursor: pointer;
 }
 .reminder-card .reminder-amount {
@@ -486,4 +486,38 @@ input[type=number]::-webkit-outer-spin-button {
   background: #2a181a !important;
   color: #ff4d4f !important;
   box-shadow: 0 0 0 2px rgba(255,77,79,0.13) !important;
+}
+
+#reminder-search {
+  width: 100%;
+  min-width: 1100px;
+  padding-right: 48px;
+  padding-left: 16px;
+  background: var(--main-bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 1em;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  outline: none;
+  box-shadow: none;
+}
+#reminder-search:focus {
+  border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
+}
+
+.reminder-date-past {
+  color: #e53935 !important;
+  font-weight: 600;
+}
+.reminder-date-today {
+  color: #43a047 !important;
+  font-weight: 600;
+}
+.reminder-date-future {
+  color: #fbc02d !important;
+  font-weight: 600;
 }

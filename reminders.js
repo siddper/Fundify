@@ -245,6 +245,7 @@ setupCustomTimePicker();
 const remindersContainer = document.getElementById('reminders-container');
 const addReminderForm = document.getElementById('add-reminder-form');
 let editingId = null;
+let allReminders = [];
 
 const API_BASE = 'http://127.0.0.1:8000'; // or wherever your Flask backend runs
 
@@ -255,21 +256,98 @@ async function fetchReminders() {
 }
 
 async function renderReminders() {
-  const reminders = await fetchReminders();
+  allReminders = await fetchReminders();
+  filterAndRenderReminders();
+}
+
+function filterAndRenderReminders() {
+  const searchInput = document.getElementById('reminder-search');
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+  let reminders = allReminders;
+  // Sort reminders by date ascending
+  reminders = reminders.slice().sort((a, b) => {
+    const [amm, add, ayyyy] = a.date.split('/').map(Number);
+    const [bmm, bdd, byyyy] = b.date.split('/').map(Number);
+    const adate = new Date(ayyyy, amm - 1, add);
+    const bdate = new Date(byyyy, bmm - 1, bdd);
+    return adate - bdate;
+  });
+  let dateMatch = null;
+  let showPast = false;
+  let showFuture = false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  if (query.includes('today')) {
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    dateMatch = `${mm}/${dd}/${yyyy}`;
+  } else if (query.includes('tomorrow')) {
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const dd = String(tomorrow.getDate()).padStart(2, '0');
+    const yyyy = tomorrow.getFullYear();
+    dateMatch = `${mm}/${dd}/${yyyy}`;
+  } else if (query.includes('yesterday')) {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
+    const dd = String(yesterday.getDate()).padStart(2, '0');
+    const yyyy = yesterday.getFullYear();
+    dateMatch = `${mm}/${dd}/${yyyy}`;
+  } else if ('missed'.includes(query) || 'past'.includes(query)) {
+    showPast = true;
+  } else if ('future'.includes(query) || 'upcoming'.includes(query)) {
+    showFuture = true;
+  }
+  if (query) {
+    reminders = reminders.filter(reminder => {
+      if (dateMatch) return reminder.date === dateMatch;
+      if (showPast) {
+        // Parse reminder date
+        const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
+        const reminderDate = new Date(yyyy, mm - 1, dd);
+        reminderDate.setHours(0,0,0,0);
+        return reminderDate < today;
+      }
+      if (showFuture) {
+        // Parse reminder date
+        const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
+        const reminderDate = new Date(yyyy, mm - 1, dd);
+        reminderDate.setHours(0,0,0,0);
+        return reminderDate > today;
+      }
+      return (
+        reminder.amount.toString().toLowerCase().includes(query) ||
+        reminder.date.toLowerCase().includes(query) ||
+        reminder.time.toLowerCase().includes(query) ||
+        reminder.description.toLowerCase().includes(query)
+      );
+    });
+  }
   remindersContainer.innerHTML = '';
   if (reminders.length === 0) {
-    remindersContainer.innerHTML = '<div style="color:var(--text-muted);font-size:1.1rem;">No reminders yet.</div>';
+    remindersContainer.innerHTML = '<div style="color:var(--text-muted);font-size:1.1rem;">No reminders found.</div>';
     return;
   }
   reminders.forEach((reminder) => {
     const card = document.createElement('div');
     card.className = 'reminder-card';
+    // Determine date color class
+    const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
+    const reminderDate = new Date(yyyy, mm - 1, dd);
+    reminderDate.setHours(0,0,0,0);
+    let dateClass = '';
+    if (reminderDate < today) dateClass = 'reminder-date-past';
+    else if (reminderDate.getTime() === today.getTime()) dateClass = 'reminder-date-today';
+    else dateClass = 'reminder-date-future';
     card.innerHTML = `
       <button class="delete-btn" title="Delete Reminder">
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm80-160h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/></svg>
       </button>
       <div class="reminder-amount">$${parseFloat(reminder.amount).toFixed(2)}</div>
-      <div class="reminder-date-time">${reminder.date} &bull; ${reminder.time}</div>
+      <div class="reminder-date-time"><span class="${dateClass}">${reminder.date}</span> &bull; ${reminder.time}</div>
       <div class="reminder-description">${reminder.description}</div>
     `;
     // Delete button logic
@@ -289,7 +367,12 @@ async function renderReminders() {
     remindersContainer.appendChild(card);
   });
 }
-renderReminders();
+
+// Attach search event
+const searchInput = document.getElementById('reminder-search');
+if (searchInput) {
+  searchInput.addEventListener('input', filterAndRenderReminders);
+}
 
 if (addReminderForm) {
   // Remove 'required' attributes from all fields
@@ -434,3 +517,7 @@ async function deleteReminder(id) {
   const res = await fetch(`${API_BASE}/reminders/${id}`, { method: 'DELETE' });
   return (await res.json()).success;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderReminders();
+});
