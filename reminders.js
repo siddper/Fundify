@@ -347,3 +347,70 @@ if (addReminderForm) {
   if (closeBtn) closeBtn.addEventListener('click', () => { editingIndex = null; });
   if (cancelBtn) cancelBtn.addEventListener('click', () => { editingIndex = null; });
 }
+
+// Request notification permission on page load
+if ('Notification' in window && Notification.permission !== 'granted') {
+  Notification.requestPermission();
+}
+
+// Helper to check if two date+time strings match current time (to the minute)
+function isReminderDue(reminder) {
+  const now = new Date();
+  // Parse reminder date (mm/dd/yyyy)
+  const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
+  // Parse reminder time (hh:mm AM/PM)
+  const timeMatch = reminder.time.match(/(\d{1,2}):(\d{2}) (AM|PM)/);
+  if (!timeMatch) return false;
+  let [_, h, m, ampm] = timeMatch;
+  h = Number(h);
+  m = Number(m);
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  const reminderDate = new Date(yyyy, mm - 1, dd, h, m);
+  // Debug log
+  console.log('isReminderDue:', {
+    now: now.toString(),
+    reminderDate: reminderDate.toString(),
+    nowYear: now.getFullYear(), reminderYear: reminderDate.getFullYear(),
+    nowMonth: now.getMonth(), reminderMonth: reminderDate.getMonth(),
+    nowDate: now.getDate(), reminderDay: reminderDate.getDate(),
+    nowHour: now.getHours(), reminderHour: reminderDate.getHours(),
+    nowMinute: now.getMinutes(), reminderMinute: reminderDate.getMinutes()
+  });
+  // Compare to now (to the minute)
+  return now.getFullYear() === reminderDate.getFullYear() &&
+    now.getMonth() === reminderDate.getMonth() &&
+    now.getDate() === reminderDate.getDate() &&
+    now.getHours() === reminderDate.getHours() &&
+    now.getMinutes() === reminderDate.getMinutes();
+}
+
+// Track notified reminders to avoid duplicate notifications
+function getNotifiedIds() {
+  try {
+    return JSON.parse(localStorage.getItem('fundify_reminders_notified') || '[]');
+  } catch { return []; }
+}
+function setNotifiedIds(ids) {
+  localStorage.setItem('fundify_reminders_notified', JSON.stringify(ids));
+}
+
+function checkRemindersForNotification() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const reminders = getReminders();
+  const notified = getNotifiedIds();
+  reminders.forEach((reminder, idx) => {
+    console.log('Checking reminder:', reminder, 'Due:', isReminderDue(reminder), 'Already notified:', notified.includes(idx));
+    if (!notified.includes(idx) && isReminderDue(reminder)) {
+      // Show notification
+      new Notification('Reminder', {
+        body: `${reminder.description}\n$${parseFloat(reminder.amount).toFixed(2)} at ${reminder.time} on ${reminder.date}`,
+        icon: 'fundifyIcon.png'
+      });
+      notified.push(idx);
+    }
+  });
+  setNotifiedIds(notified);
+}
+checkRemindersForNotification(); // Run once on page load for debugging
+setInterval(checkRemindersForNotification, 60000); // check every minute
