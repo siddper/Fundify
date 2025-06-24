@@ -144,9 +144,11 @@ body.fundAI-bg {
   padding: 12px 16px;
   border-radius: 8px;
   border-bottom-right-radius: 8px;
-  display: inline-block;
+  display: block;
+  width: 100%;
   max-width: 100%;
   word-wrap: break-word;
+  box-sizing: border-box;
 }
 
 .ai-message .message-content p {

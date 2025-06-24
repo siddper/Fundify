@@ -5,13 +5,12 @@ class FundAIChat {
         this.sendButton = document.getElementById('sendButton');
         this.userEmail = this.getUserEmail();
         this.transactions = [];
+        this.chatHistory = [];
+        this.localStorageKey = this.userEmail ? `fundai_chat_${this.userEmail}` : null;
         
         this.initializeEventListeners();
         this.loadUserTransactions();
-        this.addMessage(
-            "Hello! I'm FundAI, your personal financial assistant. I can help you analyze your transactions, answer questions about your spending patterns, and provide financial insights. What would you like to know about your finances?",
-            'ai'
-        );
+        this.loadChatHistory();
     }
 
     getUserEmail() {
@@ -71,6 +70,38 @@ class FundAIChat {
         }
     }
 
+    loadChatHistory() {
+        if (!this.localStorageKey) {
+            this.addMessage('Please log in to use FundAI.', 'ai');
+            return;
+        }
+        const saved = localStorage.getItem(this.localStorageKey);
+        this.chatMessages.innerHTML = '';
+        if (saved) {
+            try {
+                this.chatHistory = JSON.parse(saved);
+                for (const msg of this.chatHistory) {
+                    this.renderMessage(msg.content, msg.sender);
+                }
+            } catch (e) {
+                this.chatHistory = [];
+            }
+        }
+        if (this.chatHistory.length === 0) {
+            // Add welcome message if no history
+            this.addMessage(
+                "Hello! I'm FundAI, your personal financial assistant. I can help you analyze your transactions, answer questions about your spending patterns, and provide financial insights. What would you like to know about your finances?",
+                'ai'
+            );
+        }
+    }
+
+    saveChatHistory() {
+        if (this.localStorageKey) {
+            localStorage.setItem(this.localStorageKey, JSON.stringify(this.chatHistory));
+        }
+    }
+
     async sendMessage() {
         const message = this.chatInput.value.trim();
         if (!message) return;
@@ -124,25 +155,27 @@ class FundAIChat {
     }
 
     addMessage(content, sender) {
+        // Save to chat history and localStorage
+        this.chatHistory.push({ content, sender });
+        this.saveChatHistory();
+        this.renderMessage(content, sender);
+    }
+
+    renderMessage(content, sender) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
-        
         const avatar = document.createElement('div');
         avatar.className = 'message-avatar';
-        
         if (sender === 'ai') {
             avatar.innerHTML = `<img src="fundifyIcon.png" alt="FundAI" style="width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border);">`;
         } else {
             avatar.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#235FD6"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg>`;
         }
-        
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
         messageContent.innerHTML = `<p>${this.escapeHtml(content)}</p>`;
-        
         messageDiv.appendChild(avatar);
         messageDiv.appendChild(messageContent);
-        
         this.chatMessages.appendChild(messageDiv);
         this.scrollToBottom();
     }
