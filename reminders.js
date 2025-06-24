@@ -4,6 +4,13 @@ const closeBtn = document.getElementById('closeAddModal');
 const cancelBtn = document.getElementById('cancelAddModal');
 const modalBg = document.getElementById('addModal');
 
+// Example: get from localStorage, or set after login
+const userEmail = localStorage.getItem('fundify_user_email');
+if (!userEmail) {
+  alert('No user email found. Please log in.');
+  // Optionally redirect to login page
+}
+
 if (openBtn && closeBtn && modalBg) {
   openBtn.addEventListener('click', () => {
     // Autofill date and time to today and now
@@ -237,26 +244,24 @@ setupCustomTimePicker();
 // Reminders logic
 const remindersContainer = document.getElementById('reminders-container');
 const addReminderForm = document.getElementById('add-reminder-form');
-let editingIndex = null;
+let editingId = null;
 
-function getReminders() {
-  try {
-    return JSON.parse(localStorage.getItem('fundify_reminders') || '[]');
-  } catch {
-    return [];
-  }
+const API_BASE = 'http://127.0.0.1:8000'; // or wherever your Flask backend runs
+
+async function fetchReminders() {
+  const res = await fetch(`${API_BASE}/reminders?email=${encodeURIComponent(userEmail)}`);
+  const data = await res.json();
+  return data.success ? data.reminders : [];
 }
-function saveReminders(reminders) {
-  localStorage.setItem('fundify_reminders', JSON.stringify(reminders));
-}
-function renderReminders() {
-  const reminders = getReminders();
+
+async function renderReminders() {
+  const reminders = await fetchReminders();
   remindersContainer.innerHTML = '';
   if (reminders.length === 0) {
     remindersContainer.innerHTML = '<div style="color:var(--text-muted);font-size:1.1rem;">No reminders yet.</div>';
     return;
   }
-  reminders.forEach((reminder, idx) => {
+  reminders.forEach((reminder) => {
     const card = document.createElement('div');
     card.className = 'reminder-card';
     card.innerHTML = `
@@ -268,21 +273,17 @@ function renderReminders() {
       <div class="reminder-description">${reminder.description}</div>
     `;
     // Delete button logic
-    const delBtn = card.querySelector('.delete-btn');
-    delBtn.addEventListener('click', (e) => {
+    card.querySelector('.delete-btn').addEventListener('click', async (e) => {
       e.stopPropagation();
-      const reminders = getReminders();
-      reminders.splice(idx, 1);
-      saveReminders(reminders);
+      await deleteReminder(reminder.id);
       renderReminders();
     });
     card.addEventListener('click', () => {
-      // Autofill modal with reminder values for editing
       document.getElementById('reminder-amount').value = reminder.amount;
       document.getElementById('reminder-date-input').value = reminder.date;
       document.getElementById('reminder-time-input').value = reminder.time;
       document.getElementById('reminder-description').value = reminder.description;
-      editingIndex = idx;
+      editingId = reminder.id;
       modalBg.classList.add('active');
     });
     remindersContainer.appendChild(card);
@@ -313,7 +314,7 @@ if (addReminderForm) {
     }
   });
 
-  addReminderForm.addEventListener('submit', function(e) {
+  addReminderForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     const amount = document.getElementById('reminder-amount').value.trim();
     const date = document.getElementById('reminder-date-input').value.trim();
@@ -329,23 +330,20 @@ if (addReminderForm) {
     if (!time) { document.getElementById('reminder-time-input').classList.add('incorrect'); valid = false; }
     if (!description) { document.getElementById('reminder-description').classList.add('incorrect'); valid = false; }
     if (!valid) return;
-    const reminders = getReminders();
-    if (editingIndex !== null) {
-      // Update existing reminder
-      reminders[editingIndex] = { amount, date, time, description };
-      editingIndex = null;
+    if (editingId) {
+      await updateReminder(editingId, { amount, date, time, description });
+      editingId = null;
     } else {
-      reminders.push({ amount, date, time, description });
+      await addReminder({ amount, date, time, description });
     }
-    saveReminders(reminders);
     renderReminders();
     addReminderForm.reset();
     modalBg.classList.remove('active');
   });
 
-  // Reset editingIndex when modal is closed
-  if (closeBtn) closeBtn.addEventListener('click', () => { editingIndex = null; });
-  if (cancelBtn) cancelBtn.addEventListener('click', () => { editingIndex = null; });
+  // Reset editingId when modal is closed
+  if (closeBtn) closeBtn.addEventListener('click', () => { editingId = null; });
+  if (cancelBtn) cancelBtn.addEventListener('click', () => { editingId = null; });
 }
 
 // Request notification permission on page load
@@ -395,14 +393,13 @@ function setNotifiedIds(ids) {
   localStorage.setItem('fundify_reminders_notified', JSON.stringify(ids));
 }
 
-function checkRemindersForNotification() {
+async function checkRemindersForNotification() {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const reminders = getReminders();
+  const reminders = await fetchReminders();
   const notified = getNotifiedIds();
   reminders.forEach((reminder, idx) => {
     console.log('Checking reminder:', reminder, 'Due:', isReminderDue(reminder), 'Already notified:', notified.includes(idx));
     if (!notified.includes(idx) && isReminderDue(reminder)) {
-      // Show notification
       new Notification('Reminder', {
         body: `${reminder.description}\n$${parseFloat(reminder.amount).toFixed(2)} at ${reminder.time} on ${reminder.date}`,
         icon: 'fundifyIcon.png'
@@ -412,5 +409,28 @@ function checkRemindersForNotification() {
   });
   setNotifiedIds(notified);
 }
-checkRemindersForNotification(); // Run once on page load for debugging
-setInterval(checkRemindersForNotification, 60000); // check every minute
+checkRemindersForNotification();
+setInterval(checkRemindersForNotification, 60000);
+
+async function addReminder(reminder) {
+  const res = await fetch(`${API_BASE}/reminders`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({...reminder, email: userEmail})
+  });
+  return (await res.json()).success;
+}
+
+async function updateReminder(id, reminder) {
+  const res = await fetch(`${API_BASE}/reminders/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(reminder)
+  });
+  return (await res.json()).success;
+}
+
+async function deleteReminder(id) {
+  const res = await fetch(`${API_BASE}/reminders/${id}`, { method: 'DELETE' });
+  return (await res.json()).success;
+}

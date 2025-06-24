@@ -62,6 +62,14 @@ class Preset(db.Model):
 
     user = db.relationship('User', backref=db.backref('presets', lazy=True))
 
+class Reminder(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String(120), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    date = db.Column(db.String(32), nullable=False)
+    time = db.Column(db.String(16), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+
 def create_db():
     with app.app_context():
         db.create_all()
@@ -791,6 +799,70 @@ def fundai_chat():
     except Exception as e:
         print('FundAI chat error:', e)
         return jsonify({'success': False, 'error': f"An error occurred: {str(e)}"}), 500
+
+@app.route('/reminders', methods=['GET'])
+def get_reminders():
+    user_email = request.args.get('email')
+    if not user_email:
+        return jsonify({'success': False, 'error': 'Email required'}), 400
+    reminders = Reminder.query.filter_by(user_email=user_email).all()
+    return jsonify({'success': True, 'reminders': [
+        {
+            'id': r.id,
+            'amount': r.amount,
+            'date': r.date,
+            'time': r.time,
+            'description': r.description
+        } for r in reminders
+    ]})
+
+@app.route('/reminders', methods=['POST'])
+def add_reminder():
+    data = request.json
+    user_email = data.get('email')
+    amount = data.get('amount')
+    date = data.get('date')
+    time = data.get('time')
+    description = data.get('description')
+    if not all([user_email, amount, date, time, description]):
+        return jsonify({'success': False, 'error': 'All fields required'}), 400
+    reminder = Reminder(
+        user_email=user_email,
+        amount=float(amount),
+        date=date,
+        time=time,
+        description=description
+    )
+    db.session.add(reminder)
+    db.session.commit()
+    return jsonify({'success': True, 'reminder': {
+        'id': reminder.id,
+        'amount': reminder.amount,
+        'date': reminder.date,
+        'time': reminder.time,
+        'description': reminder.description
+    }}), 201
+
+@app.route('/reminders/<int:reminder_id>', methods=['PUT'])
+def update_reminder(reminder_id):
+    data = request.json
+    reminder = Reminder.query.get(reminder_id)
+    if not reminder:
+        return jsonify({'success': False, 'error': 'Reminder not found'}), 404
+    for field in ['amount', 'date', 'time', 'description']:
+        if field in data:
+            setattr(reminder, field, data[field])
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/reminders/<int:reminder_id>', methods=['DELETE'])
+def delete_reminder(reminder_id):
+    reminder = Reminder.query.get(reminder_id)
+    if not reminder:
+        return jsonify({'success': False, 'error': 'Reminder not found'}), 404
+    db.session.delete(reminder)
+    db.session.commit()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     create_db()
