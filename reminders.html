@@ -92,6 +92,27 @@
               <label for="reminder-description">Description</label>
               <textarea id="reminder-description" name="description" rows="2" maxlength="200" required></textarea>
             </div>
+            <div class="modal-field">
+              <div style="display:flex;align-items:center;gap:16px;justify-content: space-between">
+                <label style="margin-bottom:8px;">Repeat Reminder</label>
+                <label class="switch">
+                  <input type="checkbox" id="reminder-repeat-toggle">
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="modal-field" id="repeat-options" style="display:none;">
+              <div style="display:flex;gap:18px;">
+                <div style="flex:1;display:flex;flex-direction:column;">
+                  <label for="reminder-repeat-count">Times to Repeat</label>
+                  <input type="number" id="reminder-repeat-count" min="1" value="1">
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;">
+                  <label for="reminder-repeat-gap">Gap Between</label>
+                  <input type="number" id="reminder-repeat-gap" min="1" value="7">
+                </div>
+              </div>
+            </div>
             <div class="modal-actions">
                 <button type="button" class="modal-cancel-btn" id="cancelAddModal">Cancel</button>
               <button type="submit" class="modal-action-btn">Add Reminder</button>

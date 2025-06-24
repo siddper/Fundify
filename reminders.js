@@ -241,6 +241,24 @@ function setupCustomTimePicker() {
 }
 setupCustomTimePicker();
 
+// Repeat toggle logic
+const repeatToggle = document.getElementById('reminder-repeat-toggle');
+const repeatOptions = document.getElementById('repeat-options');
+if (repeatToggle && repeatOptions) {
+  repeatToggle.addEventListener('change', () => {
+    repeatOptions.style.display = repeatToggle.checked ? '' : 'none';
+  });
+}
+// Reset repeat options when modal is closed
+if (closeBtn) closeBtn.addEventListener('click', () => {
+  if (repeatToggle) repeatToggle.checked = false;
+  if (repeatOptions) repeatOptions.style.display = 'none';
+});
+if (cancelBtn) cancelBtn.addEventListener('click', () => {
+  if (repeatToggle) repeatToggle.checked = false;
+  if (repeatOptions) repeatOptions.style.display = 'none';
+});
+
 // Reminders logic
 const remindersContainer = document.getElementById('reminders-container');
 const addReminderForm = document.getElementById('add-reminder-form');
@@ -403,6 +421,9 @@ if (addReminderForm) {
     const date = document.getElementById('reminder-date-input').value.trim();
     const time = document.getElementById('reminder-time-input').value.trim();
     const description = document.getElementById('reminder-description').value.trim();
+    const repeatEnabled = repeatToggle && repeatToggle.checked;
+    const repeatCount = repeatEnabled ? Math.max(1, parseInt(document.getElementById('reminder-repeat-count').value, 10) || 1) : 1;
+    const repeatGap = repeatEnabled ? Math.max(1, parseInt(document.getElementById('reminder-repeat-gap').value, 10) || 1) : 1;
     let valid = true;
     // Remove previous error states
     ['reminder-amount','reminder-date-input','reminder-time-input','reminder-description'].forEach(id => {
@@ -417,10 +438,27 @@ if (addReminderForm) {
       await updateReminder(editingId, { amount, date, time, description });
       editingId = null;
     } else {
-      await addReminder({ amount, date, time, description });
+      // Repeat logic
+      let baseDate = new Date(date);
+      if (isNaN(baseDate)) {
+        // Parse mm/dd/yyyy
+        const [mm, dd, yyyy] = date.split('/').map(Number);
+        baseDate = new Date(yyyy, mm - 1, dd);
+      }
+      for (let i = 0; i < repeatCount; i++) {
+        const repeatDate = new Date(baseDate);
+        repeatDate.setDate(baseDate.getDate() + i * repeatGap);
+        const mm = String(repeatDate.getMonth() + 1).padStart(2, '0');
+        const dd = String(repeatDate.getDate()).padStart(2, '0');
+        const yyyy = repeatDate.getFullYear();
+        const repeatDateStr = `${mm}/${dd}/${yyyy}`;
+        await addReminder({ amount, date: repeatDateStr, time, description });
+      }
     }
     renderReminders();
     addReminderForm.reset();
+    if (repeatToggle) repeatToggle.checked = false;
+    if (repeatOptions) repeatOptions.style.display = 'none';
     modalBg.classList.remove('active');
   });
 
