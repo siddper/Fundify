@@ -1800,7 +1800,7 @@ input[type=number]::-webkit-outer-spin-button {
   display: flex;
 }
 .filter-modal-content {
-  background: #23262a;
+  background: var(--main-bg);
   border-radius: 12px;
   box-shadow: 0 8px 40px 0 rgba(0,0,0,0.38);
   padding: 0;
@@ -1812,8 +1812,7 @@ input[type=number]::-webkit-outer-spin-button {
   border: 1.5px solid var(--border);
 }
 .filter-modal-header {
-  padding: 28px 40px 0 40px;
-  border-bottom: 1px solid var(--border);
+  padding: 30px 20px 0 30px;
 }
 .filter-modal-header h3 {
   color: var(--text);
