@@ -295,28 +295,28 @@ function filterAndRenderReminders() {
   let showFuture = false;
   const today = new Date();
   today.setHours(0,0,0,0);
-  if (query.includes('today')) {
+  if ('today'.includes(query)) {
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     const yyyy = today.getFullYear();
     dateMatch = `${mm}/${dd}/${yyyy}`;
-  } else if (query.includes('tomorrow')) {
+  } else if ('tomorrow'.includes(query)) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
     const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
     const dd = String(tomorrow.getDate()).padStart(2, '0');
     const yyyy = tomorrow.getFullYear();
     dateMatch = `${mm}/${dd}/${yyyy}`;
-  } else if (query.includes('yesterday')) {
+    } else if ('yesterday'.includes(query)) {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     const mm = String(yesterday.getMonth() + 1).padStart(2, '0');
     const dd = String(yesterday.getDate()).padStart(2, '0');
     const yyyy = yesterday.getFullYear();
     dateMatch = `${mm}/${dd}/${yyyy}`;
-  } else if ('missed'.includes(query) || 'past'.includes(query)) {
+  } else if ('missed'.includes(query) || 'past'.includes(query) || 'overdue'.includes(query)) {
     showPast = true;
-  } else if ('future'.includes(query) || 'upcoming'.includes(query)) {
+  } else if ('future'.includes(query) || 'upcoming'.includes(query) || 'due'.includes(query)) {
     showFuture = true;
   }
   if (query) {
@@ -472,12 +472,21 @@ if ('Notification' in window && Notification.permission !== 'granted') {
   Notification.requestPermission();
 }
 
+// Clear notified reminders on page load for testing
+function clearNotifiedReminders() {
+  localStorage.removeItem('fundify_reminders_notified');
+  console.log('Cleared notified reminders list');
+}
+
 // Helper to check if two date+time strings match current time (to the minute)
 function isReminderDue(reminder) {
   const now = new Date();
   const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
-  const timeMatch = reminder.time.match(/(\\d{1,2}):(\\d{2}) (AM|PM)/);
-  if (!timeMatch) return false;
+  const timeMatch = reminder.time.match(/(\d{1,2}):(\d{2}) (AM|PM)/);
+  if (!timeMatch) {
+    console.log('Time format not recognized:', reminder.time);
+    return false;
+  }
   let [_, h, m, ampm] = timeMatch;
   h = Number(h);
   m = Number(m);
@@ -487,6 +496,14 @@ function isReminderDue(reminder) {
   // Only compare up to the minute
   reminderDate.setSeconds(0, 0);
   now.setSeconds(0, 0);
+  
+  console.log('Time comparison:', {
+    reminder: reminder.time,
+    reminderDate: reminderDate.toLocaleString(),
+    now: now.toLocaleString(),
+    isDue: reminderDate <= now
+  });
+  
   return reminderDate <= now;
 }
 
@@ -501,17 +518,24 @@ function setNotifiedIds(ids) {
 }
 
 async function checkRemindersForNotification() {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') {
+    console.log('Notifications not available or permission not granted');
+    return;
+  }
   const reminders = await fetchReminders();
   const notified = getNotifiedIds();
-  reminders.forEach((reminder, idx) => {
-    console.log('Checking reminder:', reminder, 'Due:', isReminderDue(reminder), 'Already notified:', notified.includes(idx));
-    if (!notified.includes(idx) && isReminderDue(reminder)) {
+  console.log('Checking', reminders.length, 'reminders for notifications');
+  reminders.forEach((reminder) => {
+    const isDue = isReminderDue(reminder);
+    const alreadyNotified = notified.includes(reminder.id);
+    console.log('Checking reminder:', reminder, 'Due:', isDue, 'Already notified:', alreadyNotified);
+    if (!alreadyNotified && isDue) {
+      console.log('Sending notification for reminder:', reminder);
       new Notification('Reminder', {
         body: `${reminder.description}\n$${parseFloat(reminder.amount).toFixed(2)} at ${reminder.time} on ${reminder.date}`,
         icon: 'fundifyIcon.png'
       });
-      notified.push(idx);
+      notified.push(reminder.id);
     }
   });
   setNotifiedIds(notified);
