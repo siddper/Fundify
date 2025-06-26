@@ -107,7 +107,7 @@ body.settings-bg {
 }
 .settings-section-item {
   color: var(--text-muted);
-  font-size: 1.08rem;
+  font-size: 1rem;
   font-weight: 500;
   padding: 8px;
   border: none;
@@ -192,6 +192,7 @@ body.settings-bg {
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
 .settings-field-row label {
   min-width: 110px;
@@ -283,4 +284,97 @@ body.settings-bg {
 }
 .settings-edit-btn, .settings-cancel-btn {
   min-width: 120px;
-} 
+}
+
+.settings-security-fields {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.settings-security-fields .settings-field-row {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 0;
+  margin: 0;
+}
+
+.settings-security-fields label {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.settings-security-fields .switch {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Modern toggle switch for settings */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px; /* Updated to match .slider width */
+  height: 28px; /* Updated to match .slider height */
+  margin-left: 18px;
+  vertical-align: middle;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #444a54;
+  transition: background 0.25s, border 0.25s;
+  border-radius: 999px;
+  width: 60px;
+  height: 28px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  transition: transform 0.25s cubic-bezier(.4, 0, .2, 1), background 0.18s;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px 0 rgba(35, 95, 214, 0.10);
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+input:checked + .slider:before {
+  transform: translate(30px, -50%);
+  background-color: #fff;
+}
+
+.slider.round {
+  border-radius: 999px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch input:focus + .slider {
+  box-shadow: 0 0 0 2px #235fd655;
+}

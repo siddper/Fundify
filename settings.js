@@ -126,6 +126,107 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  async function renderSecuritySection() {
+    contentDiv.innerHTML = `
+      <div class="settings-content-title" style="display:flex;align-items:center;font-size:1.3rem;font-weight:600;margin-bottom:32px;">
+        <span style='display:inline-flex;align-items:center;'>
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/></svg>
+        </span>
+        <span style='margin-left:14px;'>Security</span>
+      </div>
+      <div class="settings-security-fields">
+        <div class="settings-field-row">
+          <label>2-Step Verification</label>
+          <label class="switch">
+            <input type="checkbox" id="twofa-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div id="twofa-message" style="color:var(--text-muted);margin-top:12px;"></div>
+      </div>
+    `;
+
+    // Fetch user info to get 2FA status
+    const user = await fetchUserInfo();
+    if (!user) return;
+    const toggle = contentDiv.querySelector('#twofa-toggle');
+    // Set toggle state based on DB value
+    toggle.checked = !!user.two_factor_enabled;
+
+    toggle.addEventListener('change', async function() {
+      const msg = contentDiv.querySelector('#twofa-message');
+      msg.textContent = '';
+      toggle.disabled = true;
+      let url = toggle.checked ? 'enable-2fa' : 'disable-2fa';
+      try {
+        const res = await fetch(`http://localhost:8000/${url}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          toggle.checked = url === 'enable-2fa';
+          msg.textContent = toggle.checked
+            ? '2-step verification is now enabled. You will be asked for a code when signing in.'
+            : '2-step verification is now disabled.';
+        } else {
+          msg.textContent = data.error || 'Failed to update 2FA status.';
+          toggle.checked = !toggle.checked; // revert
+        }
+      } catch {
+        msg.textContent = 'Server error. Please try again.';
+        toggle.checked = !toggle.checked; // revert
+      }
+      toggle.disabled = false;
+    });
+  }
+
+  async function renderNotificationsSection() {
+    contentDiv.innerHTML = `<div class="settings-content-title" style="display:flex;align-items:center;font-size:1.3rem;font-weight:600;margin-bottom:32px;"><span style='display:inline-flex;align-items:center;'><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20px\" viewBox=\"0 -960 960 960\" width=\"20px\" fill=\"currentColor\"><path d=\"M192-216v-72h48v-240q0-87 53.5-153T432-763v-53q0-20 14-34t34-14q20 0 34 14t14 34v53q85 16 138.5 82T720-528v240h48v72H192ZM479.79-96Q450-96 429-117.15T408-168h144q0 30-21.21 51t-51 21Z\"/></svg></span><span style='margin-left:14px;'>Notifications</span></div>
+      <div class="settings-notifications-fields">
+        <div class="settings-field-row">
+          <label>Disable reminder notifications</label>
+          <label class="switch">
+            <input type="checkbox" id="disable-reminder-notifications-toggle">
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div id="notifications-message" style="color:var(--text-muted);margin-top:12px;"></div>
+      </div>`;
+    // Fetch user info to get notification setting
+    const user = await fetchUserInfo();
+    if (!user) return;
+    const toggle = contentDiv.querySelector('#disable-reminder-notifications-toggle');
+    // Set toggle state based on DB value
+    toggle.checked = !!user.disable_reminder_notifications;
+    toggle.addEventListener('change', async function() {
+      const msg = contentDiv.querySelector('#notifications-message');
+      msg.textContent = '';
+      toggle.disabled = true;
+      try {
+        const res = await fetch('http://localhost:8000/update-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, field: 'disable_reminder_notifications', value: toggle.checked })
+        });
+        const data = await res.json();
+        if (data.success) {
+          msg.textContent = toggle.checked
+            ? 'Reminder notifications are now disabled.'
+            : 'Reminder notifications are enabled.';
+        } else {
+          msg.textContent = data.error || 'Failed to update notification setting.';
+          toggle.checked = !toggle.checked; // revert
+        }
+      } catch {
+        msg.textContent = 'Server error. Please try again.';
+        toggle.checked = !toggle.checked; // revert
+      }
+      toggle.disabled = false;
+    });
+  }
+
   function setActive(index) {
     sidebarItems.forEach((item, i) => {
       if (i === index) {
@@ -137,6 +238,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update content
     if (index === 0) {
       renderAccountSection();
+    } else if (index === 1) {
+      renderNotificationsSection();
+    } else if (index === 2) {
+      renderSecuritySection();
     } else {
       // Update content title with icon and label
       const icon = sidebarItems[index].querySelector('.settings-section-icon').innerHTML;

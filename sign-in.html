@@ -29,6 +29,21 @@
       <div class="auth-footer">Don't have an account? <a href="create-account.html">Create one</a></div>
     </div>
   </div>
+  <div id="twofa-modal" class="modal-bg">
+    <div class="modal-content">
+      <button class="modal-close" id="twofa-close">&times;</button>
+      <h2 class="twofa-title" style="color:#fff;">Two-Factor Authentication</h2>
+      <p class="twofa-instructions">Enter the 4-digit code sent to your email.</p>
+      <div class="twofa-inputs">
+        <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+      </div>
+      <div id="twofa-error" class="auth-error" style="display:none;"></div>
+      <button id="twofa-submit" class="auth-btn">Verify</button>
+    </div>
+  </div>
   <script src="auth.js"></script>
 </body>
 </html> 

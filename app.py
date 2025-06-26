@@ -8,6 +8,8 @@ import os
 import groq
 from dotenv import load_dotenv
 from flask_mail import Mail, Message
+from sqlalchemy import Boolean, String, DateTime
+import random
 
 load_dotenv()
 
@@ -38,6 +40,10 @@ class User(db.Model):
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    two_factor_enabled = db.Column(db.Boolean, default=False)
+    two_factor_code = db.Column(db.String(8), nullable=True)
+    two_factor_expiry = db.Column(db.DateTime, nullable=True)
+    disable_reminder_notifications = db.Column(db.Boolean, default=False)
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -100,6 +106,24 @@ def login():
     user = User.query.filter_by(email=email).first()
     if not user or not bcrypt.check_password_hash(user.password_hash, password):
         return jsonify({'success': False, 'error': 'Invalid email or password.'}), 401
+
+    # 2FA logic
+    if user.two_factor_enabled:
+        code = f'{random.randint(1000, 9999)}'
+        user.two_factor_code = code
+        user.two_factor_expiry = datetime.utcnow() + timedelta(minutes=10)
+        db.session.commit()
+        # Send code via email
+        try:
+            msg = Message('Your Fundify 2FA Code', recipients=[user.email])
+            msg.body = f'Your Fundify 2-step verification code is: {code}\nThis code will expire in 10 minutes.'
+            mail.send(msg)
+        except Exception as e:
+            print('2FA email error:', e)
+            return jsonify({'success': False, 'error': 'Failed to send 2FA code.'}), 500
+        return jsonify({'success': False, 'two_factor_required': True, 'email': user.email})
+
+    # Normal login
     return jsonify({'success': True, 'user': {'name': user.name, 'email': user.email}})
 
 @app.route('/presets', methods=['GET'])
@@ -929,7 +953,12 @@ def user_info():
     user = User.query.filter_by(email=email).first()
     if not user:
         return jsonify({'success': False, 'error': 'User not found.'}), 404
-    return jsonify({'success': True, 'user': {'name': user.name, 'email': user.email}})
+    return jsonify({'success': True, 'user': {
+        'name': user.name,
+        'email': user.email,
+        'two_factor_enabled': user.two_factor_enabled,
+        'disable_reminder_notifications': user.disable_reminder_notifications
+    }})
 
 @app.route('/update-user', methods=['POST'])
 def update_user():
@@ -953,9 +982,51 @@ def update_user():
         user.email = value
     elif field == 'password':
         user.password_hash = bcrypt.generate_password_hash(value).decode('utf-8')
+    elif field == 'disable_reminder_notifications':
+        user.disable_reminder_notifications = bool(value)
     else:
         return jsonify({'success': False, 'error': 'Invalid field.'}), 400
 
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/verify-2fa', methods=['POST'])
+def verify_2fa():
+    data = request.json
+    email = data.get('email')
+    code = data.get('code')
+    user = User.query.filter_by(email=email).first()
+    if not user or not user.two_factor_enabled:
+        return jsonify({'success': False, 'error': '2FA not enabled.'}), 400
+    if not user.two_factor_code or not user.two_factor_expiry or datetime.utcnow() > user.two_factor_expiry:
+        return jsonify({'success': False, 'error': '2FA code expired. Please sign in again.'}), 400
+    if user.two_factor_code != code:
+        return jsonify({'success': False, 'error': 'Invalid 2FA code.'}), 400
+    # Clear code after successful verification
+    user.two_factor_code = None
+    user.two_factor_expiry = None
+    db.session.commit()
+    return jsonify({'success': True, 'user': {'name': user.name, 'email': user.email}})
+
+@app.route('/enable-2fa', methods=['POST'])
+def enable_2fa():
+    data = request.json
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    user.two_factor_enabled = True
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/disable-2fa', methods=['POST'])
+def disable_2fa():
+    data = request.json
+    email = data.get('email')
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    user.two_factor_enabled = False
     db.session.commit()
     return jsonify({'success': True})
 

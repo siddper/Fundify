@@ -105,7 +105,72 @@ if (loginForm) {
         body: JSON.stringify({ email, password })
       });
       const data = await res.json();
-      if (!data.success) {
+      if (!data.success && data.two_factor_required) {
+        // Show 2FA modal
+        document.getElementById('twofa-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+        const twofaEmail = email; // Save for verify step
+
+        const digitInputs = document.querySelectorAll('.twofa-digit');
+        digitInputs.forEach((input, idx) => {
+          input.addEventListener('input', (e) => {
+            if (e.inputType === 'insertText' && input.value.length === 1 && idx < 3) {
+              digitInputs[idx + 1].focus();
+            }
+          });
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !input.value && idx > 0) {
+              digitInputs[idx - 1].focus();
+            }
+            // Allow only numbers
+            if (!e.ctrlKey && !e.metaKey && e.key.length === 1 && !/[0-9]/.test(e.key)) {
+              e.preventDefault();
+            }
+            // If Enter is pressed, trigger Verify
+            if (e.key === 'Enter') {
+              document.getElementById('twofa-submit').click();
+            }
+          });
+        });
+        digitInputs[0].focus();
+
+        document.getElementById('twofa-submit').onclick = async function() {
+          const digits = Array.from(document.querySelectorAll('.twofa-digit')).map(input => input.value.trim());
+          const code = digits.join('');
+          const errorDiv = document.getElementById('twofa-error');
+          errorDiv.style.display = 'none';
+          if (!/^[0-9]{4}$/.test(code)) {
+            errorDiv.textContent = 'Please enter the 4-digit code.';
+            errorDiv.style.display = 'block';
+            return;
+          }
+          try {
+            const res2 = await fetch('http://127.0.0.1:8000/verify-2fa', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: twofaEmail, code })
+            });
+            const data2 = await res2.json();
+            if (data2.success) {
+              localStorage.setItem('fundify_user_email', twofaEmail);
+              window.location.href = 'dashboard.html';
+            } else {
+              errorDiv.textContent = data2.error || 'Invalid code.';
+              errorDiv.style.display = 'block';
+            }
+          } catch {
+            errorDiv.textContent = 'Server error. Please try again.';
+            errorDiv.style.display = 'block';
+          }
+        };
+
+        // Optional: allow closing modal
+        document.getElementById('twofa-close').onclick = function() {
+          document.getElementById('twofa-modal').classList.remove('active');
+          document.body.style.overflow = '';
+        };
+        return;
+      } else if (!data.success) {
         errorDiv.textContent = data.error || 'Login failed.';
         errorDiv.style.display = 'block';
       } else {
