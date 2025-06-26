@@ -921,6 +921,44 @@ def help_ai():
         print('HELP-AI ERROR:', e)
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/user-info', methods=['GET'])
+def user_info():
+    email = request.args.get('email')
+    if not email:
+        return jsonify({'success': False, 'error': 'Email required.'}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    return jsonify({'success': True, 'user': {'name': user.name, 'email': user.email}})
+
+@app.route('/update-user', methods=['POST'])
+def update_user():
+    data = request.json
+    email = data.get('email')
+    field = data.get('field')
+    value = data.get('value')
+    if not email or not field or value is None:
+        return jsonify({'success': False, 'error': 'Missing required fields.'}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+
+    if field == 'name':
+        user.name = value
+    elif field == 'email':
+        # Check if new email is already taken
+        if User.query.filter_by(email=value).first():
+            return jsonify({'success': False, 'error': 'Email already in use.'}), 400
+        user.email = value
+    elif field == 'password':
+        user.password_hash = bcrypt.generate_password_hash(value).decode('utf-8')
+    else:
+        return jsonify({'success': False, 'error': 'Invalid field.'}), 400
+
+    db.session.commit()
+    return jsonify({'success': True})
+
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=8000) 
