@@ -736,6 +736,18 @@ def fundai_chat():
     if not user:
         return jsonify({'success': False, 'error': 'User not found.'}), 404
 
+    # Fetch reminders for the user
+    reminders = Reminder.query.filter_by(user_email=user_email).all()
+    reminders_list = [
+        {
+            'id': r.id,
+            'amount': r.amount,
+            'date': r.date,
+            'time': r.time,
+            'description': r.description
+        } for r in reminders
+    ]
+
     try:
         client = groq.Groq(api_key=GROQ_API_KEY)
         
@@ -748,25 +760,38 @@ def fundai_chat():
         else:
             tx_context = "You don't have any transactions recorded yet."
 
+        # Prepare reminders data for context
+        reminders_context = ""
+        if reminders_list:
+            reminders_context = "Here are your upcoming reminders (bills, payments, etc):\n"
+            for r in reminders_list[-20:]:
+                reminders_context += f"- {r['date']} at {r['time']}: ${r['amount']} for {r['description']}\n"
+        else:
+            reminders_context = "You don't have any reminders set."
+
         system_prompt = f"""
-        You are FundAI, a helpful and friendly financial assistant for the Fundify app. You have access to the user's transaction data and can provide personalized financial insights.
+        You are FundAI, a helpful and friendly financial assistant for the Fundify app. You have access to the user's transaction data and reminders, and can provide personalized financial insights.
 
         **Your Capabilities:**
         - Analyze spending patterns and trends
         - Provide budgeting advice
-        - Answer questions about specific transactions
+        - Answer questions about specific transactions or reminders
         - Help with financial planning
         - Explain financial concepts in simple terms
         - Identify potential areas for saving money
         - Suggest ways to improve financial health
+        - Reference the user's reminders for upcoming bills, payments, or important dates
 
         **User's Transaction Data:**
         {tx_context}
 
+        **User's Reminders:**
+        {reminders_context}
+
         **Guidelines:**
         - Be conversational, friendly, and helpful
         - Provide specific, actionable advice when possible
-        - Use the transaction data to give personalized insights
+        - Use the transaction and reminder data to give personalized insights
         - Keep responses concise but informative (2-4 sentences typically)
         - If asked about data you don't have, politely explain what information would be needed
         - Focus on being helpful rather than judgmental
