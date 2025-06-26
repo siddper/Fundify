@@ -311,8 +311,13 @@
             const contentDiv = document.createElement('div');
             contentDiv.className = 'mini-fundai-message-content';
             contentDiv.innerHTML = `<p>${escapeHtml(content)}</p>`;
-            msgDiv.appendChild(avatar);
-            msgDiv.appendChild(contentDiv);
+            if (sender === 'user') {
+                msgDiv.appendChild(contentDiv);
+                msgDiv.appendChild(avatar);
+            } else {
+                msgDiv.appendChild(avatar);
+                msgDiv.appendChild(contentDiv);
+            }
             chatMessages.appendChild(msgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
