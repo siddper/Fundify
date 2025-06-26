@@ -2493,3 +2493,91 @@ if (repeatToggle && repeatOptionsContainer) {
         }
     });
 }
+
+// --- Transactions Lock Overlay Logic ---
+async function checkAndShowTransactionsLock() {
+  const overlay = document.getElementById('transactions-lock-overlay');
+  const form = document.getElementById('unlock-transactions-form');
+  const passwordInput = document.getElementById('unlock-password-input');
+  const errorMsg = document.getElementById('unlock-error-msg');
+  const toggleBtn = document.getElementById('toggle-unlock-password');
+  const eyeIcon = document.getElementById('unlock-password-eye');
+  let unlocked = false;
+
+  // Helper: fetch user info
+  async function fetchUserInfo() {
+    const email = localStorage.getItem('fundify_user_email');
+    if (!email) return null;
+    try {
+      const res = await fetch(`http://localhost:8000/user-info?email=${encodeURIComponent(email)}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.success) return data.user;
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  const user = await fetchUserInfo();
+  if (!user || !user.require_password_for_transactions) {
+    overlay.style.display = 'none';
+    document.body.classList.remove('transactions-blur');
+    return;
+  }
+  overlay.style.display = 'flex';
+  document.body.classList.add('transactions-blur');
+  errorMsg.textContent = '';
+  passwordInput.value = '';
+  passwordInput.type = 'password';
+  eyeIcon.innerHTML = `<path d='M0 0h24v24H0z' fill='none'/><path d='M12 6a9.77 9.77 0 0 1 8.94 6A9.77 9.77 0 0 1 12 18a9.77 9.77 0 0 1-8.94-6A9.77 9.77 0 0 1 12 6m0-2C6.48 4 1.73 7.61.07 12c1.66 4.39 6.41 8 11.93 8s10.27-3.61 11.93-8C22.27 7.61 17.52 4 12 4zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z'/>`;
+
+  // Show/hide password logic
+  toggleBtn.onclick = function() {
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+    } else {
+      passwordInput.type = 'password';
+    }
+  };
+
+  // Unlock logic
+  form.onsubmit = async function(e) {
+    e.preventDefault();
+    errorMsg.textContent = '';
+    const email = localStorage.getItem('fundify_user_email');
+    const password = passwordInput.value;
+    if (!email || !password) {
+      errorMsg.textContent = 'Please enter your password.';
+      return;
+    }
+    try {
+      const res = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        overlay.style.display = 'none';
+        document.body.classList.remove('transactions-blur');
+        unlocked = true;
+      } else if (data.two_factor_required) {
+        errorMsg.textContent = '2FA is enabled. Please sign in again.';
+      } else {
+        errorMsg.textContent = data.error || 'Incorrect password.';
+      }
+    } catch {
+      errorMsg.textContent = 'Server error. Please try again.';
+    }
+  };
+
+  // Enter key submits form
+  passwordInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      form.requestSubmit();
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', checkAndShowTransactionsLock);

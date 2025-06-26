@@ -128,25 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   async function renderSecuritySection() {
     contentDiv.innerHTML = `
-      <div class="settings-content-title" style="display:flex;align-items:center;font-size:1.3rem;font-weight:600;margin-bottom:32px;">
+      <div class=\"settings-content-title\" style=\"display:flex;align-items:center;font-size:1.3rem;font-weight:600;margin-bottom:32px;\">
         <span style='display:inline-flex;align-items:center;'>
-          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/></svg>
+          <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"20px\" viewBox=\"0 -960 960 960\" width=\"20px\" fill=\"currentColor\"><path d=\"M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z\"/></svg>
         </span>
         <span style='margin-left:14px;'>Security</span>
       </div>
-      <div class="settings-security-fields">
-        <div class="settings-field-row">
-          <label>2-Step Verification</label>
-          <label class="switch">
-            <input type="checkbox" id="twofa-toggle">
-            <span class="slider round"></span>
-          </label>
-        </div>
-        <div id="twofa-message" style="color:var(--text-muted);margin-top:12px;"></div>
-      </div>
-    `;
+      <div class=\"settings-security-fields\">\n        <div class=\"settings-field-row\">\n          <label>2-Step Verification</label>\n          <label class=\"switch\">\n            <input type=\"checkbox\" id=\"twofa-toggle\">\n            <span class=\"slider round\"></span>\n          </label>\n        </div>\n        <div id=\"twofa-message\" style=\"color:var(--text-muted);margin-top:12px;\"></div>\n        <div class=\"settings-field-row\" style=\"margin-top:32px;\">\n          <label>Require password to view transactions</label>\n          <label class=\"switch\">\n            <input type=\"checkbox\" id=\"require-password-toggle\">\n            <span class=\"slider round\"></span>\n          </label>\n        </div>\n        <div id=\"require-password-message\" style=\"color:var(--text-muted);margin-top:12px;\"></div>\n        <div class=\"settings-fundai-access-label\">Disable FundAI's access to:</div>\n        <div class=\"settings-fundai-access-group\">\n          <div class=\"settings-field-row settings-fundai-access-row\">\n            <label>Transactions</label>\n            <label class=\"switch\">\n              <input type=\"checkbox\" id=\"disable-fundai-transactions-toggle\">\n              <span class=\"slider round\"></span>\n            </label>\n          </div>\n          <div class=\"settings-field-row settings-fundai-access-row\">\n            <label>Reminders</label>\n            <label class=\"switch\">\n              <input type=\"checkbox\" id=\"disable-fundai-reminders-toggle\">\n              <span class=\"slider round\"></span>\n            </label>\n          </div>\n        </div>\n        <div id=\"disable-fundai-message\" style=\"color:var(--text-muted);margin-top:12px;\"></div>\n      </div>\n    `;
 
-    // Fetch user info to get 2FA status
+    // Fetch user info to get 2FA, require-password, and FundAI disable status
     const user = await fetchUserInfo();
     if (!user) return;
     const toggle = contentDiv.querySelector('#twofa-toggle');
@@ -179,6 +169,71 @@ document.addEventListener('DOMContentLoaded', function() {
         toggle.checked = !toggle.checked; // revert
       }
       toggle.disabled = false;
+    });
+
+    // Require password toggle logic
+    const requirePwToggle = contentDiv.querySelector('#require-password-toggle');
+    requirePwToggle.checked = !!user.require_password_for_transactions;
+    requirePwToggle.addEventListener('change', async function() {
+      const msg = contentDiv.querySelector('#require-password-message');
+      msg.textContent = '';
+      requirePwToggle.disabled = true;
+      try {
+        const res = await fetch('http://localhost:8000/update-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: user.email, field: 'require_password_for_transactions', value: requirePwToggle.checked })
+        });
+        const data = await res.json();
+        if (data.success) {
+          msg.textContent = requirePwToggle.checked
+            ? 'Password will be required to view transactions.'
+            : 'Password is no longer required to view transactions.';
+        } else {
+          msg.textContent = data.error || 'Failed to update setting.';
+          requirePwToggle.checked = !requirePwToggle.checked; // revert
+        }
+      } catch {
+        msg.textContent = 'Server error. Please try again.';
+        requirePwToggle.checked = !requirePwToggle.checked; // revert
+      }
+      requirePwToggle.disabled = false;
+    });
+
+    // FundAI disable toggles
+    const disableTxToggle = contentDiv.querySelector('#disable-fundai-transactions-toggle');
+    const disableRemToggle = contentDiv.querySelector('#disable-fundai-reminders-toggle');
+    disableTxToggle.checked = !!user.disable_fundai_transactions;
+    disableRemToggle.checked = !!user.disable_fundai_reminders;
+    [
+      { toggle: disableTxToggle, field: 'disable_fundai_transactions', label: 'transactions' },
+      { toggle: disableRemToggle, field: 'disable_fundai_reminders', label: 'reminders' }
+    ].forEach(({ toggle, field, label }) => {
+      toggle.addEventListener('change', async function() {
+        const msg = contentDiv.querySelector('#disable-fundai-message');
+        msg.textContent = '';
+        toggle.disabled = true;
+        try {
+          const res = await fetch('http://localhost:8000/update-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, field, value: toggle.checked })
+          });
+          const data = await res.json();
+          if (data.success) {
+            msg.textContent = toggle.checked
+              ? `FundAI will not have access to your ${label}.`
+              : `FundAI can now access your ${label}.`;
+          } else {
+            msg.textContent = data.error || `Failed to update FundAI ${label} access.`;
+            toggle.checked = !toggle.checked; // revert
+          }
+        } catch {
+          msg.textContent = 'Server error. Please try again.';
+          toggle.checked = !toggle.checked; // revert
+        }
+        toggle.disabled = false;
+      });
     });
   }
 

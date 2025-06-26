@@ -268,8 +268,6 @@ const addReminderForm = document.getElementById('add-reminder-form');
 let editingId = null;
 let allReminders = [];
 
-const API_BASE = 'http://127.0.0.1:8000'; // or wherever your Flask backend runs
-
 async function fetchNotificationsSetting() {
   try {
     const res = await fetch(`http://127.0.0.1:8000/user-info?email=${encodeURIComponent(userEmail)}`);

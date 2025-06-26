@@ -117,6 +117,27 @@
         </table>
       </section>
     </main>
+    <div id="transactions-lock-overlay" class="modal-bg" style="display:none;z-index:1000;">
+      <form id="unlock-transactions-form" class="modal-content transactions-lock-modal">
+        <div class="modal-header" style="border-bottom:none;padding-bottom:0;margin-bottom:0;">
+          <div style="font-size:1.25rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:10px;">
+            <svg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='currentColor'><path d='M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z'/></svg>
+            Transactions Locked
+          </div>
+        </div>
+        <div class="modal-body" style="padding-top:0;">
+          <div style="color:var(--text-muted);font-size:1.08rem;margin-bottom:18px;text-align:center;">Enter your password to view your transactions.</div>
+          <div class="form-group" style="width:100%;margin-bottom:18px;position:relative;">
+            <input type="password" id="unlock-password-input" class="modal-input" placeholder="Password" autocomplete="current-password" required style="padding-right:44px;" />
+            <button type="button" id="toggle-unlock-password" tabindex="-1" class="input-eye-btn" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;outline:none;cursor:pointer;padding:0;display:flex;align-items:center;">
+              <svg id="unlock-password-eye" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--text-muted)"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/></svg>
+            </button>
+          </div>
+          <button type="submit" class="modal-action-btn" style="width:100%;margin-bottom:10px;">Unlock</button>
+          <div id="unlock-error-msg" style="color:#ff4d4f;font-size:1.05rem;margin-top:2px;min-height:22px;text-align:center;"></div>
+        </div>
+      </form>
+    </div>
   </div>
   <div class="modal-bg" id="addModal">
     <div class="modal-content">
@@ -425,6 +446,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
+  <script src="global-notifications.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

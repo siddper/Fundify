@@ -44,6 +44,9 @@ class User(db.Model):
     two_factor_code = db.Column(db.String(8), nullable=True)
     two_factor_expiry = db.Column(db.DateTime, nullable=True)
     disable_reminder_notifications = db.Column(db.Boolean, default=False)
+    require_password_for_transactions = db.Column(db.Boolean, default=False)
+    disable_fundai_transactions = db.Column(db.Boolean, default=False)
+    disable_fundai_reminders = db.Column(db.Boolean, default=False)
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -777,21 +780,27 @@ def fundai_chat():
         
         # Prepare transaction data for context
         tx_context = ""
-        if transactions:
-            tx_context = "Here are your recent transactions:\n"
-            for tx in transactions[-20:]:  # Last 20 transactions for context
-                tx_context += f"- {tx['date']}: {tx['type']} ${tx['amount']} at {tx['store']} ({tx['method']})\n"
+        if not user.disable_fundai_transactions:
+            if transactions:
+                tx_context = "Here are your recent transactions:\n"
+                for tx in transactions[-20:]:
+                    tx_context += f"- {tx['date']}: {tx['type']} ${tx['amount']} at {tx['store']} ({tx['method']})\n"
+            else:
+                tx_context = "You don't have any transactions recorded yet."
         else:
-            tx_context = "You don't have any transactions recorded yet."
+            tx_context = "(You have disabled FundAI's access to your transactions.)"
 
         # Prepare reminders data for context
         reminders_context = ""
-        if reminders_list:
+        if not user.disable_fundai_reminders:
             reminders_context = "Here are your upcoming reminders (bills, payments, etc):\n"
-            for r in reminders_list[-20:]:
-                reminders_context += f"- {r['date']} at {r['time']}: ${r['amount']} for {r['description']}\n"
+            if reminders_list:
+                for r in reminders_list[-20:]:
+                    reminders_context += f"- {r['date']} at {r['time']}: ${r['amount']} for {r['description']}\n"
+            else:
+                reminders_context = "You don't have any reminders set."
         else:
-            reminders_context = "You don't have any reminders set."
+            reminders_context = "(You have disabled FundAI's access to your reminders.)"
 
         system_prompt = f"""
         You are FundAI, a helpful and friendly financial assistant for the Fundify app. You have access to the user's transaction data and reminders, and can provide personalized financial insights.
@@ -957,7 +966,10 @@ def user_info():
         'name': user.name,
         'email': user.email,
         'two_factor_enabled': user.two_factor_enabled,
-        'disable_reminder_notifications': user.disable_reminder_notifications
+        'disable_reminder_notifications': user.disable_reminder_notifications,
+        'require_password_for_transactions': user.require_password_for_transactions,
+        'disable_fundai_transactions': user.disable_fundai_transactions,
+        'disable_fundai_reminders': user.disable_fundai_reminders
     }})
 
 @app.route('/update-user', methods=['POST'])
@@ -984,6 +996,12 @@ def update_user():
         user.password_hash = bcrypt.generate_password_hash(value).decode('utf-8')
     elif field == 'disable_reminder_notifications':
         user.disable_reminder_notifications = bool(value)
+    elif field == 'require_password_for_transactions':
+        user.require_password_for_transactions = bool(value)
+    elif field == 'disable_fundai_transactions':
+        user.disable_fundai_transactions = bool(value)
+    elif field == 'disable_fundai_reminders':
+        user.disable_fundai_reminders = bool(value)
     else:
         return jsonify({'success': False, 'error': 'Invalid field.'}), 400
 

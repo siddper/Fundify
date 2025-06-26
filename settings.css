@@ -378,3 +378,29 @@ input:checked + .slider:before {
 .switch input:focus + .slider {
   box-shadow: 0 0 0 2px #235fd655;
 }
+
+/* Add spacing for FundAI access toggles in Security section */
+.settings-fundai-access-label {
+  margin-top: 36px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 1.08rem;
+}
+.settings-fundai-access-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-left: 12px;
+  margin-bottom: 0;
+  justify-content: flex-start;
+}
+.settings-fundai-access-row:first-of-type {
+  margin-bottom: 32px;
+}
+
+.settings-fundai-access-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
