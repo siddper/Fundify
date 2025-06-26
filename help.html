@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="auth-styles.css">
     <link rel="stylesheet" href="help.css">
     <script type="text/javascript" src="command-bar.js" defer></script>
+    <script type="text/javascript" src="mini-fundAI.js" defer></script>
 </head>
 <body class="help-bg">
   <div class="help-layout">
@@ -59,7 +60,54 @@
           <span class="help-title">Help</span>
         </div>
       </header>
+      <section class="faq-section">
+        <h1 class="faq-title">Frequently Asked Questions</h1>
+        <p class="faq-subtitle">Quick answers to questions you may have. Can't find what you're looking for? Ask below or contact support.</p>
+        <div style="width: 95%; margin: 0 auto 32px auto; display: flex; flex-direction: row; align-items: stretch; gap: 12px;">
+          <textarea id="help-ai-question" rows="3" placeholder="Ask a question about how to use Fundify..."></textarea>
+          <div id="help-ai-answer"></div>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-card">
+            <strong>What is Fundify?</strong>
+            <p>Fundify is a personal finance management platform that helps you track spending, set budgets, and achieve your financial goals. It is made for students, but can be used by anyone.</p>
+          </div>
+          <div class="faq-card">
+            <strong>How do I add a new transaction?</strong>
+            <p>Go to the Dashboard and click the "Add" button. Fill in the details and save your transaction.</p>
+          </div>
+          <div class="faq-card">
+            <strong>Can I set reminders for bills?</strong>
+            <p>Yes! Use the Reminders page to schedule bill reminders and never miss a payment.</p>
+          </div>
+          <div class="faq-card">
+            <strong>How do I use FundAI?</strong>
+            <p>FundAI analyzes your spending and provides personalized financial insights. Access it from the FundAI page.</p>
+          </div>
+          <div class="faq-card">
+            <strong>Is my data secure?</strong>
+            <p>Absolutely. Your data is stored in a local database. To maximize security, we recommend not using the FundAI chat feature.</p>
+          </div>
+          <div class="faq-card">
+            <strong>Can I export my data?</strong>
+            <p>Yes, you can export your transactions and summaries from the Settings page.</p>
+          </div>
+          <div class="faq-card">
+            <strong>How do I contact support?</strong>
+            <p>Click the "Help" page and use the contact form or email us at fundifyteam@gmail.com</p>
+          </div>
+          <div class="faq-card">
+            <strong>Can I use Fundify on mobile?</strong>
+            <p>It is not recommended to use Fundify on mobile, as it is not optimized for mobile devices. However, our team is working on a mobile version of Fundify.</p>
+          </div>
+          <div class="faq-card">
+            <strong>How do I use the command bar?</strong>
+            <p>The command bar is a feature that allows you to quickly navigate to different pages and perform actions. To use it, simply click Cmd+K (Mac) or Ctrl+K (Windows).</p>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
+  <script src="help.js"></script>
 </body>
 </html>

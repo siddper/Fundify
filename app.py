@@ -864,6 +864,38 @@ def delete_reminder(reminder_id):
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/help-ai', methods=['POST'])
+def help_ai():
+    data = request.json
+    question = data.get('question')
+    context = data.get('context')
+    if not question or not context:
+        return jsonify({'success': False, 'error': 'Both question and context are required.'}), 400
+    if not GROQ_API_KEY:
+        return jsonify({'success': False, 'error': 'GROQ_API_KEY not configured'}), 500
+    try:
+        import groq
+        client = groq.Groq(api_key=GROQ_API_KEY)
+        system_prompt = context
+        user_prompt = question
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            model="llama3-8b-8192",
+            temperature=0.2,
+            max_tokens=512,
+            top_p=1,
+            stop=None,
+            stream=False,
+        )
+        ai_response = chat_completion.choices[0].message.content
+        return jsonify({'answer': ai_response})
+    except Exception as e:
+        print('HELP-AI ERROR:', e)
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=8000) 
