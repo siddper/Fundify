@@ -62,6 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
           <button class="settings-edit-btn">Change password</button>
         </div>
       </div>
+      <div class="settings-account-actions" style="margin-top:30px;display:flex;gap:16px;">
+        <button id="logout-btn" class="settings-edit-btn" style="background:#444a54; color:#fff;">Log out</button>
+        <button id="delete-account-btn" class="settings-cancel-btn" style="background:#ff4d4f; color:#fff;">Delete account</button>
+      </div>
     `;
     // Add edit logic
     contentDiv.querySelectorAll('.settings-edit-btn').forEach(btn => {
@@ -124,6 +128,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
     });
+    // Add logout and delete account logic
+    const logoutBtn = contentDiv.querySelector('#logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function() {
+        localStorage.removeItem('fundify_user_email');
+        window.location.href = 'sign-in.html';
+      });
+    }
+    const deleteBtn = contentDiv.querySelector('#delete-account-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async function() {
+        if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
+        const email = localStorage.getItem('fundify_user_email');
+        if (!email) return;
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Deleting...';
+        try {
+          const res = await fetch('http://localhost:8000/delete-account', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          if (data.success) {
+            localStorage.removeItem('fundify_user_email');
+            window.location.href = 'sign-in.html';
+          } else {
+            alert(data.error || 'Failed to delete account.');
+          }
+        } catch {
+          alert('Server error. Please try again.');
+        }
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = 'Delete account';
+      });
+    }
   }
 
   async function renderSecuritySection() {

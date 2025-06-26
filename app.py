@@ -1169,6 +1169,28 @@ def disable_2fa():
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/delete-account', methods=['POST'])
+def delete_account():
+    data = request.json
+    email = data.get('email')
+    if not email:
+        return jsonify({'success': False, 'error': 'Email required.'}), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    try:
+        # Delete all related data
+        Transaction.query.filter_by(user_id=user.id).delete()
+        Preset.query.filter_by(user_id=user.id).delete()
+        Budget.query.filter_by(user_id=user.id).delete()
+        Reminder.query.filter_by(user_email=user.email).delete()
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=8000) 

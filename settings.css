@@ -233,7 +233,7 @@ body.settings-bg {
 .settings-edit-btn:hover, .settings-cancel-btn:hover {
   background: #1c4daf;
 }
-.settings-edit-btn {
+.settings-edit-btn:not(#logout-btn, #delete-account-btn) {
   margin-left: 12px;
 }
 .settings-cancel-btn {
@@ -403,4 +403,40 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   gap: 0;
+}
+
+.settings-account-actions {
+  display: flex;
+  gap: 18px;
+  margin-top: 40px;
+}
+#logout-btn {
+  background: #444a54;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 18px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+#logout-btn:hover {
+  background: #23262a;
+}
+#delete-account-btn {
+  background: #ff4d4f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 18px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+#delete-account-btn:hover {
+  background: #e24141;
 }
