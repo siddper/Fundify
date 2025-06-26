@@ -6,17 +6,45 @@ function getCurrentMonthYear() {
   return { month: now.getMonth() + 1, year: now.getFullYear() };
 }
 
-function getBudget() {
+async function getBudget() {
   const { month, year } = getCurrentMonthYear();
-  const key = `fundify_budget_${month}_${year}`;
-  const val = localStorage.getItem(key);
-  return val ? parseFloat(val) : 0;
+  const email = localStorage.getItem('fundify_user_email');
+  if (!email) return 0;
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/budget?email=${encodeURIComponent(email)}&month=${month}&year=${year}`);
+    const data = await response.json();
+    if (data.success) {
+      return data.budget.budget_amount || 0;
+    }
+  } catch (error) {
+    console.error('Error fetching budget:', error);
+  }
+  return 0;
 }
 
-function setBudget(amount) {
+async function setBudget(amount) {
   const { month, year } = getCurrentMonthYear();
-  const key = `fundify_budget_${month}_${year}`;
-  localStorage.setItem(key, amount);
+  const email = localStorage.getItem('fundify_user_email');
+  if (!email) return false;
+  
+  try {
+    const response = await fetch('http://127.0.0.1:8000/budget', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        month: month,
+        year: year,
+        budget_amount: amount
+      })
+    });
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error('Error setting budget:', error);
+    return false;
+  }
 }
 
 function getSpentThisMonth() {
@@ -30,9 +58,9 @@ function getSpentThisMonth() {
     .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
 }
 
-function updateBudgetUI() {
+async function updateBudgetUI() {
   const spent = getSpentThisMonth();
-  const budget = getBudget();
+  const budget = await getBudget();
   const remaining = Math.max(0, budget - spent);
   const percent = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
 
@@ -57,17 +85,45 @@ function updateBudgetUI() {
 }
 
 // --- Goal Widget Logic ---
-function getGoal() {
+async function getGoal() {
   const { month, year } = getCurrentMonthYear();
-  const key = `fundify_goal_${month}_${year}`;
-  const val = localStorage.getItem(key);
-  return val ? parseFloat(val) : 0;
+  const email = localStorage.getItem('fundify_user_email');
+  if (!email) return 0;
+  
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/budget?email=${encodeURIComponent(email)}&month=${month}&year=${year}`);
+    const data = await response.json();
+    if (data.success) {
+      return data.budget.goal_amount || 0;
+    }
+  } catch (error) {
+    console.error('Error fetching goal:', error);
+  }
+  return 0;
 }
 
-function setGoal(amount) {
+async function setGoal(amount) {
   const { month, year } = getCurrentMonthYear();
-  const key = `fundify_goal_${month}_${year}`;
-  localStorage.setItem(key, amount);
+  const email = localStorage.getItem('fundify_user_email');
+  if (!email) return false;
+  
+  try {
+    const response = await fetch('http://127.0.0.1:8000/budget', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        month: month,
+        year: year,
+        goal_amount: amount
+      })
+    });
+    const data = await response.json();
+    return data.success;
+  } catch (error) {
+    console.error('Error setting goal:', error);
+    return false;
+  }
 }
 
 function getMadeThisMonth() {
@@ -81,9 +137,9 @@ function getMadeThisMonth() {
     .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
 }
 
-function updateGoalUI() {
+async function updateGoalUI() {
   const made = getMadeThisMonth();
-  const goal = getGoal();
+  const goal = await getGoal();
   const remaining = Math.max(0, goal - made);
   const percent = goal > 0 ? Math.min(100, (made / goal) * 100) : 0;
 
@@ -104,17 +160,22 @@ function updateGoalUI() {
 }
 
 // --- DOMContentLoaded additions for goal widget ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Set initial goal input value
-  document.getElementById('goal-input').value = getGoal() || '';
+  const goalValue = await getGoal();
+  document.getElementById('goal-input').value = goalValue || '';
 
   // Goal form submit
-  document.getElementById('goal-form').addEventListener('submit', function(e) {
+  document.getElementById('goal-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const val = parseFloat(document.getElementById('goal-input').value);
     if (!isNaN(val) && val >= 0) {
-      setGoal(val);
-      updateAllPlanWidgets();
+      const success = await setGoal(val);
+      if (success) {
+        updateAllPlanWidgets();
+      } else {
+        alert('Failed to save goal. Please try again.');
+      }
     }
   });
 
@@ -136,9 +197,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Update all widgets including AI prediction
-function updateAllPlanWidgets() {
-  updateBudgetUI();
-  updateGoalUI();
+async function updateAllPlanWidgets() {
+  await updateBudgetUI();
+  await updateGoalUI();
   updateAIPredictiveBudget();
   renderSpendingHeatmap();
   updateWhatIfResults();
@@ -162,19 +223,24 @@ async function fetchPlanTransactions() {
   updateAllPlanWidgets();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Set initial budget input value
-  document.getElementById('budget-input').value = getBudget() || '';
+  const budgetValue = await getBudget();
+  document.getElementById('budget-input').value = budgetValue || '';
   // Fetch transactions and update UI
   fetchPlanTransactions();
 
   // Budget form submit
-  document.getElementById('budget-form').addEventListener('submit', function(e) {
+  document.getElementById('budget-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const val = parseFloat(document.getElementById('budget-input').value);
     if (!isNaN(val) && val >= 0) {
-      setBudget(val);
-      updateAllPlanWidgets();
+      const success = await setBudget(val);
+      if (success) {
+        updateAllPlanWidgets();
+      } else {
+        alert('Failed to save budget. Please try again.');
+      }
     }
   });
 
@@ -194,15 +260,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  setupWhatIfSliders();
+  await setupWhatIfSliders();
   renderSpendingHeatmap();
 });
 
-function updateAIPredictiveBudget() {
+async function updateAIPredictiveBudget() {
   const spent = getSpentThisMonth();
-  const budget = getBudget();
+  const budget = await getBudget();
   const made = getMadeThisMonth();
-  const goal = getGoal();
+  const goal = await getGoal();
   const now = new Date();
   const { month, year } = getCurrentMonthYear();
   const daysInMonth = new Date(year, month, 0).getDate();
@@ -271,11 +337,11 @@ function updateAIPredictiveBudget() {
 }
 
 // --- What-If Sliders & Heatmap Logic ---
-function updateWhatIfResults() {
+async function updateWhatIfResults() {
   const spent = getSpentThisMonth();
   const made = getMadeThisMonth();
-  const budget = getBudget();
-  const goal = getGoal();
+  const budget = await getBudget();
+  const goal = await getGoal();
   const now = new Date();
   const { month, year } = getCurrentMonthYear();
   const daysInMonth = new Date(year, month, 0).getDate();
@@ -300,7 +366,7 @@ function updateWhatIfResults() {
   document.getElementById('whatif-results').innerHTML = html;
 }
 
-function setupWhatIfSliders() {
+async function setupWhatIfSliders() {
   const spendSlider = document.getElementById('whatif-spend-slider');
   const earnSlider = document.getElementById('whatif-earn-slider');
   if (!spendSlider || !earnSlider) return;
@@ -311,7 +377,7 @@ function setupWhatIfSliders() {
   const today = now.getDate();
   spendSlider.value = today > 0 ? (getSpentThisMonth() / today).toFixed(2) : 0;
   earnSlider.value = today > 0 ? (getMadeThisMonth() / today).toFixed(2) : 0;
-  updateWhatIfResults();
+  await updateWhatIfResults();
 }
 
 function renderSpendingHeatmap() {

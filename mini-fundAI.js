@@ -155,7 +155,7 @@
     .mini-fundai-message-content {
         background: var(--card-bg);
         color: var(--text);
-        border-radius: 16px 16px 16px 6px;
+        border-radius: 8px;
         padding: 12px;
         font-size: 1rem;
         max-width: 250px;
@@ -172,7 +172,7 @@
         background: var(--accent);
         color: #fff;
         align-self: flex-end;
-        border-radius: 16px 16px 6px 16px;
+        border-radius: 8px;
         box-shadow: 0 2px 12px rgba(35,95,214,0.10);
     }
     /* User's messages are at the right */

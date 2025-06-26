@@ -79,6 +79,19 @@ class Reminder(db.Model):
     time = db.Column(db.String(16), nullable=False)
     description = db.Column(db.String(200), nullable=False)
 
+class Budget(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    month = db.Column(db.Integer, nullable=False)  # 1-12
+    year = db.Column(db.Integer, nullable=False)
+    budget_amount = db.Column(db.Float, default=0.0)
+    goal_amount = db.Column(db.Float, default=0.0)
+    
+    user = db.relationship('User', backref=db.backref('budgets', lazy=True))
+    
+    # Ensure unique budget per user per month
+    __table_args__ = (db.UniqueConstraint('user_id', 'month', 'year', name='_user_month_year_uc'),)
+
 def create_db():
     with app.app_context():
         db.create_all()
@@ -746,25 +759,115 @@ def ai_recommendations():
         print('AI endpoint error (recommendations):', e)
         return jsonify({'error': str(e)}), 500
 
+@app.route('/budget', methods=['GET'])
+def get_budget():
+    user_email = request.args.get('email')
+    month = request.args.get('month', type=int)
+    year = request.args.get('year', type=int)
+    
+    if not user_email:
+        return jsonify({'success': False, 'error': 'Email required.'}), 400
+    
+    if not month or not year:
+        return jsonify({'success': False, 'error': 'Month and year required.'}), 400
+    
+    user = User.query.filter_by(email=user_email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    
+    budget = Budget.query.filter_by(user_id=user.id, month=month, year=year).first()
+    
+    if budget:
+        return jsonify({
+            'success': True,
+            'budget': {
+                'budget_amount': budget.budget_amount,
+                'goal_amount': budget.goal_amount
+            }
+        })
+    else:
+        return jsonify({
+            'success': True,
+            'budget': {
+                'budget_amount': 0.0,
+                'goal_amount': 0.0
+            }
+        })
+
+@app.route('/budget', methods=['POST'])
+def update_budget():
+    data = request.json
+    user_email = data.get('email')
+    month = data.get('month')
+    year = data.get('year')
+    budget_amount = data.get('budget_amount')
+    goal_amount = data.get('goal_amount')
+    
+    if not all([user_email, month, year]):
+        return jsonify({'success': False, 'error': 'Email, month, and year are required.'}), 400
+    
+    if budget_amount is None and goal_amount is None:
+        return jsonify({'success': False, 'error': 'At least one of budget_amount or goal_amount must be provided.'}), 400
+    
+    user = User.query.filter_by(email=user_email).first()
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found.'}), 404
+    
+    # Try to find existing budget for this month/year
+    budget = Budget.query.filter_by(user_id=user.id, month=month, year=year).first()
+    
+    if budget:
+        # Update existing budget
+        if budget_amount is not None:
+            budget.budget_amount = float(budget_amount)
+        if goal_amount is not None:
+            budget.goal_amount = float(goal_amount)
+    else:
+        # Create new budget
+        budget = Budget(
+            user_id=user.id,
+            month=month,
+            year=year,
+            budget_amount=float(budget_amount) if budget_amount is not None else 0.0,
+            goal_amount=float(goal_amount) if goal_amount is not None else 0.0
+        )
+        db.session.add(budget)
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'budget': {
+            'budget_amount': budget.budget_amount,
+            'goal_amount': budget.goal_amount
+        }
+    })
+
+# FundAI Chat Endpoint - Handles AI-powered financial conversations with users
 @app.route('/fundai-chat', methods=['POST'])
 def fundai_chat():
+    # Check if GROQ API key is configured for AI functionality
     if not GROQ_API_KEY:
         return jsonify({'success': False, 'error': 'GROQ_API_KEY not configured'}), 500
     
+    # Extract user data from the request
     data = request.json
-    user_message = data.get('message')
-    user_email = data.get('email')
-    transactions = data.get('transactions', [])
+    user_message = data.get('message')  # The user's question or message to FundAI
+    user_email = data.get('email')      # User's email for authentication
+    transactions = data.get('transactions', [])  # Recent transaction data for context
 
+    # Validate that required fields are present
     if not user_message or not user_email:
         return jsonify({'success': False, 'error': 'Message and email are required.'}), 400
 
+    # Find the user in the database using their email
     user = User.query.filter_by(email=user_email).first()
     if not user:
         return jsonify({'success': False, 'error': 'User not found.'}), 404
 
-    # Fetch reminders for the user
+    # Fetch all reminders for the user from the database
     reminders = Reminder.query.filter_by(user_email=user_email).all()
+    # Convert reminder objects to a list of dictionaries for easier processing
     reminders_list = [
         {
             'id': r.id,
@@ -776,32 +879,38 @@ def fundai_chat():
     ]
 
     try:
+        # Initialize the GROQ AI client
         client = groq.Groq(api_key=GROQ_API_KEY)
         
-        # Prepare transaction data for context
+        # Build transaction context for the AI based on user preferences
         tx_context = ""
-        if not user.disable_fundai_transactions:
-            if transactions:
+        if not user.disable_fundai_transactions:  # Check if user has enabled transaction access
+            if transactions:  # If transactions exist, format them for AI context
                 tx_context = "Here are your recent transactions:\n"
+                # Include only the last 20 transactions to keep context manageable
                 for tx in transactions[-20:]:
                     tx_context += f"- {tx['date']}: {tx['type']} ${tx['amount']} at {tx['store']} ({tx['method']})\n"
             else:
                 tx_context = "You don't have any transactions recorded yet."
         else:
+            # User has disabled transaction access for privacy
             tx_context = "(You have disabled FundAI's access to your transactions.)"
 
-        # Prepare reminders data for context
+        # Build reminders context for the AI based on user preferences
         reminders_context = ""
-        if not user.disable_fundai_reminders:
+        if not user.disable_fundai_reminders:  # Check if user has enabled reminder access
             reminders_context = "Here are your upcoming reminders (bills, payments, etc):\n"
-            if reminders_list:
+            if reminders_list:  # If reminders exist, format them for AI context
+                # Include only the last 20 reminders to keep context manageable
                 for r in reminders_list[-20:]:
                     reminders_context += f"- {r['date']} at {r['time']}: ${r['amount']} for {r['description']}\n"
             else:
                 reminders_context = "You don't have any reminders set."
         else:
+            # User has disabled reminder access for privacy
             reminders_context = "(You have disabled FundAI's access to your reminders.)"
 
+        # Create the system prompt that defines FundAI's personality and capabilities
         system_prompt = f"""
         You are FundAI, a helpful and friendly financial assistant for the Fundify app. You have access to the user's transaction data and reminders, and can provide personalized financial insights.
 
@@ -834,43 +943,55 @@ def fundai_chat():
         Respond naturally as a helpful financial assistant. Do not use JSON format - just provide a conversational response.
         """
 
+        # Make the API call to GROQ AI with the prepared context and user message
         chat_completion = client.chat.completions.create(
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message}
+                {"role": "system", "content": system_prompt},  # AI personality and context
+                {"role": "user", "content": user_message}      # User's actual question
             ],
-            model="llama3-8b-8192",
-            temperature=0.7,
-            max_tokens=512,
-            top_p=1,
-            stop=None,
-            stream=False,
+            model="llama3-8b-8192",  # Use Llama 3.1 8B model for good performance
+            temperature=0.7,         # Moderate creativity for varied responses
+            max_tokens=512,          # Limit response length for concise answers
+            top_p=1,                 # Use full probability distribution
+            stop=None,               # No specific stop sequences
+            stream=False,            # Get complete response at once
         )
 
+        # Extract the AI's response from the completion
         ai_response = chat_completion.choices[0].message.content
         
+        # Return successful response with the AI's answer
         return jsonify({
             'success': True,
             'response': ai_response
         })
 
     except Exception as e:
+        # Log the error for debugging purposes
         print('FundAI chat error:', e)
+        # Return error response to the client
         return jsonify({'success': False, 'error': f"An error occurred: {str(e)}"}), 500
 
+# Reminders GET Endpoint - Retrieves all reminders for a specific user
 @app.route('/reminders', methods=['GET'])
 def get_reminders():
+    # Extract user email from query parameters
     user_email = request.args.get('email')
+    # Validate that email is provided
     if not user_email:
         return jsonify({'success': False, 'error': 'Email required'}), 400
+    
+    # Query the database for all reminders belonging to this user
     reminders = Reminder.query.filter_by(user_email=user_email).all()
+    
+    # Return the reminders as a JSON response with success status
     return jsonify({'success': True, 'reminders': [
         {
-            'id': r.id,
-            'amount': r.amount,
-            'date': r.date,
-            'time': r.time,
-            'description': r.description
+            'id': r.id,                    # Unique reminder identifier
+            'amount': r.amount,            # Dollar amount for the reminder
+            'date': r.date,                # Date when reminder should trigger
+            'time': r.time,                # Time when reminder should trigger
+            'description': r.description   # What the reminder is for
         } for r in reminders
     ]})
 
