@@ -13,15 +13,45 @@
         border-radius: 8px 0 0 8px;
         border: none;
         box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-        padding: 14px 3px;
-        padding-left: 4px;
+        padding: 15px 0;
+        padding-left: 3px;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         display: flex;
         align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 26px;
+        max-width: 26px;
+        overflow: hidden;
+        transform-origin: right center;
     }
     .mini-fundai-arrow-btn:hover {
         background: #1c4daf;
+        width: 140px;
+        min-width: 56px;
+        max-width: 180px;
+        padding-right: 18px;
+        padding-left: 18px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        transform: translateY(-50%) scale(1.02);
+    }
+    .mini-fundai-arrow-btn .mini-fundai-text {
+        display: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateX(-8px) scale(0.9);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition-delay: 0.1s;
+    }
+    .mini-fundai-arrow-btn:hover .mini-fundai-text {
+        display: inline;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        transition-delay: 0.05s;
     }
     .mini-fundai-panel {
         position: fixed;
@@ -37,22 +67,29 @@
         flex-direction: column;
         overflow: hidden;
         font-family: 'Inter', Arial, sans-serif;
-        /* --- Animation --- */
+        /* --- Enhanced Animation --- */
         opacity: 0;
-        transform: translateY(-50%) scale(0.92) translateX(60px);
-        transition: opacity 0.38s cubic-bezier(.22,1.2,.36,1), transform 0.38s cubic-bezier(.22,1.2,.36,1);
+        transform: translateY(-50%) scale(0.88) translateX(80px) rotateY(-8deg);
+        transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         box-shadow: 0 8px 32px rgba(0,0,0,0.22);
         border: 1.5px solid var(--border);
+        transform-origin: right center;
+        perspective: 1000px;
     }
     .mini-fundai-panel.open {
         opacity: 1;
-        transform: translateY(-50%) scale(1) translateX(0);
-        transition: opacity 0.44s cubic-bezier(.22,1.2,.36,1), transform 0.44s cubic-bezier(.22,1.2,.36,1);
+        transform: translateY(-50%) scale(1) translateX(0) rotateY(0deg);
+        transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.28);
     }
     .mini-fundai-panel.closing {
         opacity: 0;
-        transform: translateY(-50%) scale(0.92) translateX(60px);
-        transition: opacity 0.32s cubic-bezier(.55,0,.55,1), transform 0.32s cubic-bezier(.55,0,.55,1);
+        transform: translateY(-50%) scale(0.88) translateX(80px) rotateY(-8deg);
+        transition: opacity 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19), 
+                    transform 0.4s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
     .mini-fundai-header {
         background: var(--sidebar-bg);
@@ -221,16 +258,22 @@
         color: #ff4d4f;
         fill: #ff4d4f;
     }
+    .mini-fundai-arrow-icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 16px;
+        min-height: 16px;
+    }
     `;
     document.head.appendChild(style);
 
     // --- HTML Injection ---
     const arrowBtn = document.createElement('button');
     arrowBtn.className = 'mini-fundai-arrow-btn';
-    arrowBtn.title = 'Open FundAI';
-    arrowBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="#fff"><path d="M192-144v-192q0-29.7 21.16-50.85Q234.32-408 264.04-408h432.24Q726-408 747-386.85T768-336v192H192Zm179.75-312Q297-456 244.5-508.71T192-636.21q0-74.79 52.68-127.29Q297.37-816 372.11-816h216.14q74.75 0 127.25 52.71t52.5 127.5q0 74.79-52.68 127.29Q662.63-456 587.89-456H371.75Zm.04-144q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5Zm216 0q15.21 0 25.71-10.29t10.5-25.5q0-15.21-10.29-25.71t-25.5-10.5q-15.21 0-25.71 10.29t-10.5 25.5q0 15.21 10.29 25.71t25.5 10.5Z"/></svg>
-    `;
+    const icon = '<span class="mini-fundai-arrow-icon" style="display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#fff"><path d="M160-360q-50 0-85-35t-35-85q0-50 35-85t85-35v-80q0-33 23.5-56.5T240-760h120q0-50 35-85t85-35q50 0 85 35t35 85h120q33 0 56.5 23.5T800-680v80q50 0 85 35t35 85q0 50-35 85t-85 35v160q0 33-23.5 56.5T720-120H240q-33 0-56.5-23.5T160-200v-160Zm200-80q25 0 42.5-17.5T420-500q0-25-17.5-42.5T360-560q-25 0-42.5 17.5T300-500q0 25 17.5 42.5T360-440Zm240 0q25 0 42.5-17.5T660-500q0-25-17.5-42.5T600-560q-25 0-42.5 17.5T540-500q0 25 17.5 42.5T600-440ZM320-280h320v-80H320v80Z"/></svg></span>';
+    arrowBtn.innerHTML = icon + '<span class="mini-fundai-text">FundAI</span>';
     document.body.appendChild(arrowBtn);
 
     let panel = null;
@@ -277,7 +320,7 @@
                     panel = null;
                 }
                 arrowBtn.style.display = '';
-            }, 340); // match closing transition duration
+            }, 400); // match closing transition duration
         }
     }
 
