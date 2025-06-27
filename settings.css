@@ -21,6 +21,7 @@ body.settings-bg {
     padding: 0;
     background: var(--main-bg);
     overflow: scroll;
+    scrollbar-width: none;
 }
 
 .settings-layout {
@@ -40,6 +41,7 @@ body.settings-bg {
     max-width: 100%;
     overflow-y: auto;
     transition: margin 0.18s;
+    margin-left: 300px;
 }
 
 .settings-topbar {

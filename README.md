@@ -13,12 +13,12 @@ Built by students, for students — because we were tired of not knowing where o
 - Set recurring transactions
 - Filter, sort, and search transactions (by keyword or AI)
 - Edit, duplicate, and delete entries
-- Export/Import transactions (.csv, .json, .txt, Google Sheets)
+- Export/Import transactions (.csv, .json, .txt)
 
 ### AI-Powered Input
 - Quick add via natural language (e.g., “I spent $120 at Nike on shoes”)
 - Voice input with microphone button
-- Receipt scanner (OCR + GPT): upload a photo and auto-fill the transaction
+- Receipt scanner (OCR + Groq): upload a photo and auto-fill the transaction
 
 ### Graphs and Summaries
 - Daily, weekly, and monthly spending graphs
@@ -46,40 +46,21 @@ Built by students, for students — because we were tired of not knowing where o
 
 ### Additional Tools
 - Command Bar (Ctrl/Cmd + K) for full keyboard control
-- Chrome Extension and Plaid integration for syncing real bank data
-- Customizable UI: light/dark mode, font size, accent color
+- Chrome Extension for syncing real bank data
 - Secure login with 2FA and privacy controls
-
----
-
-## Screenshots
-
-Coming soon...
-
----
 
 ## Tech Stack
 
 - Frontend: HTML, CSS, JavaScript
 - Backend: Flask (Python)
-- Database: SQLite (local) or PostgreSQL (production)
+- Database: SQLite (local)
 - APIs/Tools:
-  - OpenAI (AI input, FundAI)
+  - Groq (AI input, FundAI)
   - Tesseract.js (OCR receipt scanner)
   - Chart.js (Graphs)
-  - Amazon Forecast (Budget prediction)
-  - Plaid API (Bank account linking)
-  - Calendarific API (Calendar features)
   - Flask-Mail (Email reports)
-
----
-
-## For Developers
-
-### Installation
-
-```bash
-git clone https://github.com/YOUR_USERNAME/fundify.git
-cd fundify
-pip install -r requirements.txt
-flask run
+  - Google Fonts (fonts, icons)
+  - LocalStorage
+  - Web Speech API
+  - Dribble, OpenAI, ChatGPT, Notion (UI Inspiration)
+  - html2canvas

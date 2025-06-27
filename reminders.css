@@ -41,6 +41,7 @@ body.reminders-bg {
     max-width: 100%;
     overflow-y: auto;
     transition: margin 0.18s;
+    margin-left: 300px;
 }
 
 .reminders-topbar {
