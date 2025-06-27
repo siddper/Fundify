@@ -1407,8 +1407,19 @@ if (tableBody) {
             
             if (!wasOpen) {
                 const btnRect = menuBtn.getBoundingClientRect();
+                const dropdownHeight = 120; // or use dropdown.offsetHeight if already in DOM
+                const spaceBelow = window.innerHeight - btnRect.bottom;
+                const spaceAbove = btnRect.top;
+
                 dropdown.classList.add('show');
-                dropdown.style.top = `${btnRect.bottom}px`;
+
+                if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                    // Open upwards
+                    dropdown.style.top = `${btnRect.top - dropdownHeight}px`;
+                } else {
+                    // Open downwards (default)
+                    dropdown.style.top = `${btnRect.bottom}px`;
+                }
                 dropdown.style.left = `${btnRect.right - dropdown.offsetWidth}px`;
             }
             return;
