@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     contentDiv.innerHTML += `
       <div class="settings-account-fields">
         <div class="settings-field-row" data-field="name">
-          <label>First Name</label>
+          <label>Name</label>
           <input type="text" value="${user.name || ''}" readonly />
           <button class="settings-edit-btn">Change name</button>
         </div>
