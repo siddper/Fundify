@@ -15,6 +15,60 @@ class FundAIChat {
         if (this.clearChatButton) {
             this.clearChatButton.addEventListener('click', () => this.clearChat());
         }
+
+        // Example question buttons logic
+        const exampleQuestionsList = [
+            "How much did I spend this month?",
+            "How much did I receive this month?",
+            "How many transactions this week?",
+            "What's my largest transaction this month?",
+            "What's my smallest transaction this month?",
+            "How much did I spend yesterday?",
+            "How much did I spend today?",
+            "How much did I spend last week?",
+            "How much did I spend this week?",
+            "How much did I spend last month?",
+            "How much on groceries this month?",
+            "How much on entertainment this month?",
+            "How much on transportation this month?",
+            "How much on shopping this month?",
+            "How much on restaurants this month?",
+            "How much did I save this month?",
+            "How many deposits this month?",
+            "How many withdrawals this month?",
+            "What's my average transaction this month?"
+        ];
+        
+        // Randomly pick 2 unique questions
+        function getTwoRandomQuestions(list) {
+            const idx1 = Math.floor(Math.random() * list.length);
+            let idx2;
+            do {
+                idx2 = Math.floor(Math.random() * list.length);
+            } while (idx2 === idx1);
+            return [list[idx1], list[idx2]];
+        }
+        
+        const exampleBtns = document.querySelectorAll('.example-question-btn');
+        const [q1, q2] = getTwoRandomQuestions(exampleQuestionsList);
+        if (exampleBtns[0]) {
+            exampleBtns[0].value = q1;
+            exampleBtns[0].textContent = q1;
+            exampleBtns[0].addEventListener('click', () => {
+                this.chatInput.value = q1;
+                this.chatInput.dispatchEvent(new Event('input'));
+                this.chatInput.focus();
+            });
+        }
+        if (exampleBtns[1]) {
+            exampleBtns[1].value = q2;
+            exampleBtns[1].textContent = q2;
+            exampleBtns[1].addEventListener('click', () => {
+                this.chatInput.value = q2;
+                this.chatInput.dispatchEvent(new Event('input'));
+                this.chatInput.focus();
+            });
+        }
     }
 
     getUserEmail() {
