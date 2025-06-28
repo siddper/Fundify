@@ -894,37 +894,45 @@ async function fetchTransactions() {
   }
 }
 
-// --- Delete transaction ---
+// --- Delete transaction from database and update UI ---
 async function deleteTransaction(transactionId) {
+    // Send DELETE request to backend API to remove transaction from database
     try {
         const res = await fetch(`http://127.0.0.1:8000/transactions/${transactionId}`, {
             method: 'DELETE'
         });
         const data = await res.json();
+        
+        // If deletion was successful, refresh the transaction list and UI
         if(data.success) {
             await fetchTransactions(); // This will re-fetch, re-render, and update balance
         } else {
+            // Show error message from server if deletion failed
             alert(data.error || 'Failed to delete transaction.');
         }
     } catch (err) {
+        // Handle network errors or server connection issues
         alert('Server error while deleting transaction.');
     }
 }
 
-// --- Duplicate transaction ---
+// --- Create a copy of an existing transaction ---
 async function duplicateTransaction(transactionId) {
+    // Find the original transaction in the local transactions array
     const originalTx = transactions.find(tx => tx.id === transactionId);
     if (!originalTx) {
         alert('Could not find the transaction to duplicate.');
         return;
     }
 
+    // Create a new transaction payload by copying all properties from the original
     const duplicatedTxPayload = {
         ...originalTx,
-        email: localStorage.getItem('fundify_user_email')
+        email: localStorage.getItem('fundify_user_email') // Ensure correct user email
     };
-    delete duplicatedTxPayload.id; // Remove ID to allow DB to create a new one
+    delete duplicatedTxPayload.id; // Remove ID to allow database to create a new unique ID
 
+    // Send POST request to create the duplicate transaction in database
     try {
         const res = await fetch('http://127.0.0.1:8000/transactions', {
             method: 'POST',
@@ -932,19 +940,26 @@ async function duplicateTransaction(transactionId) {
             body: JSON.stringify(duplicatedTxPayload)
         });
         const data = await res.json();
+        
+        // If duplication was successful and we received the new transaction data
         if (data.success && data.transaction) {
+            // Find the position of the original transaction in the array
             const originalIndex = transactions.findIndex(t => t.id === transactionId);
             if (originalIndex !== -1) {
+                // Insert the new transaction right after the original one in the local array
                 transactions.splice(originalIndex + 1, 0, data.transaction);
-                renderTransactions(); // Re-render with the new local array
-                updateBalance();
+                renderTransactions(); // Re-render with the updated local array
+                updateBalance(); // Update the balance display
             } else {
+                // Fallback: if we can't find the original index, refresh from server
                 await fetchTransactions(); // Fallback if index isn't found
             }
         } else {
+            // Show error message from server if duplication failed
             alert(data.error || 'Failed to duplicate transaction.');
         }
     } catch(err) {
+        // Handle network errors or server connection issues
         alert('Server error while duplicating transaction.');
     }
 }

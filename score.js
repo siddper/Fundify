@@ -1,9 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const scoreValueEl = document.querySelector('.score-value');
-  const positivesEl = document.getElementById('score-positives');
-  const negativesEl = document.getElementById('score-negatives');
-  const adviceEl = document.getElementById('score-advice');
+// score.js - Score page functionality
 
+// Add event listener for DOMContentLoaded (score.html)
+document.addEventListener('DOMContentLoaded', () => {
+  // Set score value element
+  const scoreValueEl = document.querySelector('.score-value');
+  // Set score positives element
+  const positivesEl = document.getElementById('score-positives');
+  // Set score negatives element
+  const negativesEl = document.getElementById('score-negatives');
+  // Set score advice element
+  const adviceEl = document.getElementById('score-advice');
+  // Set score ai recommendations element
+  const aiRecommendationsEl = document.getElementById('score-ai-recommendations');
+
+  // Fetch transactions
   async function fetchTransactions() {
     const email = localStorage.getItem('fundify_user_email');
     if (!email) return [];
@@ -17,8 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return [];
   }
 
+  // Analyze transactions
   function analyzeTransactions(transactions) {
-    // --- Gather stats ---
+    // Gather stats
     let totalSpent = 0, totalDeposited = 0, withdrawals = 0, deposits = 0;
     let storeCounts = {}, methodCounts = {}, days = new Set(), negativeDays = 0;
     let last30 = [], now = new Date();
@@ -49,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let last90 = [];
     let withdrawalAmounts = [], depositAmounts = [];
 
-    // Preprocess: sort by date ascending
+    // Preprocess: sort by date ascending (for consecutive days)
     transactions.sort((a, b) => {
       const [am, ad, ay] = a.date.split('/');
       const [bm, bd, by] = b.date.split('/');
@@ -73,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
       storeCounts[tx.store]++;
       if (!methodCounts[tx.method]) methodCounts[tx.method] = 0;
       methodCounts[tx.method]++;
-      // For last 30/7/90 days
+      // For last 30/7/90 days (for recent activity)
       if ((now - txDate) / (1000*60*60*24) <= 30) last30.push(tx);
       if ((now - txDate) / (1000*60*60*24) <= 7) last7.push(tx);
       if ((now - txDate) / (1000*60*60*24) <= 90) last90.push(tx);
@@ -120,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       prevAmount = parseFloat(tx.amount);
     });
 
-    // Calculate negative days
+    // Calculate negative days (for no negative days)
     running = 0;
     Object.keys(dailyBalances).sort().forEach(date => {
       running += dailyBalances[date];
@@ -130,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (dailyBalances[date] > 0 && dailyBalances[date] < 50) lowSpendingDays++;
     });
 
-    // Consecutive days with transactions
+    // Consecutive days with transactions (for consistent activity)
     let sortedDays = Array.from(days).sort((a, b) => new Date(a) - new Date(b));
     prevDate = null;
     sortedDays.forEach(dateStr => {
@@ -148,17 +159,17 @@ document.addEventListener('DOMContentLoaded', () => {
       prevDate = date;
     });
 
-    // Recurring stores (visited > 3 times)
+    // Recurring stores (visited > 3 times) (for healthy recurring transactions)
     highFrequencyStores = Object.values(storeCounts).filter(c => c > 3).length;
     recurringCount = Object.values(recurringStores).filter(c => c > 2).length;
 
-    // Method diversity
+    // Method diversity (for variety of payment methods)
     methodDiversity = Object.keys(methodCounts).length;
 
-    // Withdrawal to deposit ratio
+    // Withdrawal to deposit ratio (for balance of cash flow)
     withdrawalToDepositRatio = deposits > 0 ? withdrawals / deposits : 0;
 
-    // Days with both deposit and withdrawal
+    // Days with both deposit and withdrawal (for activity)
     let dayTxMap = {};
     transactions.forEach(tx => {
       if (!dayTxMap[tx.date]) dayTxMap[tx.date] = { d: 0, w: 0 };
@@ -170,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val.d === 0 && val.w === 0) daysWithNoTransactions++;
     });
 
-    // Cash/card only days
+    // Cash/card only days (for card usage)
     Object.keys(dayTxMap).forEach(date => {
       const txs = transactions.filter(tx => tx.date === date);
       const allCash = txs.every(tx => tx.method === 'Cash');
@@ -179,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (allCard) cardOnlyDays++;
     });
 
-    // --- Score Calculation (100 max) ---
+    // Score Calculation (100 max)
     let score = 50;
     // 1. More deposits than withdrawals
     if (totalDeposited > totalSpent) score += 6;
@@ -246,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (score > 100) score = 100;
     if (score < 0) score = 0;
 
-    // --- Positives ---
+    // Positives
     const positives = [];
     if (totalDeposited > totalSpent) positives.push('You deposited more than you spent.');
     if (negativeDays === 0) positives.push('You never had a negative balance.');
@@ -276,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (deposits > 0 && withdrawals > 0 && (totalDeposited / deposits) > (totalSpent / withdrawals)) positives.push('Your average deposit is higher than your average withdrawal.');
     if (daysWithNoTransactions === 0) positives.push('You have transaction activity every day.');
 
-    // --- Negatives ---
+    // Negatives
     const negatives = [];
     if (totalSpent > totalDeposited) negatives.push('You spent more than you deposited.');
     if (negativeDays > 0) negatives.push(`You had ${negativeDays} day(s) with a negative balance.`);
@@ -307,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (deposits > 0 && withdrawals > 0 && (totalDeposited / deposits) < (totalSpent / withdrawals)) negatives.push('Your average withdrawal is higher than your average deposit.');
     if (daysWithNoTransactions > 2) negatives.push('You have many days with no transactions.');
 
-    // --- Advice ---
+    // Advice
     const advice = [];
     if (totalSpent > totalDeposited) advice.push('Try to deposit more or reduce spending.');
     if (negativeDays > 0) advice.push('Maintain a buffer to avoid negative balances.');
@@ -342,11 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return { score, positives, negatives, advice };
   }
 
-  // --- Explain My Score & AI Recommendations ---
+  // Explain My Score & AI Recommendations
   async function fetchGroqExplanation(transactions, score, positives, negatives, advice) {
-    // Use Groq or OpenAI to generate a natural language explanation
-    // This is a placeholder for your actual Groq API call
-    // You should replace this with your backend endpoint that calls Groq
+    // Fetch explanation from backend
     const res = await fetch('http://127.0.0.1:8000/ai-explain-score', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -362,10 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return data.explanation || 'Could not generate explanation.';
   }
 
+  // Fetch Groq recommendations
   async function fetchGroqRecommendations(transactions, score, positives, negatives, advice) {
-    // Use Groq or OpenAI to generate actionable recommendations
-    // This is a placeholder for your actual Groq API call
-    // You should replace this with your backend endpoint that calls Groq
+    // Fetch recommendations from backend
     const res = await fetch('http://127.0.0.1:8000/ai-recommendations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -381,15 +389,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return data.recommendations || 'No additional recommendations.';
   }
 
+  // Draw score progress
   function drawScoreProgress(score) {
     const canvas = document.getElementById('score-progress');
     if (!canvas) return;
-    // Make the gauge taller and more elegant
+    // Make the gauge taller and more elegant (130px height)
     canvas.width = 220;
     canvas.height = 130;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // --- Elegant Fundify gradient arc (blue to green, no red) ---
+    // Elegant Fundify gradient arc (blue to green, no red)
     // Draw left (blue)
     ctx.beginPath();
     ctx.arc(110, 110, 95, Math.PI, Math.PI * 1.5, false);
@@ -415,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.shadowBlur = 6;
     ctx.stroke();
     ctx.shadowBlur = 0;
-    // --- Progress arc (overlay, accent color) ---
+    // Progress arc (overlay, accent color)
     const percent = Math.max(0, Math.min(1, score / 100));
     ctx.beginPath();
     ctx.arc(110, 110, 95, Math.PI, Math.PI + Math.PI * percent, false);
@@ -428,15 +437,21 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.shadowBlur = 0;
   }
 
+  // Render score
   function renderScore({ score, positives, negatives, advice }, transactions) {
+    // Set score value
     scoreValueEl.textContent = score;
+    // Draw score progress
     drawScoreProgress(score);
+    // Clear positives, negatives, and advice
     positivesEl.innerHTML = '';
     negativesEl.innerHTML = '';
     adviceEl.innerHTML = '';
+    // Get important positives, negatives, and advice
     const importantPositives = positives.slice(0, 5);
     const importantNegatives = negatives.slice(0, 5);
     const importantAdvice = advice.slice(0, 5);
+    // Add important positives, negatives, and advice to the DOM
     importantPositives.forEach(p => {
       const li = document.createElement('li');
       li.textContent = p;
@@ -452,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.textContent = a;
       adviceEl.appendChild(li);
     });
-    // Fetch and display AI recommendations
+    // Fetch and display AI recommendations (Groq)
     const aiRecEl = document.getElementById('score-ai-recommendations');
     aiRecEl.textContent = 'Loading...';
     fetchGroqRecommendations(transactions, score, positives, negatives, advice).then(recs => {
@@ -469,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Explain My Score modal logic
+  // Explain My Score modal logic (Groq)
   const explainBtn = document.getElementById('explain-score-btn');
   const explainModal = document.getElementById('explain-score-modal');
   const explainText = document.getElementById('explain-score-text');
@@ -501,6 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Fetch transactions and render score
   fetchTransactions().then(transactions => {
     const analysis = analyzeTransactions(transactions);
     lastScoreData = analysis;

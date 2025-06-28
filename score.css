@@ -1,3 +1,4 @@
+/* score.css - Score page styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 * {
@@ -5,6 +6,7 @@
   font: 'Inter';
 }
 
+/* Set root variables */
 :root {
   --accent: #235FD6;
   --sidebar-bg: #000;
@@ -15,6 +17,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* Set body background */
 body.score-bg {
     font-family: 'Inter', Arial, sans-serif;
     margin: 0;
@@ -24,12 +27,14 @@ body.score-bg {
     scrollbar-width: none;
 }
 
+/* Set layout*/
 .score-layout {
     display: flex;
     min-height: 100vh;
     min-width: 0;
 }
 
+/* Set main layout*/
 .score-main {
     flex: 1;
     min-width: 0;
@@ -44,6 +49,7 @@ body.score-bg {
     margin-left: 300px;
 }
 
+/* Set topbar */
 .score-topbar {
   display: flex;
   align-items: center;
@@ -70,7 +76,7 @@ body.score-bg {
     letter-spacing: -0.5px;
 }
 
-/* Score Section Layout */
+/* Set score section layout */
 .score-section {
   padding: 24px 0 0 0;
   display: flex;
@@ -80,6 +86,7 @@ body.score-bg {
   width: 100%;
 }
 
+/* Set score card */
 .score-card {
   background: var(--card-bg);
   border-radius: 18px;
@@ -99,6 +106,8 @@ body.score-bg {
     border-color: var(--accent);
     transform: translateY(-1.5px);
 }
+
+/* Set score progress container */
 .score-progress-container {
   position: relative;
   width: 220px;
@@ -108,11 +117,15 @@ body.score-bg {
   align-items: center;
   justify-content: center;
 }
+
+/* Set score progress */
 #score-progress {
   position: absolute;
   left: 0; top: 0;
   z-index: 1;
 }
+
+/* Set score value */
 .score-value {
   position: absolute;
   left: 0;
@@ -127,6 +140,8 @@ body.score-bg {
   text-align: center;
   width: 100%;
 }
+
+/* Set explain score button */
 .explain-score-btn {
   background: var(--card-bg);
   color: var(--accent);
@@ -144,6 +159,8 @@ body.score-bg {
   background: var(--accent);
   color: #fff;
 }
+
+/* Set explain score modal */
 .explain-score-modal {
   display: flex;
   align-items: center;
@@ -153,6 +170,8 @@ body.score-bg {
   background: rgba(16, 17, 20, 0.75);
   z-index: 1000;
 }
+
+/* Set explain score content */
 .explain-score-content {
   background: #23262a;
   border-radius: 18px;
@@ -165,6 +184,8 @@ body.score-bg {
   font-size: 1.18rem;
   line-height: 2;
 }
+
+/* Set close explain score */
 .close-explain-score {
   position: absolute;
   top: 18px;
@@ -177,12 +198,16 @@ body.score-bg {
 .close-explain-score:hover {
   color: #ff4d4f;
 }
+
+/* Set score feedback title */
 .score-feedback-title.ai-recommendations {
   color: var(--accent);
   margin-top: 32px;
   font-size: 1.18rem;
   font-weight: 600;
 }
+
+/* Set score ai recommendations */
 #score-ai-recommendations {
   margin-top: 0;
   color: var(--text);
@@ -195,12 +220,16 @@ body.score-bg {
   line-height: 2.2;
   margin-bottom: 10px;
 }
+
+/* Set score ai recommendations li */
 #score-ai-recommendations li {
     transition: background 0.18s, color 0.18s, padding-left 0.18s;
     border-radius: 8px;
     padding-left: 0;
     cursor: pointer;
 }
+
+/* Set score label */
 .score-label {
   font-size: 1.15rem;
   color: var(--text-muted);
@@ -209,6 +238,7 @@ body.score-bg {
   margin-bottom: 10px;
 }
 
+/* Set score feedback fullrow */
 .score-feedback-fullrow {
   background: var(--card-bg);
   border-radius: 14px;
@@ -225,12 +255,15 @@ body.score-bg {
   margin-bottom: 8px;
   transition: box-shadow 0.22s cubic-bezier(.4,2,.6,1), transform 0.18s cubic-bezier(.4,2,.6,1), border-color 0.18s;
 }
+
+/* Set score feedback fullrow hover */
 .score-feedback-fullrow:hover {
   box-shadow: 0 4px 18px 0 rgba(35,95,214,0.13), 0 1px 4px 0 rgba(0,0,0,0.13);
   border-color: var(--accent);
   transform: translateY(-1.5px);
 }
 
+/* Set score feedback title */
 .score-feedback-title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -239,16 +272,22 @@ body.score-bg {
   padding-left: 18px;
 }
 
+/* Set score feedback title positive */
 .score-feedback-title.positive {
   color: #22c55e;
 }
+
+/* Set score feedback title negative */
 .score-feedback-title.negative {
   color: #ff4d4f;
 }
+
+/* Set score feedback title advice */
 .score-feedback-title.advice {
   color: var(--accent);
 }
 
+/* Set score feedback list */
 .score-feedback-list {
   list-style: disc inside;
   color: var(--text);
@@ -261,18 +300,22 @@ body.score-bg {
   line-height: 1.8;
 }
 
+/* Set score feedback list li */
 .score-feedback-list li {
   transition: background 0.18s, color 0.18s, padding-left 0.18s;
   border-radius: 6px;
   cursor: pointer;
   padding-left: 0;
 }
+
+/* Set score feedback list li hover */
 .score-feedback-list li:hover, #score-ai-recommendations li:hover {
   background: rgba(35,95,214,0.10);
   color: var(--accent);
   padding-left: 10px;
 }
 
+/* Set media query */
 @media (max-width: 900px) {
   .score-section {
     padding: 12px 0 0 0;
