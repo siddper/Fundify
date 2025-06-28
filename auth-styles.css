@@ -1,5 +1,9 @@
+/* auth-styles.css - Create Account and Sign In page styles */
+
+/* Import the Inter font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+/* Reset the page to take up full screen */
 html, body {
   width: 100vw;
   height: 100vh;
@@ -8,6 +12,7 @@ html, body {
   overflow: hidden;
 }
 
+/* Main background for auth pages - dark gradient */
 body.auth-bg {
   background: linear-gradient(135deg, #181c24 0%, #101114 100%);
   width: 100vw;
@@ -19,13 +24,14 @@ body.auth-bg {
   overflow: hidden;
 }
 
-
+/* Set Inter as the default font for everything */
 * {
     font-family: 'Inter', Arial, sans-serif;
     font-weight: 400 !important;
     outline: none;
 }
 
+/* Main container that holds the form and side content */
 .auth-container, .auth-container.reverse {
   display: flex;
   flex-direction: row;
@@ -39,6 +45,7 @@ body.auth-bg {
   transition: none !important;
 }
 
+/* The form section - where users enter their info */
 .auth-form-section, .auth-form-section.reverse {
   flex: 1 1 0;
   height: 80vh;
@@ -59,6 +66,7 @@ body.auth-bg {
   backdrop-filter: blur(16px);
 }
 
+/* Fundify logo styling */
 .auth-logo {
   font-size: 2.2rem;
   color: #235FD6;
@@ -77,12 +85,14 @@ body.auth-bg {
     justify-content: center;
 }
 
+/* Logo image sizing */
 .auth-logo img{
     width: 150px;
     height: 150px;
     user-select: none;
 }
 
+/* Main title on auth pages */
 .auth-title {
   font-size: 2.5rem;
   font-weight: 600;
@@ -95,6 +105,7 @@ body.auth-bg {
 
 }
 
+/* Description text below the title */
 .auth-desc {
   color: #bfc6e0;
   font-size: 1.18rem;
@@ -104,6 +115,7 @@ body.auth-bg {
   text-align: center;
 }
 
+/* The actual form where users type their info */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -111,6 +123,7 @@ body.auth-bg {
   width: 100%;
 }
 
+/* Labels for form inputs */
 .auth-form label {
   font-size: 1.08rem;
   color: #bfc6e0;
@@ -118,6 +131,7 @@ body.auth-bg {
   font-weight: 500;
 }
 
+/* Input field styling */
 .auth-form input {
   padding: 18px;
   border: 1.5px solid rgba(75, 122, 209, 0.1);
@@ -131,16 +145,19 @@ body.auth-bg {
   margin-bottom: 10px;
 }
 
+/* Password field specific styling */
 #password{
     margin-bottom: 0;
 }
 
+/* When user clicks on an input field */
 .auth-form input:focus {
   border-color: #235FD6;
   outline: none;
 
 }
 
+/* The main button (Sign In, Create Account, etc.) */
 .auth-btn {
   margin-top: 22px;
   padding: 18px 0;
@@ -157,11 +174,13 @@ body.auth-bg {
   letter-spacing: 0.5px;
 }
 
+/* Button hover effect */
 .auth-btn:hover {
   background: #1c4daf;
   box-shadow: 0 2px 8px 0 rgba(61, 97, 165, 0.1);
 }
 
+/* The "or" divider between main form and social login */
 .auth-divider {
   text-align: center;
   margin: 32px 0 18px 0;
@@ -171,6 +190,7 @@ body.auth-bg {
   width: 100%;
 }
 
+/* Lines on either side of the "or" text */
 .auth-divider:before, .auth-divider:after {
   content: '';
   display: inline-block;
@@ -181,6 +201,7 @@ body.auth-bg {
   margin: 0 14px;
 }
 
+/* Container for social login buttons */
 .auth-socials {
   display: flex;
   gap: 10px;
@@ -189,6 +210,7 @@ body.auth-bg {
   width: 100%;
 }
 
+/* Footer text with links */
 .auth-footer {
   text-align: center;
   font-size: 1.08rem;
@@ -206,6 +228,7 @@ body.auth-bg {
   color: #235FD6;
 }
 
+/* The right side content (testimonials, features, etc.) */
 .auth-side-content {
   position: relative;
   z-index: 2;
@@ -222,6 +245,7 @@ body.auth-bg {
   width: 100%;
 }
 
+/* Tags/badges on the side content */
 .auth-side-tags {
   display: flex;
   gap: 14px;
@@ -235,6 +259,7 @@ body.auth-bg {
   font-weight: 400;
 }
 
+/* Quote text on the side */
 .auth-side-quote {
   color: #fff;
   font-size: 1.18rem;
@@ -244,6 +269,7 @@ body.auth-bg {
   line-height: 1.5;
 }
 
+/* User info below the quote */
 .auth-side-user {
   display: flex;
   flex-direction: column;
@@ -260,6 +286,7 @@ body.auth-bg {
   opacity: 0.8;
 }
 
+/* Navigation arrows for cycling through testimonials */
 .auth-side-arrows {
   display: flex;
   gap: 14px;
@@ -281,6 +308,7 @@ body.auth-bg {
   color: #fff;
 }
 
+/* Tablet layout - stack form and side content vertically */
 @media (max-width: 1100px) {
   .auth-container, .auth-container.reverse {
     flex-direction: column !important;
@@ -306,6 +334,7 @@ body.auth-bg {
     text-align: center;
   }
 
+/* Smaller logo on tablets */
 .auth-logo img{
     width: 125px;
     height: 125px;
@@ -313,6 +342,7 @@ body.auth-bg {
 }
 }
 
+/* Mobile layout - full screen, hide side content */
 @media (max-width: 900px) {
   .auth-container, .auth-container.reverse {
     flex-direction: column !important;
@@ -357,6 +387,7 @@ body.auth-bg {
   }
 }
 
+/* Hide elements on mobile */
 .hide-on-mobile {
   display: block;
 }
@@ -366,6 +397,7 @@ body.auth-bg {
   }
 }
 
+/* Success message styling */
 .auth-success {
   color: #27c97a;
   background: rgba(39, 201, 122, 0.08);
@@ -376,6 +408,7 @@ body.auth-bg {
   display: none;
   text-align: center;
 }
+/* Error message styling */
 .auth-error {
   color: #ff4d4f;
   background: rgba(255,77,79,0.08);
@@ -387,11 +420,12 @@ body.auth-bg {
   text-align: center;
 }
 
+/* Minimum height for review content */
 .review-info {
   min-height: 100px; /* or whatever fits your content */
 }
 
-/* Password input wrapper and toggle button */
+/* Password field with show/hide toggle */
 .password-input-wrapper {
   position: relative;
   display: flex;
@@ -403,6 +437,7 @@ body.auth-bg {
   box-sizing: border-box;
   padding-right: 44px;
 }
+/* The eye icon button to show/hide password */
 .toggle-password {
   position: absolute;
   right: 10px;
@@ -427,7 +462,7 @@ body.auth-bg {
   fill: #bfc6e0;
 }
 
-/* Password feedback styles */
+/* Password strength feedback box */
 .password-feedback {
   margin-top: 0;
   background: #3242612b;
@@ -442,6 +477,7 @@ body.auth-bg {
   line-height: 24px;
   border: 1.5px solid rgba(75, 124, 209, 0.1);
 }
+/* Password strength indicator */
 .pw-strength {
   margin-bottom: 6px;
   font-size: 1rem;
@@ -451,6 +487,7 @@ body.auth-bg {
 .pw-strength.pw-weak { color: #ff4d4f; }
 .pw-strength.pw-medium { color: #ffb300; }
 .pw-strength.pw-strong { color: #27c97a; }
+/* List of password requirements */
 .pw-rules {
   list-style: none;
   padding: 0;
@@ -470,7 +507,7 @@ body.auth-bg {
 .pw-rules li.ok { color: #27c97a; }
 .pw-rules li.bad { color: #ff4d4f; }
 
-/* Dashboard Topbar and Add Button */
+/* Top bar on dashboard pages */
 .dashboard-topbar {
   width: 100vw;
   height: 72px;
@@ -483,12 +520,14 @@ body.auth-bg {
   position: relative;
   z-index: 2;
 }
+/* Dashboard title */
 .dashboard-title {
   color: #fff;
   font-size: 2rem;
   font-weight: 600;
   letter-spacing: -1px;
 }
+/* Add button in dashboard */
 .dashboard-add-btn {
   background: #235FD6;
   color: #fff;
@@ -506,7 +545,7 @@ body.auth-bg {
   background: #1c4daf;
 }
 
-/* Modal Styles */
+/* Modal popup styling */
 .modal-bg {
   display: none;
   position: fixed;
@@ -521,6 +560,7 @@ body.auth-bg {
 .modal-bg.active {
   display: flex;
 }
+/* Modal content box */
 .modal-content {
   background: rgba(24, 27, 32, 0.98);
   border-radius: 24px;
@@ -535,6 +575,7 @@ body.auth-bg {
   border: 1.5px solid rgba(75, 135, 209, 0.1);
   backdrop-filter: blur(16px);
 }
+/* X button to close modal */
 .modal-close {
   position: absolute;
   top: 18px;
@@ -550,6 +591,7 @@ body.auth-bg {
   color: #ff4d4f;
 }
 
+/* 2FA input field */
 .twofa-input {
   width: 100%;
   font-size: 1.5rem;
@@ -563,17 +605,20 @@ body.auth-bg {
   color: #fff;
 }
 
+/* 2FA modal title */
 .twofa-title {
   color: #fff !important;
   font-weight: 700;
   text-align: center;
 }
+/* Instructions text in 2FA modal */
 .twofa-instructions {
   color: #fff !important;
   text-align: center;
   font-size: 1.1rem;
   margin-bottom: 0.5em;
 }
+/* Error message in 2FA modal */
 #twofa-error {
   color: #ff4d4f !important;
   background: none;
@@ -582,6 +627,7 @@ body.auth-bg {
   margin-bottom: 12px;
 }
 
+/* Container for individual 2FA digit inputs */
 .twofa-inputs {
   display: flex;
   gap: 18px;
@@ -589,6 +635,7 @@ body.auth-bg {
   margin: 24px 0 18px 0;
 }
 
+/* Individual 2FA digit input boxes */
 .twofa-digit {
   width: 56px;
   height: 56px;
