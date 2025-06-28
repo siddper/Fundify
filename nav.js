@@ -1,6 +1,7 @@
-// Navigation functionality for Fundify
+// nav.js - Navigation functionality for Fundify
 // This file handles sidebar footer user name display
 
+// Add event listener to DOMContentLoaded (nav.html)
 document.addEventListener('DOMContentLoaded', function() {
     // Function to fetch user info from backend
     async function fetchUserInfo() {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to update sidebar footer with user name
+    // Function to update sidebar footer with user name (nav.html)
     async function updateSidebarFooter() {
         const sidebarFooter = document.querySelector('.sidebar-footer span');
         if (!sidebarFooter) return;

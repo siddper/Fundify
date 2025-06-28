@@ -1,3 +1,4 @@
+/* nav.css - Navbar styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 :root {
@@ -10,6 +11,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* Set sidebar */
 .sidebar {
   width: 300px;
   min-width: 56px;
@@ -31,11 +33,15 @@
   overflow: hidden;
   z-index: 100;
 }
+
+/* Set sidebar collapsed */
 .sidebar.sidebar-collapsed {
   width: 56px;
   min-width: 56px;
   max-width: 56px;
 }
+
+/* Set sidebar top */
 .sidebar-top {
   display: flex;
   align-items: center;
@@ -45,6 +51,8 @@
   transition: padding 0.18s;
   min-width: 0;
 }
+
+/* Set sidebar logo img */
 .sidebar-logo-img {
   width: 48px;
   height: 48px;
@@ -55,6 +63,8 @@
   display: block;
   margin: 0;
 }
+
+/* Set sidebar projects dropdown */
 .sidebar-projects-dropdown {
   background: var(--sidebar-bg);
   color: var(--text);
@@ -70,19 +80,27 @@
   flex-grow: 1;
   transition: opacity 0.18s, width 0.18s;
 }
+
+/* Set sidebar collapsed section label */
 .sidebar.sidebar-collapsed .sidebar-section-label {
   opacity: 0;
   margin: 0;
   pointer-events: none;
 }
+
+/* Set sidebar nav */
 .sidebar-nav{
     margin-top: 10px;
 }
+
+/* Set sidebar nav ul */
 .sidebar-nav ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
+
+/* Set sidebar nav li */
 .sidebar-nav li {
   display: flex;
   align-items: center;
@@ -98,11 +116,15 @@
   white-space: nowrap;
   min-width: 0;
 }
+
+/* Set sidebar collapsed nav li */
 .sidebar.sidebar-collapsed .sidebar-nav li {
   justify-content: center;
   gap: 0;
   padding: 13px 0;
 }
+
+/* Set sidebar nav li span */
 .sidebar-nav li span:not(.sidebar-icon) {
   transition: opacity 0.18s, width 0.18s;
   opacity: 1;
@@ -110,6 +132,8 @@
   display: inline-block;
   min-width: 0;
 }
+
+/* Set sidebar collapsed nav li span */
 .sidebar.sidebar-collapsed .sidebar-nav li span:not(.sidebar-icon) {
   opacity: 0;
   width: 0;
@@ -117,21 +141,31 @@
   overflow: hidden;
   display: inline-block;
 }
+
+/* Set sidebar nav li active */
 .sidebar-nav li.active, .sidebar-nav li:hover {
   background: var(--card-bg);
   color: var(--accent);
 }
+
+/* Set sidebar nav li active svg */
 .sidebar-nav li.active .sidebar-icon svg,
 .sidebar-nav li:hover .sidebar-icon svg {
   fill: var(--accent);
 }
+
+/* Set sidebar icon svg */
 .sidebar-icon svg {
   fill: gray;
   transition: fill 0.18s;
 }
+
+/* Set sidebar icon */
 .sidebar-icon {
   margin-left: 5px;
 }
+
+/* Set sidebar footer */
 .sidebar-footer {
   font-size: 1rem;
   color: var(--text-muted);
@@ -143,11 +177,15 @@
   margin-left: 12px;
   padding-bottom: 20px;
 }
+
+/* Set sidebar collapsed footer */
 .sidebar.sidebar-collapsed .sidebar-footer {
   opacity: 0;
   margin: 0;
   pointer-events: none;
 }
+
+/* Set sidebar resize handle */
 .sidebar-resize-handle {
   position: absolute;
   top: 0;
@@ -160,15 +198,16 @@
   transition: background 0.18s;
   pointer-events: auto;
 }
-.sidebar-resize-handle:hover {
-  background: var(--border);
-}
+
+/* Set sidebar nav a */
 .sidebar-nav a {
   text-decoration: none;
   color: inherit;
   background: none;
   display: block;
 }
+
+/* Set sidebar nav a visited, active, focus, and hover */
 .sidebar-nav a:visited,
 .sidebar-nav a:active,
 .sidebar-nav a:focus,

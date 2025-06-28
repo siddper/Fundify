@@ -1,6 +1,8 @@
-// Mini FundAI Chatbot Widget
+// mini-fundAI.js - Mini FundAI Chatbot Widget
+
+// Add event listener to DOMContentLoaded (mini-fundAI.html)
 (function() {
-    // --- CSS Injection ---
+    // CSS Injection
     const style = document.createElement('style');
     style.innerHTML = `
     .mini-fundai-arrow-btn {
@@ -269,7 +271,7 @@
     `;
     document.head.appendChild(style);
 
-    // --- HTML Injection ---
+    // HTML Injection
     const arrowBtn = document.createElement('button');
     arrowBtn.className = 'mini-fundai-arrow-btn';
     const icon = '<span class="mini-fundai-arrow-icon" style="display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#fff"><path d="M160-360q-50 0-85-35t-35-85q0-50 35-85t85-35v-80q0-33 23.5-56.5T240-760h120q0-50 35-85t85-35q50 0 85 35t35 85h120q33 0 56.5 23.5T800-680v80q50 0 85 35t35 85q0 50-35 85t-85 35v160q0 33-23.5 56.5T720-120H240q-33 0-56.5-23.5T160-200v-160Zm200-80q25 0 42.5-17.5T420-500q0-25-17.5-42.5T360-560q-25 0-42.5 17.5T300-500q0 25 17.5 42.5T360-440Zm240 0q25 0 42.5-17.5T660-500q0-25-17.5-42.5T600-560q-25 0-42.5 17.5T540-500q0 25 17.5 42.5T600-440ZM320-280h320v-80H320v80Z"/></svg></span>';
@@ -326,7 +328,7 @@
 
     arrowBtn.onclick = openPanel;
 
-    // --- Chat Logic (shares with FundAI) ---
+    // Chat Logic (shares with FundAI)
     function setupChat() {
         const chatMessages = document.getElementById('miniFundAIMessages');
         const chatInput = document.getElementById('miniFundAIInput');
@@ -335,12 +337,14 @@
         let chatHistory = [];
         let transactions = [];
 
+        // Escape HTML
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
+        // Render message
         function renderMessage(content, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `mini-fundai-message ${sender}`;
@@ -365,6 +369,7 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        // Show typing
         function showTyping() {
             const typingDiv = document.createElement('div');
             typingDiv.className = 'mini-fundai-typing';
@@ -378,16 +383,21 @@
             chatMessages.appendChild(typingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+
+        // Hide typing
         function hideTyping() {
             const typing = document.getElementById('miniFundAITyping');
             if (typing) typing.remove();
         }
 
+        // Save history
         function saveHistory() {
             if (localStorageKey) {
                 localStorage.setItem(localStorageKey, JSON.stringify(chatHistory));
             }
         }
+
+        // Load history
         function loadHistory() {
             chatMessages.innerHTML = '';
             if (!userEmail) {
@@ -411,6 +421,7 @@
             }
         }
 
+        // Load transactions
         async function loadTransactions() {
             if (!userEmail) return;
             try {
@@ -420,6 +431,7 @@
             } catch {}
         }
 
+        // Send message
         async function sendMessage(e) {
             e.preventDefault();
             const msg = chatInput.value.trim();
@@ -450,6 +462,7 @@
             }
         }
 
+        // Event listeners
         chatInput.addEventListener('input', () => {
             chatInput.style.height = 'auto';
             chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
@@ -462,7 +475,7 @@
         });
         document.querySelector('.mini-fundai-input-container').addEventListener('submit', sendMessage);
 
-        // Load on open
+        // Load on open and transactions
         loadHistory();
         loadTransactions();
         chatInput.focus();
