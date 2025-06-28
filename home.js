@@ -1,4 +1,6 @@
-// Review carousel functionality
+// home.js - Review carousel functionality
+
+// Add event listener to DOMContentLoaded (home.html)
 document.addEventListener('DOMContentLoaded', function() {
     const reviews = document.querySelectorAll('.review');
     let currentReviewIndex = 0;

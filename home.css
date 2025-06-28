@@ -1,4 +1,6 @@
-/* ====== Base & Theme ====== */
+/* home.css - Home page styles */
+
+/* Set base and theme */
 body {
     background: radial-gradient(ellipse at 60% 20%, #222a36 60%, #181c23 100%);
     color: #f5f7fa;
@@ -9,6 +11,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Set root variables */
 :root {
     --accent: #235FD6;
     --bg-dark: #181C23;
@@ -18,11 +21,12 @@ body {
     --shadow: 0 8px 32px 0 rgba(35,95,214,0.15);
 }
 
+/* Set box-sizing and font */
 * {
     font-weight: 400 !important;
 }
 
-/* ====== Navbar ====== */
+/* Set navbar */
 .navbar {
     display: flex;
     align-items: center;
@@ -35,6 +39,8 @@ body {
     z-index: 100;
     border-radius: 0 0 2rem 2rem;
 }
+
+/* Set logo */
 .logo {
     display: flex;
     align-items: center;
@@ -49,6 +55,8 @@ body {
     height: 2.2rem;
     filter: drop-shadow(0 0 8px var(--accent));
 }
+
+/* Set nav links */
 .nav-links {
     display: flex;
     gap: 2.5rem;
@@ -56,6 +64,8 @@ body {
     margin: 0;
     padding: 0;
 }
+
+/* Set nav links a */
 .nav-links a {
     color: var(--text-muted);
     text-decoration: none;
@@ -63,15 +73,19 @@ body {
     font-size: 1.1rem;
     transition: color 0.2s;
 }
+
+/* Set nav links a hover */
 .nav-links a:hover {
     color: var(--accent);
 }
+
+/* Set nav cta */
 .nav-cta {
     display: flex;
     gap: 1rem;
 }
 
-/* ====== Buttons ====== */
+/* Set buttons */
 .btn {
     border: none;
     outline: none;
@@ -85,6 +99,8 @@ body {
     text-decoration: none;
     display: inline-block;
 }
+
+/* Set btn primary */
 .btn.primary {
     background: #235FD6;
     color: #fff;
@@ -97,6 +113,8 @@ body {
     box-shadow: 0 2px 12px 0 #235fd655;
     transform: translateY(-2px) scale(1.03);
 }
+
+/* Set btn secondary */
 .btn.secondary {
     background: rgba(35,95,214,0.08);
     color: var(--accent);
@@ -110,12 +128,14 @@ body {
     box-shadow: 0 2px 8px 0 #235fd622;
     transform: translateY(-1px) scale(1.02);
 }
+
+/* Set btn large */
 .btn.large {
     font-size: 1.2rem;
     padding: 1rem 2.5rem;
 }
 
-/* ====== Hero Section ====== */
+/* Set hero */
 .hero {
     position: relative;
     min-height: 70vh;
@@ -126,6 +146,8 @@ body {
     overflow: hidden;
     z-index: 1;
 }
+
+/* Set hero content */
 .hero-content {
     position: relative;
     z-index: 2;
@@ -134,6 +156,8 @@ body {
     padding-top: 4rem;
     animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) 0.1s both;
 }
+
+/* Set hero title */
 .hero-title {
     font-size: 3rem;
     font-weight: 800;
@@ -146,18 +170,24 @@ body {
     color: var(--accent);
     text-shadow: 0 0 16px #235fd6cc;
 }
+
+/* Set hero subtitle */
 .hero-subtitle {
     font-size: 1.3rem;
     color: var(--text-muted);
     margin-bottom: 2.5rem;
     line-height: 1.6;
 }
+
+/* Set hero cta */
 .hero-cta {
     display: flex;
     gap: 1.5rem;
     justify-content: center;
     margin-bottom: 2rem;
 }
+
+/* Set hero bg anim */
 .hero-bg-anim {
     position: absolute;
     top: -10%;
@@ -171,12 +201,13 @@ body {
     animation: floatBg 12s ease-in-out infinite alternate;
 }
 
+/* Set hero bg anim keyframes */
 @keyframes floatBg {
     0% { transform: translateX(-50%) scale(1.1); }
     100% { transform: translateX(-48%) scale(1.15); }
 }
 
-/* ====== Features Section ====== */
+/* Set features */
 .features {
     display: flex;
     justify-content: center;
@@ -184,6 +215,8 @@ body {
     margin: 5rem 0 3rem 0;
     flex-wrap: wrap;
 }
+
+/* Set feature card */
 .feature-card {
     background: #232a3a;
     border-radius: 1.5rem;
@@ -200,21 +233,29 @@ body {
     transform: translateY(40px);
     animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) both;
 }
+
+/* Set feature card h2 */
 .feature-card h2 {
     color: var(--accent);
     font-size: 1.4rem;
     margin-bottom: 0.7rem;
     font-weight: 700;
 }
+
+/* Set feature card p */
 .feature-card p {
     color: var(--text-muted);
     font-size: 1.05rem;
     line-height: 1.5;
 }
+
+/* Set feature card fade in */
 .feature-card.fade-in {
     opacity: 1;
     animation-name: fadeInUp;
 }
+
+/* Set feature card fade in keyframes */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -225,6 +266,8 @@ body {
         transform: translateY(0);
     }
 }
+
+/* Set feature card hover */
 .feature-card:hover {
     border: 2px solid var(--accent);
     background: #26304a;
@@ -232,7 +275,7 @@ body {
     transform: translateY(-2px) scale(1.01);
 }
 
-/* ====== Reviews Section ====== */
+/* Set reviews */
 .reviews {
     background: none;
     border: none;
@@ -246,11 +289,15 @@ body {
     border-radius: 0;
     position: relative;
 }
+
+/* Set reviews inner */
 .reviews-inner {
     position: relative;
     width: 100%;
     height: 100%;
 }
+
+/* Set review */
 .review {
     opacity: 0;
     position: absolute;
@@ -273,11 +320,15 @@ body {
     text-align: center;
     line-height: 1.7;
 }
+
+/* Set review active */
 .review.active {
     opacity: 1;
     z-index: 2;
     pointer-events: auto;
 }
+
+/* Set reviewer */
 .reviewer {
     display: block;
     margin-top: 1.2rem;
@@ -287,7 +338,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* ====== Footer ====== */
+/* Set footer */
 .footer {
     background: #181c23;
     padding: 2rem 0 2rem 0;
@@ -296,6 +347,8 @@ body {
     box-shadow: 0 -2px 12px 0 #235fd611;
     margin-top: 0;
 }
+
+/* Set footer content */
 .footer-content {
     color: #b0b8c9;
     font-size: 1rem;
@@ -305,25 +358,29 @@ body {
     align-items: center;
 }
 
-/* ====== Animations ====== */
+/* Set fade in */
 .fade-in {
     opacity: 0;
     animation: fadeInUp 1.2s cubic-bezier(.23,1.01,.32,1) forwards;
 }
 
-/* ====== Responsive ====== */
+/* Set responsive */
 @media (max-width: 900px) {
     .navbar {
         flex-direction: column;
         gap: 1rem;
         padding: 1rem 1.5rem;
     }
+
+    /* Set features */
     .features {
         flex-direction: column;
         align-items: center;
         gap: 1.5rem;
     }
 }
+
+/* Set responsive */
 @media (max-width: 600px) {
     .hero-title {
         font-size: 2.1rem;
@@ -334,11 +391,15 @@ body {
     .navbar {
         padding: 0.7rem 0.5rem;
     }
+
+    /* Set feature card */
     .feature-card {
         min-width: 90vw;
         max-width: 95vw;
         padding: 1.5rem 1rem;
     }
+
+    /* Set review */
     .review {
         font-size: 1rem;
         padding: 1.2rem 1rem 1rem 1rem;
