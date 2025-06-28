@@ -1,3 +1,4 @@
+/* reminders.css - Reminders page functionality for Fundify */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 * {
@@ -5,6 +6,7 @@
   font: 'Inter';
 }
 
+/* Set root */
 :root {
   --accent: #235FD6;
   --sidebar-bg: #000;
@@ -15,6 +17,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* Set body.reminders-bg */
 body.reminders-bg {
     font-family: 'Inter', Arial, sans-serif;
     margin: 0;
@@ -24,12 +27,14 @@ body.reminders-bg {
     scrollbar-width: none;
 }
 
+/* Set reminders-layout */
 .reminders-layout {
     display: flex;
     min-height: 100vh;
     min-width: 0;
 }
 
+/* Set reminders-main */
 .reminders-main {
     flex: 1;
     min-width: 0;
@@ -44,6 +49,7 @@ body.reminders-bg {
     margin-left: 300px;
 }
 
+/* Set reminders-topbar */
 .reminders-topbar {
   display: flex;
   align-items: center;
@@ -58,11 +64,15 @@ body.reminders-bg {
   width: 100%;
   max-width: 100%;
 }
+
+/* Set topbar-left */
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
+/* Set reminders-title */
 .reminders-title {
     font-size: 1.3rem;
     font-weight: 400;
@@ -70,6 +80,7 @@ body.reminders-bg {
     letter-spacing: -0.5px;
 }
 
+/* Set reminders-add-btn */
 .reminders-add-btn{
   background: var(--accent);
   color: #fff;
@@ -87,15 +98,17 @@ body.reminders-bg {
   align-items: center;
 }
 
+/* Set reminders-add-btn svg */
 .reminders-add-btn svg {
   margin-left: 4px;
 }
 
+/* Set reminders-add-btn:hover */
 .reminders-add-btn:hover{
     background: #1c4daf;
 }
 
-/* Modal Styles */
+/* Set modal-bg */
 .modal-bg {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -105,9 +118,13 @@ body.reminders-bg {
   align-items: center;
   justify-content: center;
 }
+
+/* Set modal-bg.active */
 .modal-bg.active {
   display: flex;
 }
+
+/* Set modal */
 .modal {
   background: var(--card-bg);
   border-radius: 16px;
@@ -122,6 +139,8 @@ body.reminders-bg {
   flex-direction: column;
   gap: 18px;
 }
+
+/* Set modal-header */
 .modal-header {
   display: flex;
   align-items: center;
@@ -132,6 +151,8 @@ body.reminders-bg {
   font-size: 1.2rem;
   font-weight: 400;
 }
+
+/* Set modal-close-btn */
 .modal-close-btn {
   background: none;
   border: none;
@@ -141,18 +162,24 @@ body.reminders-bg {
   padding: 0 8px;
   line-height: 1;
 }
+
+/* Set add-reminder-form .modal-field */
 .add-reminder-form .modal-field {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-bottom: 12px;
 }
+
+/* Set add-reminder-form label */
 .add-reminder-form label {
   font-size: 0.98rem;
   color: var(--text-muted);
   font-weight: 500;
   margin-bottom: 5px;
 }
+
+/* Set add-reminder-form input, add-reminder-form textarea */
 .add-reminder-form input,
 .add-reminder-form textarea {
   background: var(--main-bg);
@@ -165,28 +192,38 @@ body.reminders-bg {
   outline: none;
   resize: none;
 }
+
+/* Set reminder-description */
 #reminder-description{
   height: 100px;
   margin-bottom: 10px;
 }
+
+/* Set add-reminder-form input:focus, add-reminder-form textarea:focus */
 .add-reminder-form input:focus,
 .add-reminder-form textarea:focus {
   border-color: #235FD6;
   box-shadow: 0 0 0 3px rgba(35,95,214,0.35);
   outline: none;
 }
+
+/* Set add-reminder-form input::placeholder, add-reminder-form textarea::placeholder */
 .add-reminder-form input::placeholder,
 .add-reminder-form textarea::placeholder {
   color: var(--text-muted);
   font-weight: 400;
   opacity: 1;
 }
+
+/* Set modal-actions */
 .modal-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
   margin-top: 8px;
 }
+
+/* Set modal-action-btn */
 .modal-action-btn {
   background: var(--accent);
   color: #fff;
@@ -198,9 +235,13 @@ body.reminders-bg {
   cursor: pointer;
   transition: background 0.18s;
 }
+
+/* Set modal-action-btn:hover */
 .modal-action-btn:hover {
   background: #1c4daf;
 }
+
+/* Set modal-cancel-btn */
 .modal-cancel-btn {
   background: none;
   color: var(--text-muted);
@@ -210,7 +251,7 @@ body.reminders-bg {
   padding: 8px 12px;
 }
 
-/* Reminders Container & Card */
+/* Set reminders-container */
 .reminders-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -218,6 +259,8 @@ body.reminders-bg {
   gap: 28px;
   padding: 32px 32px 0 32px;
 }
+
+/* Set reminder-card */
 .reminder-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -234,25 +277,35 @@ body.reminders-bg {
   transition: 0.25s ease;
   border: 1px solid transparent;
 }
+
+/* Set reminder-card:hover */
 .reminder-card:hover{
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
   cursor: pointer;
 }
+
+/* Set reminder-card .reminder-amount */
 .reminder-card .reminder-amount {
   font-size: 1.1rem;
   font-weight: 400;
   color: var(--accent);
 }
+
+/* Set reminder-card .reminder-date-time */
 .reminder-card .reminder-date-time {
   font-size: 0.98rem;
   color: var(--text-muted);
 }
+
+/* Set reminder-card .reminder-description */
 .reminder-card .reminder-description {
   font-size: 1rem;
   margin-top: 4px;
   color: var(--text);
 }
+
+/* Set reminder-card .delete-btn */
 .reminder-card .delete-btn {
   position: absolute;
   top: 12px;
@@ -274,15 +327,19 @@ body.reminders-bg {
   cursor: pointer;
   padding: 0;
 }
+
+/* Set reminder-card:hover .delete-btn */
 .reminder-card:hover .delete-btn {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* Set reminder-card .delete-btn:hover */
 .reminder-card .delete-btn:hover {
   background: #b71c1c;
 }
 
-/* Custom Date Picker (reuse from dashboard) */
+/* Set custom-date-picker, custom-time-picker */
 .custom-date-picker,
 .custom-time-picker {
   position: relative;
@@ -290,12 +347,16 @@ body.reminders-bg {
   align-items: center;
   width: 100%;
 }
+
+/* Set custom-date-picker input, custom-time-picker input */
 .custom-date-picker input,
 .custom-time-picker input {
   width: 100%;
   box-sizing: border-box;
   padding-right: 44px;
 }
+
+/* Set calendar-icon, clock-icon */
 .calendar-icon,
 .clock-icon {
   position: absolute;
@@ -310,6 +371,8 @@ body.reminders-bg {
   border: none;
   padding: 0;
 }
+
+/* Set calendar-popup */
 .calendar-popup {
   position: absolute;
   top: 110%;
@@ -325,10 +388,13 @@ body.reminders-bg {
   font-size: 1.13rem;
   display: none;
 }
+
+/* Set custom-date-picker.open .calendar-popup */
 .custom-date-picker.open .calendar-popup {
   display: block;
 }
 
+/* Set calendar-popup span[style*='font-weight:600'] */
 .calendar-popup span[style*='font-weight:600'] {
   display: block;
   text-align: center;
@@ -337,6 +403,7 @@ body.reminders-bg {
   letter-spacing: 0.01em;
 }
 
+/* Set calendar-popup button.cal-prev, calendar-popup button.cal-next */
 .calendar-popup button.cal-prev,
 .calendar-popup button.cal-next {
   background: #18191a;
@@ -352,12 +419,14 @@ body.reminders-bg {
   outline: none;
 }
 
+/* Set calendar-popup button.cal-prev:hover, calendar-popup button.cal-next:hover */
 .calendar-popup button.cal-prev:hover,
 .calendar-popup button.cal-next:hover {
   background: var(--accent);
   color: #fff;
 }
 
+/* Set calendar-grid-days */
 .calendar-grid-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -368,6 +437,7 @@ body.reminders-bg {
   flex-grow: 1;
 }
 
+/* Set calendar-popup .cal-day */
 .calendar-popup .cal-day {
   background: transparent;
   color: var(--text);
@@ -384,43 +454,53 @@ body.reminders-bg {
   height: 100%;
 }
 
+/* Set calendar-popup .cal-day:hover */
 .calendar-popup .cal-day:hover {
   color: var(--accent) !important;
   outline: none;
 }
 
+/* Set calendar-popup .cal-day.selected */
 .calendar-popup .cal-day.selected {
   background: var(--accent);
   color: #fff !important;
 }
 
+/* Set calendar-popup .calendar-grid-days span, calendar-popup .calendar-grid-days button */
 .calendar-popup .calendar-grid-days span,
 .calendar-popup .calendar-grid-days button {
   font-size: 1.13rem;
 }
 
+/* Set calendar-popup .calendar-grid-days span */
 .calendar-popup .calendar-grid-days span {
   color: var(--text-muted);
   font-weight: 400;
   font-size: 1.13rem;
 }
 
-/* Custom Time Picker */
+/* Set custom-time-picker */
 .custom-time-picker {
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
+/* Set custom-time-picker input */
 .custom-time-picker input {
   width: 100px;
   cursor: pointer;
 }
+
+/* Set clock-icon */
 .clock-icon {
   cursor: pointer;
   display: flex;
   align-items: center;
 }
+
+/* Set time-popup */
 .time-popup {
   position: absolute;
   top: 110%;
@@ -433,17 +513,20 @@ body.reminders-bg {
   min-width: 180px;
   display: none;
 }
+
+/* Set custom-time-picker.open .time-popup */
 .custom-time-picker.open .time-popup {
   display: block;
 }
 
-/* Remove arrows from number inputs (cross-browser) */
+/* Set input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button */
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
+/* Set #reminder-amount */
 #reminder-amount {
   padding: 12px !important;
   border-radius: 8px;
@@ -453,11 +536,15 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: none;
   transition: box-shadow 0.18s, border-color 0.18s;
 }
+
+/* Set #reminder-amount:focus */
 #reminder-amount:focus {
   outline: none;
   border-color: #235FD6;
   box-shadow: 0 0 0 3px rgba(35,95,214,0.35);
 }
+
+/* Set #reminder-amount::placeholder */
 #reminder-amount::placeholder {
   color: var(--text-muted);
   font-size: 2rem;
@@ -465,6 +552,7 @@ input[type=number]::-webkit-outer-spin-button {
   opacity: 1;
 }
 
+/* Set time-popup input[type='text'] */
 .time-popup input[type='text'] {
   width: 3.5em;
   height: 2.5em;
@@ -480,14 +568,19 @@ input[type=number]::-webkit-outer-spin-button {
   transition: border-color 0.18s, box-shadow 0.18s;
   padding: 0 !important;
 }
+
+/* Set time-popup input[type='text']:focus */
 .time-popup input[type='text']:focus {
   border-color: #235FD6;
   box-shadow: 0 0 0 2px rgba(35,95,214,0.25);
 }
+
+/* Set time-popup */
 .time-popup {
   pointer-events: auto;
 }
 
+/* Set incorrect */
 .incorrect {
   border-color: #ff4d4f !important;
   background: #2a181a !important;
@@ -495,6 +588,7 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 0 0 2px rgba(255,77,79,0.13) !important;
 }
 
+/* Set #reminder-search */
 #reminder-search {
   width: 100%;
   min-width: 1100px;
@@ -511,35 +605,47 @@ input[type=number]::-webkit-outer-spin-button {
   outline: none;
   box-shadow: none;
 }
+
+/* Set #reminder-search:focus */
 #reminder-search:focus {
   border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
 }
 
+/* Set .reminder-date-past */
 .reminder-date-past {
   color: #e53935 !important;
   font-weight: 600;
 }
+
+/* Set .reminder-date-today */
 .reminder-date-today {
   color: #43a047 !important;
   font-weight: 600;
 }
+
+/* Set .reminder-date-future */
 .reminder-date-future {
   color: #fbc02d !important;
   font-weight: 600;
 }
 
+/* Set switch */
 .switch {
   position: relative;
   display: inline-block;
   width: 36px;
   height: 20px;
 }
+
+/* Set switch input */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
+/* Set slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -549,6 +655,8 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: 20px;
   box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
 }
+
+/* Set slider:before */
 .slider:before {
   position: absolute;
   content: "";
@@ -560,16 +668,23 @@ input[type=number]::-webkit-outer-spin-button {
   transition: .3s;
   border-radius: 50%;
 }
+
+/* Set input:checked + .slider */
 input:checked + .slider {
   background-color: var(--accent);
 }
+
+/* Set input:checked + .slider:before */
 input:checked + .slider:before {
   transform: translateX(16px);
 }
+
+/* Set slider.round */
 .slider.round {
   border-radius: 20px;
 }
 
+/* Set #repeat-options input[type='number'] */
 #repeat-options input[type='number'] {
   width: 150px;
   min-width: 0;
@@ -582,10 +697,14 @@ input:checked + .slider:before {
   color: var(--text);
   box-sizing: border-box;
 }
+
+/* Set #repeat-options label */
 #repeat-options label {
   font-size: 0.98em;
   margin-bottom: 2px;
 }
+
+/* Set #repeat-options */
 #repeat-options {
   margin-bottom: 20px;
 }

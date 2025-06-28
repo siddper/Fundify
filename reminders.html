@@ -1,5 +1,7 @@
+<!--reminders.html - Reminders page-->
 <!DOCTYPE html>
 <html lang="en">
+<!-- Set head-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +14,10 @@
     <script type="text/javascript" src="mini-fundAI.js" defer></script>
     <script type="text/javascript" src="nav.js" defer></script>
 </head>
+<!-- Set body-->
 <body class="reminders-bg">
   <div class="reminders-layout">
+    <!-- Set sidebar-->
     <aside class="sidebar">
       <div class="sidebar-top">
         <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
@@ -51,6 +55,7 @@
         <span>Fundify</span>
       </div>
     </aside>
+    <!-- Set main-->
     <main class="reminders-main">
       <header class="reminders-topbar">
         <div class="topbar-left">
@@ -60,17 +65,20 @@
             Add<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
         </button>
       </header>
+      <!-- Set search input-->
       <div style="padding: 24px 32px 0 32px;">
         <input id="reminder-search" type="text" placeholder="Search reminders..." autocomplete="off">
       </div>
+      <!-- Set reminders container-->
       <div id="reminders-container" class="reminders-container"></div>
-      <!-- Add Reminder Modal -->
+      <!-- Set add reminder modal-->
       <div class="modal-bg" id="addModal">
         <div class="modal add-reminder-modal">
           <div class="modal-header">
             <span class="modal-title">Add Reminder</span>
             <button class="modal-close-btn" id="closeAddModal">&times;</button>
           </div>
+          <!-- Set add reminder form-->
           <form id="add-reminder-form" class="add-reminder-form">
             <div class="modal-field">
               <label for="reminder-amount">Amount</label>
@@ -117,6 +125,7 @@
                 </div>
               </div>
             </div>
+            <!-- Set modal actions-->
             <div class="modal-actions">
                 <button type="button" class="modal-cancel-btn" id="cancelAddModal">Cancel</button>
               <button type="submit" class="modal-action-btn">Add Reminder</button>
@@ -126,6 +135,7 @@
       </div>
     </main>
   </div>
+  <!-- Set scripts-->
   <script src="global-notifications.js"></script>
   <script src="reminders.js"></script>
 </body>

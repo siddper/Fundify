@@ -1,22 +1,24 @@
+// reminders.js - Reminders page functionality
 // Modal logic
 const openBtn = document.getElementById('openAddModal');
 const closeBtn = document.getElementById('closeAddModal');
 const cancelBtn = document.getElementById('cancelAddModal');
 const modalBg = document.getElementById('addModal');
 
-// Example: get from localStorage, or set after login
+// Get user email from localStorage, or set after login
 const userEmail = localStorage.getItem('fundify_user_email');
 if (!userEmail) {
   alert('No user email found. Please log in.');
   // Optionally redirect to login page
 }
 
-// Always clear notified reminders on page load for testing
+// Clear notified reminders on page load for testing
 // localStorage.removeItem('fundify_reminders_notified');
 
+// Set modal logic
 if (openBtn && closeBtn && modalBg) {
   openBtn.addEventListener('click', () => {
-    // Autofill date and time to today and now
+    // Autofill date and time to today and now (reminders.html)
     const dateInput = document.getElementById('reminder-date-input');
     const timeInput = document.getElementById('reminder-time-input');
     if (dateInput) {
@@ -57,7 +59,7 @@ if (openBtn && closeBtn && modalBg) {
   });
 }
 
-// Custom Date Picker (reuse dashboard.js logic)
+// Custom Date Picker (reminders.html)
 function setupCustomDatePicker() {
   const picker = document.getElementById('reminder-date-picker');
   const input = document.getElementById('reminder-date-input');
@@ -133,7 +135,7 @@ function setupCustomDatePicker() {
 }
 setupCustomDatePicker();
 
-// Custom Time Picker
+// Custom Time Picker (reminders.html)
 function setupCustomTimePicker() {
   const picker = document.getElementById('reminder-time-picker');
   const input = document.getElementById('reminder-time-input');
@@ -244,7 +246,7 @@ function setupCustomTimePicker() {
 }
 setupCustomTimePicker();
 
-// Repeat toggle logic
+// Repeat toggle logic (reminders.html)
 const repeatToggle = document.getElementById('reminder-repeat-toggle');
 const repeatOptions = document.getElementById('repeat-options');
 if (repeatToggle && repeatOptions) {
@@ -262,12 +264,13 @@ if (cancelBtn) cancelBtn.addEventListener('click', () => {
   if (repeatOptions) repeatOptions.style.display = 'none';
 });
 
-// Reminders logic
+// Reminders logic (reminders.html)
 const remindersContainer = document.getElementById('reminders-container');
 const addReminderForm = document.getElementById('add-reminder-form');
 let editingId = null;
 let allReminders = [];
 
+// Fetch notifications setting (reminders.html)
 async function fetchNotificationsSetting() {
   try {
     const res = await fetch(`http://127.0.0.1:8000/user-info?email=${encodeURIComponent(userEmail)}`);
@@ -282,17 +285,20 @@ async function fetchNotificationsSetting() {
   }
 }
 
+// Fetch reminders (reminders.html)
 async function fetchReminders() {
   const res = await fetch(`${API_BASE}/reminders?email=${encodeURIComponent(userEmail)}`);
   const data = await res.json();
   return data.success ? data.reminders : [];
 }
 
+// Render reminders (reminders.html)
 async function renderReminders() {
   allReminders = await fetchReminders();
   filterAndRenderReminders();
 }
 
+// Filter and render reminders (reminders.html)
 function filterAndRenderReminders() {
   const searchInput = document.getElementById('reminder-search');
   const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
@@ -401,12 +407,13 @@ function filterAndRenderReminders() {
   });
 }
 
-// Attach search event
+// Attach search event (reminders.html)
 const searchInput = document.getElementById('reminder-search');
 if (searchInput) {
   searchInput.addEventListener('input', filterAndRenderReminders);
 }
 
+// Set add reminder form logic (reminders.html)
 if (addReminderForm) {
   // Remove 'required' attributes from all fields
   ['reminder-amount','reminder-date-input','reminder-time-input','reminder-description'].forEach(id => {
@@ -482,12 +489,12 @@ if (addReminderForm) {
   if (cancelBtn) cancelBtn.addEventListener('click', () => { editingId = null; });
 }
 
-// Request notification permission on page load
+// Request notification permission on page load (reminders.html)
 if ('Notification' in window && Notification.permission !== 'granted') {
   Notification.requestPermission();
 }
 
-// Helper to check if two date+time strings match current time (to the minute)
+// Helper to check if two date+time strings match current time (to the minute) (reminders.html)
 function isReminderDue(reminder) {
   const now = new Date();
   const [mm, dd, yyyy] = reminder.date.split('/').map(Number);
@@ -516,19 +523,24 @@ function isReminderDue(reminder) {
   return reminderDate <= now;
 }
 
-// Track notified reminders to avoid duplicate notifications
+// Track notified reminders to avoid duplicate notifications (reminders.html)
 function getNotifiedKeys() {
   try {
     return JSON.parse(localStorage.getItem('fundify_reminders_notified') || '[]');
   } catch { return []; }
 }
+
+// Set notified keys (reminders.html)
 function setNotifiedKeys(keys) {
   localStorage.setItem('fundify_reminders_notified', JSON.stringify(keys));
 }
+
+// Make reminder key (reminders.html)
 function makeReminderKey(reminder) {
   return `${reminder.id}|${reminder.date}|${reminder.time}`;
 }
 
+// Check reminders for notification (reminders.html)
 async function checkRemindersForNotification() {
   const notificationsDisabled = await fetchNotificationsSetting();
   if (notificationsDisabled) {
@@ -585,6 +597,7 @@ async function checkRemindersForNotification() {
 checkRemindersForNotification();
 setInterval(checkRemindersForNotification, 60000);
 
+// Add reminder (reminders.html)
 async function addReminder(reminder) {
   const res = await fetch(`${API_BASE}/reminders`, {
     method: 'POST',
@@ -594,6 +607,7 @@ async function addReminder(reminder) {
   return (await res.json()).success;
 }
 
+// Update reminder (reminders.html)
 async function updateReminder(id, reminder) {
   const res = await fetch(`${API_BASE}/reminders/${id}`, {
     method: 'PUT',
@@ -603,11 +617,13 @@ async function updateReminder(id, reminder) {
   return (await res.json()).success;
 }
 
+// Delete reminder (reminders.html)
 async function deleteReminder(id) {
   const res = await fetch(`${API_BASE}/reminders/${id}`, { method: 'DELETE' });
   return (await res.json()).success;
 }
 
+// Add event listener for DOMContentLoaded (reminders.html)
 document.addEventListener('DOMContentLoaded', () => {
   renderReminders();
 });
