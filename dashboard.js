@@ -1,4 +1,6 @@
-// Modal logic
+// dashboard.js - Dashboard page logic
+
+// --- Modal logic ---
 const openBtn = document.getElementById('openAddModal');
 const closeBtn = document.getElementById('closeAddModal');
 const modalBg = document.getElementById('addModal');
@@ -21,7 +23,7 @@ if (openBtn && closeBtn && modalBg) {
   });
 }
 
-// Quick Transaction form handler
+// --- Quick Transaction form handler ---
 const quickTransactionForm = document.querySelector('#quick-transaction-content form');
 const quickTransactionPrompt = document.querySelector('#quick-transaction-content .quick-transaction-prompt');
 const aiMessageContainer = document.querySelector('#quick-transaction-content .ai-message-container');
@@ -84,7 +86,7 @@ if (quickTransactionPrompt && quickTransactionForm) {
   });
 }
 
-// Quick Preset form handler
+// --- Quick Preset form handler ---
 const quickPresetForm = document.querySelector('#quick-preset-content form');
 const quickPresetPrompt = document.querySelector('#quick-preset-content .quick-preset-prompt');
 const quickPresetAiMessageContainer = document.querySelector('#quick-preset-content .ai-message-container');
@@ -146,6 +148,7 @@ if (quickPresetPrompt && quickPresetForm) {
   });
 }
 
+// --- Modal cancel buttons ---
 const modalCancelButtons = document.querySelectorAll('.modal-cancel-btn');
 if (modalCancelButtons.length > 0 && modalBg) {
   modalCancelButtons.forEach(btn => {
@@ -156,7 +159,7 @@ if (modalCancelButtons.length > 0 && modalBg) {
 }
 
 
-// Filter chip removal
+// --- Filter chip removal ---
 const filterChips = document.querySelectorAll('.chip-close');
 filterChips.forEach(chip => {
   chip.addEventListener('click', (e) => {
@@ -164,7 +167,7 @@ filterChips.forEach(chip => {
   });
 });
 
-// Filter add button stub
+// --- Filter add button stub ---
 const filterAddBtn = document.querySelector('.filter-add-btn');
 if (filterAddBtn) {
   filterAddBtn.addEventListener('click', () => {
@@ -172,7 +175,7 @@ if (filterAddBtn) {
   });
 }
 
-// Add-option selection logic
+// --- Add-option selection logic ---
 const modalTabsContainer = document.querySelector('.modal-tabs');
 const modalTitle = document.getElementById('modal-title');
 
@@ -200,7 +203,7 @@ if (modalTabsContainer) {
   });
 }
 
-// Set initial state based on the default active tab
+// --- Set initial state based on the default active tab ---
 document.addEventListener('DOMContentLoaded', () => {
     const activeTab = document.querySelector('.modal-tab-btn.active');
     if (activeTab) {
@@ -213,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- Custom Dropdown Logic ---
+// --- Custom dropdown logic ---
 function setupCustomDropdown(dropdownId, selectedId, listId) {
   const dropdown = document.getElementById(dropdownId);
   const selected = document.getElementById(selectedId);
@@ -252,7 +255,7 @@ setupCustomDropdown('custom-type-dropdown', 'custom-type-selected', 'custom-type
 setupCustomDropdown('custom-method-dropdown', 'custom-method-selected', 'custom-method-list');
 setupCustomDropdown('sort-dropdown', 'sort-selected', 'sort-list');
 
-// --- Custom Date Picker Logic ---
+// --- Custom date picker logic ---
 function setupCustomDatePicker() {
   const picker = document.getElementById('custom-date-picker');
   const input = document.getElementById('custom-date-input');
@@ -329,7 +332,7 @@ function setupCustomDatePicker() {
 }
 setupCustomDatePicker();
 
-// Add custom dropdowns and date picker for Add Preset form
+// --- Add custom dropdowns and date picker for Add Preset form ---
 setupCustomDropdown('custom-preset-type-dropdown', 'custom-preset-type-selected', 'custom-preset-type-list');
 setupCustomDropdown('custom-preset-method-dropdown', 'custom-preset-method-selected', 'custom-preset-method-list');
 function setupCustomPresetDatePicker() {
@@ -403,13 +406,13 @@ function setupCustomPresetDatePicker() {
 }
 setupCustomPresetDatePicker();
 
-// Prevent calendar popup from closing when clicking inside it
+// --- Prevent calendar popup from closing when clicking inside it ---
 // (for both main and preset calendar popups)
 document.querySelectorAll('.calendar-popup').forEach(popup => {
   popup.addEventListener('click', e => e.stopPropagation());
 });
 
-// --- Preset Logic ---
+// --- Preset logic ---
 let presets = [];
 
 const presetsContainer = document.getElementById('presets-container');
@@ -577,7 +580,7 @@ if (presetForm) {
     }
 }
 
-// --- Transaction List Logic ---
+// --- Transaction list logic ---
 let transactions = [];
 let selectedTransactionIds = new Set();
 
@@ -692,7 +695,7 @@ function levenshteinDistance(a, b) {
     return matrix[b.length][a.length];
 }
 
-// Search functionality
+// --- Search functionality ---
 const searchInput = document.getElementById('search-input');
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -796,7 +799,7 @@ if (searchInput) {
     }
 }
 
-// Bulk Actions Logic
+// --- Bulk actions logic ---
 if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener('change', () => {
         const visibleCheckboxes = document.querySelectorAll('.dashboard-table tbody tr:not([style*="display: none"]) input[type="checkbox"]');
@@ -865,7 +868,7 @@ async function handleBulkCopy() {
 if (bulkDeleteBtn) bulkDeleteBtn.addEventListener('click', handleBulkDelete);
 if (bulkCopyBtn) bulkCopyBtn.addEventListener('click', handleBulkCopy);
 
-// Fetch transactions from backend
+// --- Fetch transactions from backend ---
 async function fetchTransactions() {
   const email = localStorage.getItem('fundify_user_email');
   if (!email) return; // Not logged in
@@ -891,6 +894,7 @@ async function fetchTransactions() {
   }
 }
 
+// --- Delete transaction ---
 async function deleteTransaction(transactionId) {
     try {
         const res = await fetch(`http://127.0.0.1:8000/transactions/${transactionId}`, {
@@ -907,6 +911,7 @@ async function deleteTransaction(transactionId) {
     }
 }
 
+// --- Duplicate transaction ---
 async function duplicateTransaction(transactionId) {
     const originalTx = transactions.find(tx => tx.id === transactionId);
     if (!originalTx) {
@@ -944,6 +949,7 @@ async function duplicateTransaction(transactionId) {
     }
 }
 
+// --- Render transactions ---
 function renderTransactions(transactionsToRender = transactions) {
   const tbody = document.querySelector('.dashboard-table tbody');
   tbody.innerHTML = '';
@@ -978,6 +984,7 @@ function renderTransactions(transactionsToRender = transactions) {
   });
 }
 
+// --- Cancel edit ---
 function cancelEdit(tr) {
     if (!tr || !tr.classList.contains('editing')) return;
     
@@ -995,6 +1002,7 @@ function cancelEdit(tr) {
     tr.removeAttribute('data-original-values');
 }
 
+// --- Toggle edit mode ---
 function toggleEditMode(tr, transaction) {
     const isEditing = tr.classList.contains('editing');
 
@@ -1055,6 +1063,7 @@ function toggleEditMode(tr, transaction) {
     tr.cells[4].querySelector('input').focus();
 }
 
+// --- Save transaction ---
 async function saveTransaction(tr, transactionId) {
     const dateInput = tr.cells[2].querySelector('.edit-input');
     const typeSelect = tr.cells[3].querySelector('.dropdown-selected');
@@ -1094,6 +1103,7 @@ async function saveTransaction(tr, transactionId) {
     }
 }
 
+// --- Setup custom dropdown for row ---
 function setupCustomDropdownForRow(dropdownEl) {
     const selected = dropdownEl.querySelector('.dropdown-selected');
     const list = dropdownEl.querySelector('.dropdown-list');
@@ -1125,6 +1135,7 @@ function setupCustomDropdownForRow(dropdownEl) {
     });
 }
 
+// --- Setup custom date picker for row ---
 function setupCustomDatePickerForRow(pickerEl) {
     const input = pickerEl.querySelector('input');
     const popup = pickerEl.querySelector('.calendar-popup');
@@ -1178,7 +1189,7 @@ function setupCustomDatePickerForRow(pickerEl) {
     });
 }
 
-// --- Voice Recognition Logic ---
+// --- Voice recognition logic ---
 const startVoiceBtn = document.getElementById('start-voice-recognition');
 const startVoiceBtnPreset = document.getElementById('start-voice-recognition-preset');
 const voiceUi = document.getElementById('voice-recognition-ui');
@@ -1251,6 +1262,7 @@ if (SpeechRecognition) {
     };
 }
 
+// --- Start recognition ---
 function startRecognition(context) {
     if (!SpeechRecognition) {
         alert("Sorry, your browser doesn't support voice recognition.");
@@ -1271,6 +1283,7 @@ function startRecognition(context) {
     }
 }
 
+// --- Stop recognition ---
 function stopRecognition(shouldSubmit) {
     if (recognition) {
         recognition.stop();
@@ -1283,6 +1296,7 @@ function stopRecognition(shouldSubmit) {
     }
 }
 
+// --- Start visualizer ---
 async function startVisualizer() {
     stopVisualizer(); // Clear previous visualizer if any
     try {
@@ -1313,6 +1327,7 @@ async function startVisualizer() {
     }
 }
 
+// --- Stop visualizer ---
 function stopVisualizer() {
     if (visualizerFrameId) {
         cancelAnimationFrame(visualizerFrameId);
@@ -1332,6 +1347,7 @@ function stopVisualizer() {
     }
 }
 
+// --- Start voice recognition ---
 if (startVoiceBtn) {
     startVoiceBtn.addEventListener('click', () => {
         startRecognition({
@@ -1341,6 +1357,7 @@ if (startVoiceBtn) {
     });
 }
 
+// --- Start voice recognition preset ---
 if (startVoiceBtnPreset) {
     startVoiceBtnPreset.addEventListener('click', () => {
         startRecognition({
@@ -1350,9 +1367,11 @@ if (startVoiceBtnPreset) {
     });
 }
 
+// --- Stop voice recognition ---
 if(stopVoiceBtn) stopVoiceBtn.addEventListener('click', () => stopRecognition(true));
 if(cancelVoiceBtn) cancelVoiceBtn.addEventListener('click', () => stopRecognition(false));
 
+// --- Keydown event listener ---
 document.addEventListener('keydown', (e) => {
     if (voiceUi.classList.contains('active')) {
         if (e.code === 'Space') {
@@ -1366,7 +1385,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Generate waveform bars
+// --- Generate waveform bars ---
 if (waveformContainer) {
     for (let i = 0; i < 50; i++) {
         const bar = document.createElement('div');
@@ -1376,10 +1395,11 @@ if (waveformContainer) {
     }
 }
 
-// On page load, fetch transactions
+// --- On page load, fetch transactions ---
 fetchTransactions();
 fetchPresets();
 
+// --- Table body click event listener ---
 const tableBody = document.querySelector('.dashboard-table tbody');
 if (tableBody) {
     tableBody.addEventListener('click', (e) => {
@@ -1461,6 +1481,7 @@ if (tableBody) {
     });
 }
 
+// --- Add transaction form ---
 const addTransactionForm = document.querySelector('.transaction-form');
 if (addTransactionForm) {
   // Remove 'incorrect' class on input/change for text/number fields
@@ -1585,6 +1606,7 @@ if (openBtn && modalBg) {
   });
 }
 
+// --- Click event listener ---
 document.addEventListener('click', (e) => {
     const openDropdown = document.querySelector('.transaction-menu-dropdown.show');
     if (openDropdown && !openDropdown.parentElement.contains(e.target)) {
@@ -1620,7 +1642,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// --- Filter Bar & Modal Logic ---
+// --- Filter bar & modal logic ---
 const addFilterBtn = document.getElementById('add-filter-btn');
 const filterModal = document.getElementById('filter-modal');
 const closeFilterModalBtn = document.getElementById('close-filter-modal');
@@ -1633,7 +1655,7 @@ const filterChipsContainer = document.getElementById('filter-chips-container');
 
 let activeFilters = [];
 
-// Setup custom dropdown for filter type
+// --- Setup custom dropdown for filter type ---
 setupCustomDropdown('filter-type-dropdown', 'filter-type-selected', 'filter-type-list');
 
 function openFilterModal() {
@@ -1650,6 +1672,7 @@ if (filterTypeList) filterTypeList.querySelectorAll('li').forEach(li => {
   li.addEventListener('click', renderFilterValueInputs);
 });
 
+// --- Render filter value inputs ---
 function renderFilterValueInputs() {
   const type = filterTypeSelected.dataset.value || 'date';
   let html = '';
@@ -1716,6 +1739,7 @@ function renderFilterValueInputs() {
   }
 }
 
+// --- Setup custom date picker for filter modal ---
 function setupCustomDatePickerForFilterModal() {
   const picker = document.getElementById('filter-date-picker');
   const input = document.getElementById('filter-date-input');
@@ -1861,6 +1885,7 @@ function renderFilterChips() {
   });
 }
 
+// --- Apply filter ---
 if (applyFilterBtn) {
   applyFilterBtn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -1942,7 +1967,7 @@ if (applyFilterBtn) {
   });
 }
 
-// Remove .incorrect class on input/change for filter modal (robust event delegation)
+// --- Remove .incorrect class on input/change for filter modal (robust event delegation) ---
 function setupFilterModalValidationListeners() {
   // Use event delegation for all text/number inputs
   const valueInputsContainer = document.getElementById('filter-value-inputs');
@@ -1976,13 +2001,14 @@ function setupFilterModalValidationListeners() {
     methodBtn.addEventListener('click', () => methodBtn.classList.remove('incorrect'));
   }
 }
-// Call this after rendering filter value inputs
+// --- Call this after rendering filter value inputs ---
 const origRenderFilterValueInputs = renderFilterValueInputs;
 renderFilterValueInputs = function() {
   origRenderFilterValueInputs.apply(this, arguments);
   setTimeout(setupFilterModalValidationListeners, 0);
 };
 
+// --- Filter to label ---
 function filterToLabel(filter) {
   if (filter.type === 'date') {
     return `Date ${filter.operator} ${filter.value}`;
@@ -1999,6 +2025,7 @@ function filterToLabel(filter) {
   return '';
 }
 
+// --- Filter transactions ---
 function filterTransactions() {
   let filtered = [...transactions];
   activeFilters.forEach(filter => {
@@ -2046,15 +2073,15 @@ function filterTransactions() {
   updateBulkActionsUI();
 }
 
-// Re-filter when transactions are fetched
+// --- Re-filter when transactions are fetched ---
 const originalFetchTransactions = fetchTransactions;
 fetchTransactions = async function() {
   await originalFetchTransactions.apply(this, arguments);
   filterTransactions();
 };
 
-// --- Receipt Scan UI Logic ---
-// Custom file upload button
+// --- Receipt scan UI logic ---
+// --- Custom file upload button ---
 const fileBtn = document.getElementById('custom-file-btn');
 const fileInput = document.getElementById('receipt-upload');
 const fileNameSpan = document.getElementById('file-name');
@@ -2084,7 +2111,7 @@ if (fileBtn && fileInput) {
     }
   });
 }
-// Camera modal logic
+// --- Camera modal logic ---
 const cameraModal = document.getElementById('camera-modal');
 const startCameraBtn = document.getElementById('start-receipt-camera');
 const closeCameraBtn = document.getElementById('close-camera-btn');
@@ -2141,7 +2168,7 @@ if (capturePhotoBtn && cameraPreview && cameraCanvas && receiptPreview) {
   });
 }
 
-// --- Receipt Scan AI Submission Logic ---
+// --- Receipt scan AI submission logic ---
 const receiptScanForm = document.getElementById('receipt-scan-form');
 if (receiptScanForm) {
   const aiBtn = receiptScanForm.querySelector('.receipt-ai-btn');
@@ -2155,14 +2182,14 @@ if (receiptScanForm) {
   aiMsgContainer.style.display = 'block';
   aiMsgContainer.textContent = '';
 
-  // Cancel button closes modal
+  // --- Cancel button closes modal ---
   if (cancelBtn && modalBg) {
     cancelBtn.addEventListener('click', () => {
       modalBg.classList.remove('active');
     });
   }
 
-  // Enable/disable button based on image selection
+  // --- Enable/disable button based on image selection ---
   function updateAiBtnState() {
     const img = document.querySelector('#receipt-preview img');
     aiBtn.disabled = !img;
@@ -2181,7 +2208,7 @@ if (receiptScanForm) {
     }
   }
 
-  // Add spinner keyframes if not present
+  // --- Add spinner keyframes if not present ---
   if (!document.getElementById('fundify-spinner-style')) {
     const style = document.createElement('style');
     style.id = 'fundify-spinner-style';
@@ -2196,7 +2223,7 @@ if (receiptScanForm) {
     aiMsgContainer.textContent = 'Extracting text from receipt...';
     setBtnLoading(true, 'Extracting...');
 
-    // Get the image from preview (either file or camera)
+    // --- Get the image from preview (either file or camera) ---
     const imgEl = document.querySelector('#receipt-preview img');
     if (!imgEl) {
       aiMsgContainer.textContent = 'Please select or capture a receipt image.';
@@ -2206,7 +2233,7 @@ if (receiptScanForm) {
     }
     let imageDataUrl = imgEl.src;
     try {
-      // Run Tesseract.js OCR
+      // --- Run Tesseract.js OCR --- 
       const { data: { text } } = await Tesseract.recognize(imageDataUrl, 'eng', {
         tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
         tessedit_ocr_engine_mode: Tesseract.OEM.LSTM_ONLY,
@@ -2216,11 +2243,11 @@ if (receiptScanForm) {
       if (!promptText || !email) {
         throw new Error('Could not extract text or user not logged in.');
       }
-      // Force type to Withdrawal by appending a clear instruction to the prompt
+      // --- Force type to Withdrawal by appending a clear instruction to the prompt ---
       promptText += '\nType: Withdrawal';
       aiMsgContainer.textContent = 'Adding transaction...';
       setBtnLoading(true, 'Adding...');
-      // Send to backend
+      // --- Send to backend ---
       const res = await fetch('http://127.0.0.1:8000/quick-transaction', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2229,7 +2256,7 @@ if (receiptScanForm) {
       const data = await res.json();
       if (data.success) {
         await fetchTransactions();
-        // Reset form
+        // --- Reset form ---
         receiptScanForm.reset();
         document.getElementById('file-name').textContent = 'No file chosen';
         document.getElementById('receipt-preview').textContent = 'No image selected';
@@ -2262,7 +2289,7 @@ if (receiptScanForm) {
   });
 }
 
-// --- Export Transactions Logic ---
+// --- Export transactions logic ---
 const exportForm = document.getElementById('export-transactions-form');
 if (exportForm) {
   const exportBtn = exportForm.querySelector('.modal-action-btn');
@@ -2323,7 +2350,7 @@ if (exportForm) {
   });
 }
 
-// --- Import Transactions Logic ---
+// --- Import transactions logic ---
 const importForm = document.getElementById('import-transactions-form');
 console.log('[Import] importForm:', importForm);
 if (importForm) {
@@ -2359,7 +2386,7 @@ if (importForm) {
       const ext = file.name.split('.').pop().toLowerCase();
       console.log('[Import] File extension:', ext);
       
-      // Read file as text
+      // --- Read file as text ---
       const fileContent = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (event) => resolve(event.target.result);
@@ -2369,7 +2396,7 @@ if (importForm) {
       
       console.log('[Import] File read successfully, length:', fileContent.length);
       
-      // Parse the file content
+      // --- Parse the file content ---
       let imported = [];
       if (ext === 'json') {
         imported = JSON.parse(fileContent);
@@ -2398,11 +2425,11 @@ if (importForm) {
       console.log('[Import] Parsed transactions:', imported);
       if (!Array.isArray(imported) || imported.length === 0) throw new Error('No transactions found in file.');
       
-      // Validate: must have at least type, date, amount, store, method
+      // --- Validate: must have at least type, date, amount, store, method ---
       const valid = imported.every(tx => tx.type && tx.date && tx.amount && tx.store && tx.method);
       if (!valid) throw new Error('Some transactions are missing required fields.');
       
-      // Send each transaction to the backend
+      // --- Send each transaction to the backend ---
       const email = localStorage.getItem('fundify_user_email');
       if (!email) {
         throw new Error('User not logged in.');
@@ -2413,7 +2440,7 @@ if (importForm) {
       
       for (const tx of imported) {
         try {
-          // Prepare transaction data
+          // --- Prepare transaction data --- 
           const transactionData = {
             type: tx.type,
             date: tx.date,
@@ -2423,10 +2450,10 @@ if (importForm) {
             email: email
           };
           
-          // Remove id if present (let backend assign if needed)
+          // --- Remove id if present (let backend assign if needed) ---
           if (transactionData.id) delete transactionData.id;
           
-          // Send to backend
+          // --- Send to backend ---
           const res = await fetch('http://127.0.0.1:8000/transactions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2446,10 +2473,10 @@ if (importForm) {
         }
       }
       
-      // Refresh the transactions list
+      // --- Refresh the transactions list ---
       await fetchTransactions();
       
-      // Show results
+      // --- Show results ---
       if (successCount > 0) {
         statusMsg.textContent = `Successfully imported ${successCount} transaction${successCount !== 1 ? 's' : ''}${errorCount > 0 ? ` (${errorCount} failed)` : ''}!`;
         statusMsg.classList.add('success');
@@ -2469,6 +2496,7 @@ if (importForm) {
   console.log('[Import] Submit event listener added successfully');
 }
 
+// --- Export format switch ---
 const exportFormatSwitch = document.getElementById('export-format-switch');
 const exportFormatInput = document.getElementById('export-format');
 if (exportFormatSwitch && exportFormatInput) {
@@ -2481,6 +2509,7 @@ if (exportFormatSwitch && exportFormatInput) {
   });
 }
 
+// --- Import file input ---
 const importFileInput = document.getElementById('import-file');
 const importFileBtn = document.getElementById('custom-import-file-btn');
 const importFileName = document.getElementById('import-file-name');
@@ -2492,6 +2521,7 @@ if (importFileBtn && importFileInput && importFileName) {
   });
 }
 
+// --- Repeat toggle ---
 const repeatToggle = document.getElementById('repeat-toggle');
 const repeatOptionsContainer = document.getElementById('repeat-options-container');
 
@@ -2505,7 +2535,7 @@ if (repeatToggle && repeatOptionsContainer) {
     });
 }
 
-// --- Transactions Lock Overlay Logic ---
+// --- Transactions lock overlay logic ---
 async function checkAndShowTransactionsLock() {
   const overlay = document.getElementById('transactions-lock-overlay');
   const form = document.getElementById('unlock-transactions-form');
@@ -2515,7 +2545,7 @@ async function checkAndShowTransactionsLock() {
   const eyeIcon = document.getElementById('unlock-password-eye');
   let unlocked = false;
 
-  // Helper: fetch user info
+  // --- Helper: fetch user info ---
   async function fetchUserInfo() {
     const email = localStorage.getItem('fundify_user_email');
     if (!email) return null;
@@ -2543,7 +2573,7 @@ async function checkAndShowTransactionsLock() {
   passwordInput.type = 'password';
   eyeIcon.innerHTML = `<path d='M0 0h24v24H0z' fill='none'/><path d='M12 6a9.77 9.77 0 0 1 8.94 6A9.77 9.77 0 0 1 12 18a9.77 9.77 0 0 1-8.94-6A9.77 9.77 0 0 1 12 6m0-2C6.48 4 1.73 7.61.07 12c1.66 4.39 6.41 8 11.93 8s10.27-3.61 11.93-8C22.27 7.61 17.52 4 12 4zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z'/>`;
 
-  // Show/hide password logic
+  // --- Show/hide password logic ---
   toggleBtn.onclick = function() {
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
@@ -2552,7 +2582,7 @@ async function checkAndShowTransactionsLock() {
     }
   };
 
-  // Unlock logic
+  // --- Unlock logic ---
   form.onsubmit = async function(e) {
     e.preventDefault();
     errorMsg.textContent = '';
@@ -2583,7 +2613,7 @@ async function checkAndShowTransactionsLock() {
     }
   };
 
-  // Enter key submits form
+  // --- Enter key submits form ---
   passwordInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
       form.requestSubmit();
@@ -2591,4 +2621,5 @@ async function checkAndShowTransactionsLock() {
   });
 }
 
+// --- On page load, check and show transactions lock ---
 document.addEventListener('DOMContentLoaded', checkAndShowTransactionsLock);

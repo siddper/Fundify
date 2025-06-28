@@ -1,38 +1,60 @@
+<!-- create-account.html - Create Account Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Set up the page with proper character encoding and mobile responsiveness -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Account | Fundify</title>
+  <!-- Link to our custom styles for the auth pages -->
   <link rel="stylesheet" href="auth-styles.css">
+  <!-- Set the favicon (little icon in browser tab) -->
   <link rel="icon" type="image/png" href="fundifyIcon.png">
 </head>
+<!-- Main background with dark gradient -->
 <body class="auth-bg">
+  <!-- Container that holds everything on the page -->
   <div class="auth-container">
+    <!-- The form section where users enter their info -->
     <div class="auth-form-section">
+      <!-- Fundify logo at the top -->
       <div class="auth-logo"><span style="color:#4B61D1;font-weight:700;"><img src="fundifyIcon.png"></span></div>
+      <!-- Main heading -->
       <h1 class="auth-title">Create an account</h1>
+      <!-- Description text explaining what the app does -->
       <p class="auth-desc">Start exploring the resources that will help you elevate every financial decision you make.</p>
+      <!-- Small spacing -->
       <div style="height:10px;"></div>
+      <!-- Success message (hidden by default, shows when account is created) -->
       <div id="register-success" class="auth-success" style="display:none;"></div>
+      <!-- Error message (hidden by default, shows if something goes wrong) -->
       <div id="register-error" class="auth-error" style="display:none;"></div>
+      <!-- The actual form where users type their info -->
       <form class="auth-form" id="register-form" novalidate>
+        <!-- Name input field -->
         <label for="name">Name</label>
         <input type="text" id="name" placeholder="Your name" autocomplete="off">
+        <!-- Email input field -->
         <label for="email">Email</label>
         <input type="text" id="email" placeholder="Your email" autocomplete="off">
+        <!-- Password input field with show/hide toggle -->
         <label for="password">Password</label>
         <div class="password-input-wrapper">
           <input type="password" id="password" placeholder="Create a password" autocomplete="off">
+          <!-- Eye icon button to show/hide password -->
           <button type="button" id="toggle-password" class="toggle-password" tabindex="-1" aria-label="Show password">👁️</button>
         </div>
+        <!-- Password strength feedback box (hidden by default) -->
         <div id="password-feedback" class="password-feedback"></div>
+        <!-- Submit button to create the account -->
         <button type="submit" class="auth-btn" href="sign-in.html">Create account</button>
       </form>
 
+      <!-- Link to go to login page if user already has an account -->
       <div class="auth-footer">Already have an account? <a href="sign-in.html">Log in</a></div>
     </div>
   </div>
+  <!-- Load our JavaScript file that handles form submission and validation -->
   <script src="auth.js"></script>
 </body>
 </html> 

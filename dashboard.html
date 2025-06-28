@@ -1,24 +1,37 @@
+<!-- dashboard.html - Dashboard Page -->
 <!DOCTYPE html>
 <html lang="en">
+<!-- Set up the page with proper character encoding and mobile responsiveness -->
 <head>
+  <!-- Set up the page with proper character encoding and mobile responsiveness -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Set the title of the page -->
   <title>Dashboard | Fundify</title>
+  <!-- Set the favicon (little icon in browser tab) -->
   <link rel="icon" type="image/png" href="fundifyIcon.png">
+  <!-- Link to our custom styles for the auth pages -->
   <link rel="stylesheet" href="auth-styles.css">
+  <!-- Link to our custom styles for the navigation -->
   <link rel="stylesheet" href="nav.css">
+  <!-- Link to our custom styles for the dashboard -->
   <link rel="stylesheet" href="dashboard.css">
   <script type="text/javascript" src="command-bar.js" defer></script>
   <script type="text/javascript" src="mini-fundAI.js" defer></script>
   <script type="text/javascript" src="nav.js" defer></script>
 </head>
+<!-- Main background with dark gradient -->
 <body class="dashboard-bg">
+  <!-- Container that holds everything on the page -->
   <div class="dashboard-layout">
+    <!-- Sidebar -->
     <aside class="sidebar">
+      <!-- Sidebar top -->
       <div class="sidebar-top">
         <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
         <h3 style="margin:0;">Fundify</h3>
       </div>
+      <!-- Sidebar nav -->
       <nav class="sidebar-nav">
         <ul>
           <a href="dashboard.html">
@@ -47,12 +60,16 @@
           </a>
         </ul>
       </nav>
+      <!-- Sidebar footer -->
       <div class="sidebar-footer">
         <span>Fundify</span>
       </div>
     </aside>
+    <!-- Main content -->
     <main class="dashboard-main">
+      <!-- Topbar -->
       <header class="dashboard-topbar">
+        <!-- Topbar left -->
         <div class="topbar-left">
           <span class="dashboard-title">Transactions</span>
           <div class="current-balance">
@@ -60,10 +77,12 @@
             <span class="balance-amount" id="current-balance-amount">$0.00</span>
           </div>
         </div>
+        <!-- Topbar right -->
         <button class="dashboard-add-btn" id="openAddModal">
             Add<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
         </button>
       </header>
+      <!-- Controls -->
       <div class="dashboard-controls">
         <div class="bulk-actions-container" id="bulk-actions-container" style="display: none;">
             <span id="selection-count"></span>
@@ -95,6 +114,7 @@
           <button id="add-filter-btn" class="add-filter-btn" type="button">+ Add Filter</button>
         </div>
       </div>
+      <!-- Table section -->
       <section class="dashboard-table-section">
         <table class="dashboard-table">
           <thead>
@@ -114,6 +134,7 @@
         </table>
       </section>
     </main>
+    <!-- Transactions lock modal -->
     <div id="transactions-lock-overlay" class="modal-bg" style="display:none;z-index:1000;">
       <form id="unlock-transactions-form" class="modal-content transactions-lock-modal">
         <div class="modal-header" style="border-bottom:none;padding-bottom:0;margin-bottom:0;">
@@ -136,47 +157,59 @@
       </form>
     </div>
   </div>
+  <!-- Add modal -->
   <div class="modal-bg" id="addModal">
     <div class="modal-content">
       <button class="modal-close" id="closeAddModal" title="Close">×</button>
       <div class="modal-header">
         <h2 id="modal-title">Add Transaction</h2>
       </div>
+      <!-- Modal body -->
       <div class="modal-body">
         <div class="modal-tabs">
+          <!-- Add transaction tab -->
             <button class="modal-tab-btn active" data-content-id="add-transaction-content">
                 <span class="option-title">Add Transaction</span>
                 <span class="option-desc">Manually enter an expense or deposit.</span>
             </button>
+            <!-- Quick transaction tab -->
             <button class="modal-tab-btn" data-content-id="quick-transaction-content">
                 <span class="option-title">Quick Transaction</span>
                 <span class="option-desc">Use AI to parse a transaction from text.</span>
             </button>
+            <!-- Receipt scan tab -->
             <button class="modal-tab-btn" data-content-id="receipt-scan-content">
                 <span class="option-title">Receipt Scan</span>
                 <span class="option-desc">Scan a receipt and use AI to add a transaction.</span>
             </button>
+            <!-- Import transactions tab -->
             <button class="modal-tab-btn" data-content-id="import-transactions-content">
                 <span class="option-title">Import Transactions</span>
                 <span class="option-desc">Import from CSV, JSON, or TXT file.</span>
             </button>
+            <!-- Export transactions tab -->
             <button class="modal-tab-btn" data-content-id="export-transactions-content">
                 <span class="option-title">Export Transactions</span>
                 <span class="option-desc">Export your transactions as CSV, JSON, or TXT.</span>
             </button>
+            <!-- Add preset tab -->
             <button class="modal-tab-btn" data-content-id="add-preset-content">
                 <span class="option-title">Add Preset</span>
                 <span class="option-desc">Save a template for a frequent transaction.</span>
             </button>
+            <!-- Quick preset tab -->
             <button class="modal-tab-btn" data-content-id="quick-preset-content">
                 <span class="option-title">Quick Preset</span>
                 <span class="option-desc">Use AI to create a new preset from text.</span>
             </button>
         </div>
+        <!-- Modal tab content -->
         <div class="modal-tab-content">
+          <!-- Add transaction content -->
             <div id="add-transaction-content" class="tab-pane active">
               <div id="presets-container"></div>
               <form class="transaction-form">
+                <!-- Type form group -->
                 <div class="form-group">
                   <label for="custom-type">Type</label>
                   <div class="custom-dropdown" id="custom-type-dropdown">
@@ -187,6 +220,7 @@
                     </ul>
                   </div>
                 </div>
+                <!-- Date form group -->
                 <div class="form-group">
                   <label for="custom-date">Date</label>
                   <div class="custom-date-picker" id="custom-date-picker">
@@ -195,10 +229,12 @@
                     <div class="calendar-popup" id="calendar-popup"></div>
                   </div>
                 </div>
+                <!-- Amount form group -->
                 <div class="form-group">
                   <label for="amount">Amount</label>
                   <input type="number" name="amount" id="amount" placeholder="Amount" min="0" step="0.01" >
                 </div>
+                <!-- Method form group -->
                 <div class="form-group">
                   <label for="custom-method">Method</label>
                   <div class="custom-dropdown" id="custom-method-dropdown">
@@ -211,11 +247,12 @@
                     </ul>
                   </div>
                 </div>
+                <!-- Store/source form group -->
                 <div class="form-group full-width">
                   <label for="store">Store/Source</label>
                   <input type="text" name="store" id="store" placeholder="Store/Source" >
                 </div>
-
+                <!-- Repeat toggle wrapper -->
                 <div class="form-group" id="repeat-toggle-wrapper-div">
                   <label class="repeat-toggle-label" for="repeat-toggle">Repeat Transaction</label>
                   <div class="form-group full-width repeat-toggle-wrapper">
@@ -226,7 +263,7 @@
                       </label>
                   </div>
                 </div>
-
+                <!-- Repeat options container -->
                 <div id="repeat-options-container" class="full-width">
                     <div class="form-group">
                         <label for="repeat-count">Times to Repeat</label>
@@ -237,13 +274,14 @@
                         <input type="number" id="repeat-gap" min="1" value="7" placeholder="e.g., 30 for monthly">
                     </div>
                 </div>
-
+                <!-- Form actions -->
                 <div class="form-actions">
                   <button type="button" class="modal-cancel-btn">Cancel</button>
                   <button type="submit" class="modal-action-btn">Add Transaction</button>
                 </div>
               </form>
             </div>
+            <!-- Quick transaction content -->
             <div id="quick-transaction-content" class="tab-pane">
               <form>
                   <div class="quick-input-container">
@@ -256,6 +294,7 @@
                   </div>
               </form>
             </div>
+            <!-- Receipt scan content -->
             <div id="receipt-scan-content" class="tab-pane">
               <form id="receipt-scan-form" class="receipt-scan-modern-form">
                 <div class="receipt-scan-card">
@@ -275,6 +314,7 @@
                 </div>
               </form>
             </div>
+            <!-- Import transactions content -->
             <div id="import-transactions-content" class="tab-pane">
               <form id="import-transactions-form" class="import-modal-card">
                 <h2 class="import-modal-title">Import transactions</h2>
@@ -291,6 +331,7 @@
                 <div class="import-status-message ai-message-container"></div>
               </form>
             </div>
+            <!-- Export transactions content -->
             <div id="export-transactions-content" class="tab-pane">
               <form id="export-transactions-form" class="import-export-form">
                 <div class="form-group full-width">
@@ -311,12 +352,14 @@
                 <div class="export-status-message ai-message-container"></div>
               </form>
             </div>
+            <!-- Add preset content -->
             <div id="add-preset-content" class="tab-pane">
               <form class="preset-form">
                 <div class="form-group full-width">
                   <label for="preset-name">Name</label>
                   <input type="text" name="presetName" id="preset-name" placeholder="Preset Name" >
                 </div>
+                <!-- Type form group -->
                 <div class="form-group">
                   <label for="custom-preset-type">Type</label>
                   <div class="custom-dropdown" id="custom-preset-type-dropdown">
@@ -327,6 +370,7 @@
                     </ul>
                   </div>
                 </div>
+                <!-- Date form group -->
                 <div class="form-group">
                   <label for="custom-preset-date">Date</label>
                   <div class="custom-date-picker" id="custom-preset-date-picker">
@@ -335,10 +379,12 @@
                     <div class="calendar-popup" id="custom-preset-calendar-popup"></div>
                   </div>
                 </div>
+                <!-- Amount form group -->
                 <div class="form-group">
                   <label for="preset-amount">Amount</label>
                   <input type="number" name="amount" id="preset-amount" placeholder="Amount" min="0" step="0.01" >
                 </div>
+                <!-- Method form group -->
                 <div class="form-group">
                   <label for="custom-preset-method">Method</label>
                   <div class="custom-dropdown" id="custom-preset-method-dropdown">
@@ -351,16 +397,19 @@
                     </ul>
                   </div>
                 </div>
+                <!-- Store/source form group -->
                 <div class="form-group full-width">
                   <label for="preset-store">Store/Source</label>
                   <input type="text" name="store" id="preset-store" placeholder="Store/Source" >
                 </div>
+                <!-- Form actions -->
                 <div class="form-actions">
                   <button type="button" class="modal-cancel-btn">Cancel</button>
                   <button type="submit" class="modal-action-btn">Save Preset</button>
                 </div>
               </form>
             </div>
+            <!-- Quick preset content -->
             <div id="quick-preset-content" class="tab-pane">
               <form>
                 <div class="quick-input-container">
@@ -378,6 +427,7 @@
     </div>
   </div>
 
+  <!-- Voice recognition UI -->
   <div class="voice-recognition-ui" id="voice-recognition-ui">
     <div class="voice-ui-content">
       <div class="waveform-container" id="waveform-container">
@@ -394,6 +444,7 @@
     </div>
   </div>
 
+  <!-- Filter modal -->
   <div id="filter-modal" class="filter-modal-bg">
     <div class="filter-modal-content">
       <button class="filter-modal-close" id="close-filter-modal" title="Close">&times;</button>
@@ -425,7 +476,7 @@
     </div>
   </div>
 
-  <!-- Camera Modal for Receipt Scan -->
+  <!-- Camera modal for receipt scan -->
   <div id="camera-modal" class="filter-modal-bg" style="display:none;z-index:3000;">
     <div class="filter-modal-content" style="max-width:480px;min-width:320px;">
       <div class="filter-modal-header">
@@ -442,8 +493,11 @@
     </div>
   </div>
 
+  <!-- Tesseract.js -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
+  <!-- Global notifications -->
   <script src="global-notifications.js"></script>
+  <!-- Dashboard JS -->
   <script src="dashboard.js"></script>
 </body>
 </html>

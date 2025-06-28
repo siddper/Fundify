@@ -1,19 +1,33 @@
+/* dashboard.css - Dashboard Styles */
+/* Start of Selection */
+/* Import Inter font from Google Fonts with various weights */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+/* Apply border-box sizing to all elements */
 * {
   box-sizing: border-box;
 }
 
+/* CSS custom properties (variables) for consistent theming */
 :root {
+  /* Primary accent color for buttons, links, and highlights */
   --accent: #235FD6;
+  /* Background color for the sidebar */
   --sidebar-bg: #000;
+  /* Main background color for the dashboard */
   --main-bg: #18191a;
+  /* Background color for cards and containers */
   --card-bg: #23262a;
+  /* Border color for dividers and outlines */
   --border: #23262a;
+  /* Primary text color */
   --text: #e3e3e3;
+  /* Secondary/muted text color */
   --text-muted: #bfc6e0;
 }
+/* End of Selection */
 
+/* Main background for dashboard - dark gradient */
 body.dashboard-bg {
   font-family: 'Inter', Arial, sans-serif;
   margin: 0;
@@ -23,12 +37,14 @@ body.dashboard-bg {
   scrollbar-width: none;
 }
 
+/* Main layout for the dashboard */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
   min-width: 0;
 }
 
+/* Main content area for the dashboard */
 .dashboard-main {
   flex: 1;
   min-width: 0;
@@ -43,6 +59,7 @@ body.dashboard-bg {
   margin-left: 300px;
 }
 
+/* Top navigation bar for the dashboard */
 .dashboard-topbar {
   display: flex;
   align-items: center;
@@ -57,11 +74,13 @@ body.dashboard-bg {
   width: 100%;
   max-width: 100%;
 }
+/* Left side of the topbar */
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+/* Current balance display */
 .current-balance {
   display: flex;
   align-items: center;
@@ -71,17 +90,20 @@ body.dashboard-bg {
   border-radius: 8px;
   border: 1px solid var(--border);
 }
+/* Balance label */
 .balance-label {
   font-size: 1rem;
   font-weight: 500;
   color: var(--text-muted);
 }
+/* Balance amount */
 .balance-amount {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
   transition: color 0.3s ease;
 }
+/* Balance amount colors for different safety levels */
 .balance-amount.safe {
   color: #4caf50; /* Green */
 }
@@ -91,13 +113,15 @@ body.dashboard-bg {
 .balance-amount.danger {
   color: #f44336; /* Red */
 }
+/* Dashboard title */
 .dashboard-title {
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.5px;
 }
-.dashboard-add-btn {
+/* Add transaction button */
+  .dashboard-add-btn {
   background: var(--accent);
   color: #fff;
   font-size: 1rem;
@@ -118,12 +142,13 @@ body.dashboard-bg {
 .dashboard-add-btn svg {
   margin-left: 4px;
 }
-
+/* Search container */
 .search-container {
     position: relative;
     flex-grow: 1;
 }
 
+/* Search input */
 #search-input {
     width: 100%;
     min-width: 1100px;
@@ -142,6 +167,7 @@ body.dashboard-bg {
     
 }
 
+/* Sort dropdown */
 .sort-dropdown .dropdown-selected {
     background: var(--card-bg);
     color: var(--text);
@@ -156,31 +182,38 @@ body.dashboard-bg {
     padding-left: 16px;
 }
 
+/* Search input and sort dropdown focus */
 #search-input:focus,
 .sort-dropdown .dropdown-selected:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
 }
 
+/* Search input placeholder */
 #search-input::placeholder {
     color: var(--text-muted);
     opacity: 0.7;
 }
 
+/* Sort dropdown */
 .sort-dropdown {
     width: auto;
     min-width: 275px;
 }
+/* Sort dropdown selected */
 #sort-dropdown .dropdown-selected {
     font-size: 1em;
 }
+/* Sort dropdown list */
 #sort-dropdown .dropdown-list li {
     font-size: 1em;
 }
+/* Sort dropdown selected */
 .sort-dropdown .dropdown-selected {
     padding-right: 38px;
 }
 
+/* Search sort container */
 .search-sort-container {
     display: flex;
     align-items: center;
@@ -189,7 +222,8 @@ body.dashboard-bg {
     margin-bottom: 8px;
 }
 
-.dashboard-controls {
+/* Dashboard controls */
+  .dashboard-controls {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -199,6 +233,7 @@ body.dashboard-bg {
   box-sizing: border-box;
 }
 
+/* Dashboard table section */
 .dashboard-table-section {
   padding: 24px 32px;
   width: 100%;
@@ -206,6 +241,7 @@ body.dashboard-bg {
   box-sizing: border-box;
   overflow-x: auto;
 }
+/* Dashboard table */
 .dashboard-table {
   width: 100%;
   border-collapse: separate;
@@ -222,36 +258,43 @@ body.dashboard-bg {
   font-size: 1rem;
   color: var(--text);
 }
+/* Dashboard table header */
 .dashboard-table th {
   background: var(--main-bg);
   font-weight: 600;
   border-bottom: 1.5px solid var(--border);
 }
+/* Dashboard table header last child */
 .dashboard-table th:last-child,
 .dashboard-table td:last-child {
     width: 1%;
     padding-left: 0;
     padding-right: 20px;
 }
+/* Dashboard table row */
 .dashboard-table tr {
   border-bottom: 1px solid var(--border);
   transition: 0.2s ease;
   cursor: pointer;
 }
+/* Dashboard table row last child */
 .dashboard-table tr:last-child {
   border-bottom: none;
 }
+/* Dashboard table body row odd */
 .dashboard-table tbody tr:nth-child(odd) {
   background: #1f2124;
 }
+/* Dashboard table body row even */
 .dashboard-table tbody tr:nth-child(even) {
   background: #1f2124;
 }
+/* Dashboard table body row hover */
 .dashboard-table tbody tr:hover {
   background: #191b1e;
 }
 
-/* Custom Checkbox */
+/* Custom checkbox */
 .dashboard-table input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -267,14 +310,17 @@ body.dashboard-bg {
   vertical-align: middle;
 }
 
+/* Dashboard table header checkbox */
 .dashboard-table th input[type="checkbox"] {
   cursor: pointer;
 }
 
+/* Dashboard table checkbox checked */
 .dashboard-table input[type="checkbox"]:checked {
   background-color: transparent;
 }
 
+/* Dashboard table checkbox checked after */
 .dashboard-table input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
@@ -288,17 +334,19 @@ body.dashboard-bg {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
+/* Dashboard table checkbox disabled */
 .dashboard-table input[type="checkbox"]:disabled {
   border-color: #4a4a4a;
   cursor: not-allowed;
 }
 
+/* Dashboard table checkbox disabled checked */
 .dashboard-table input[type="checkbox"]:disabled:checked {
   background-color: #383838;
   border-color: #4a4a4a;
 }
 
-/* Modal Styles (dark mode) */
+/* Modal background */
 .modal-bg {
   display: none;
   position: fixed;
@@ -313,6 +361,7 @@ body.dashboard-bg {
 .modal-bg.active {
   display: flex;
 }
+/* Modal content */
 .modal-content {
   background: #18191a;
   border-radius: 12px;
@@ -326,6 +375,7 @@ body.dashboard-bg {
   border: 1.5px solid var(--border);
   overflow: hidden;
 }
+/* Modal layout grid */
 .modal-layout-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -333,6 +383,7 @@ body.dashboard-bg {
   width: 100%;
   flex-grow: 1;
 }
+/* Modal options sidebar */
 .modal-options-sidebar {
   border-right: 1px solid var(--border);
   padding: 16px;
@@ -341,11 +392,13 @@ body.dashboard-bg {
   border-radius: 20px;
   flex-direction: column;
 }
+/* Modal options content */
 .modal-options-content {
   padding: 10px;
   display: flex;
   flex-direction: column;
 }
+/* Add options */
 .add-options {
   display: flex;
   flex-direction: column;
@@ -354,6 +407,7 @@ body.dashboard-bg {
   flex-grow: 1;
   justify-content: space-evenly;
 }
+/* Add options button */
 .add-options button {
   background: transparent;
   color: var(--text);
@@ -369,40 +423,49 @@ body.dashboard-bg {
   flex-direction: column;
   gap: 4px;
 }
+/* Add options button title */
 .add-options .option-title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text);
 }
+/* Add options button description */
 .add-options .option-desc {
   font-size: 0.9rem;
   font-weight: 400;
   color: var(--text-muted);
   line-height: 1.5;
 }
+/* Add options button hover */
 .add-options button:hover{
   background: #2a2d31;
 }
+/* Add options button selected */
 .add-options button.selected{
   background: var(--accent);
 }
+/* Add options button selected title and description */
 .add-options button.selected .option-title,
 .add-options button.selected .option-desc {
   color: #fff;
 }
+/* Quick transaction and preset content h2 */
 .quick-transaction-content h2,
 .quick-preset-content h2 {
   text-align: left;
 }
+/* Modal content h2 */
 .modal-content h2 {
   display: none;
 }
+/* Modal content p */
 .modal-content p {
   color: var(--text-muted);
   font-size: 1.15rem;
   text-align: center;
   margin-top: 0;
 }
+/* Modal close */
 .modal-close {
   position: absolute;
   top: 14px;
@@ -421,10 +484,12 @@ body.dashboard-bg {
   justify-content: center;
   z-index: 10;
 }
+/* Modal close hover */
 .modal-close:hover, .modal-close:focus {
   color: #ff4d4f;
 }
 
+/* Media queries for mobile */
 @media (max-width: 900px) {
   .dashboard-layout {
     flex-direction: column;
@@ -754,14 +819,17 @@ body.dashboard-bg {
  
 }
 
+/* Store, preset, and name input padding */
 #store, #preset-store, #name, #preset-name, input[name='store'], input[name='name'] {
   padding: 12px 14px 12px 16px !important;
 }
 
+/* Modal content div */
 .modal-content > div{
   width: 100%;
 }
 
+/* Modal content textarea */
 .modal-content textarea {
   width: 100%;
   min-height: 130px;
@@ -787,10 +855,12 @@ body.dashboard-bg {
   box-shadow: 0 0 0 2px rgba(35,95,214,0.12);
 }
 
+/* Full width */
 .full-width {
   grid-column: 1 / -1;
 }
 
+/* Transaction and preset form */
 .transaction-form, .preset-form {
   width: 100%;
   max-width: 520px;
@@ -799,12 +869,14 @@ body.dashboard-bg {
   grid-template-columns: repeat(2, 1fr);
   gap: 16px 20px;
 }
+/* Form group label */
 .form-group label {
   color: var(--text);
   font-size: 0.9rem;
   font-weight: 500;
   margin-bottom: 4px;
 }
+/* Form group input and dropdown selected */
 .form-group input,
 .custom-dropdown .dropdown-selected {
   width: 100%;
@@ -819,21 +891,27 @@ body.dashboard-bg {
   font-family: 'Inter', Arial, sans-serif;
   box-sizing: border-box;
 }
+
+/* Form group input and dropdown selected focus */
 .form-group input:focus,
 .custom-dropdown .dropdown-selected:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
 }
+/* Form group input placeholder */
 .form-group input::placeholder {
   color: var(--text-muted);
   opacity: 0.7;
 }
+/* Form group input text */
 .form-group input[type="text"] {
     padding: 10px 12px;
 }
+/* Custom dropdown selected */
 .custom-dropdown .dropdown-selected {
   padding-right: 44px;
 }
+/* Modal action button */
 .modal-action-btn {
   background: var(--accent);
   color: #fff;
@@ -846,10 +924,12 @@ body.dashboard-bg {
   transition: background 0.18s;
   margin-top: 10px;
 }
+/* Modal action button hover */
 .modal-action-btn:hover {
   background: #1c4daf;
 }
 
+/* Form actions */
 .form-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -860,6 +940,7 @@ body.dashboard-bg {
   margin-top: 8px;
 }
 
+/* Quick transaction and preset content */
 .quick-transaction-content,
 .quick-preset-content {
   display: flex;
@@ -867,17 +948,20 @@ body.dashboard-bg {
   flex-grow: 1;
 }
 
+/* Quick transaction and preset content form actions */
 .quick-transaction-content .form-actions,
 .quick-preset-content .form-actions {
   border-top: none;
   padding-top: 0;
   margin-top: 16px;
 }
+/* Quick transaction and preset content modal action button */
 .quick-transaction-content .modal-action-btn,
 .quick-preset-content .modal-action-btn {
   width: auto;
   padding: 12px 24px;
 }
+/* Quick transaction and preset content textarea */
 .quick-transaction-content textarea,
 .quick-preset-content textarea {
   flex-grow: 1;
@@ -886,6 +970,7 @@ body.dashboard-bg {
   border-color: transparent;
 }
 
+/* Modal cancel button */
 .modal-cancel-btn,
 .camera-cancel-btn {
   background: #2a2d31;
@@ -899,13 +984,14 @@ body.dashboard-bg {
   transition: background 0.18s, border-color 0.18s;
   margin-top: 10px;
 }
+/* Modal cancel button hover */
 .modal-cancel-btn:hover,
 .camera-cancel-btn:hover {
   background: #3a3d41;
   border-color: #4a4a4a;
 }
 
-/* --- Repeat Transaction Styles --- */
+/* Repeat transaction styles */
 .form-group.repeat-toggle-wrapper {
     flex-direction: row;
     justify-content: space-between;
@@ -917,15 +1003,18 @@ body.dashboard-bg {
     width: 100%;
 }
 
+/* Repeat toggle wrapper div */
 #repeat-toggle-wrapper-div{
   width: 208%;
 }
 
+/* Repeat toggle label */
 .repeat-toggle-label {
     font-weight: 500;
     margin-bottom: 0;
 }
 
+/* Repeat options container */
 #repeat-options-container {
     display: none; /* JS will change this to 'grid' */
     grid-template-columns: 1fr 1fr;
@@ -933,7 +1022,7 @@ body.dashboard-bg {
     padding-top: 10px;
     width: 100%;
 }
-/* Toggle Switch */
+/* Toggle switch */
 .switch {
   position: relative;
   display: inline-block;
@@ -941,12 +1030,14 @@ body.dashboard-bg {
   height: 26px;
 }
 
+/* Toggle switch input */
 .switch input { 
   opacity: 0;
   width: 0;
   height: 0;
 }
 
+/* Toggle switch slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -958,6 +1049,7 @@ body.dashboard-bg {
   transition: .3s;
 }
 
+/* Toggle switch slider before */
 .slider:before {
   position: absolute;
   content: "";
@@ -969,23 +1061,27 @@ body.dashboard-bg {
   transition: .3s;
 }
 
+/* Toggle switch slider checked */
 input:checked + .slider {
   background-color: var(--accent);
 }
 
+/* Toggle switch slider checked before */
 input:checked + .slider:before {
   transform: translateX(22px);
 }
 
+/* Toggle switch slider round */
 .slider.round {
   border-radius: 26px;
 }
 
+/* Toggle switch slider round before */
 .slider.round:before {
   border-radius: 50%;
 }
-/* --- End Repeat Styles --- */
 
+/* Form group */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -997,6 +1093,7 @@ input:checked + .slider:before {
   position: relative;
   width: 100%;
 }
+/* Dropdown selected */
 .dropdown-selected {
   width: 100%;
   background: #18191a;
@@ -1023,6 +1120,7 @@ input:checked + .slider:before {
   transform: translateY(-50%);
   pointer-events: none;
 }
+/* Dropdown list */
 .dropdown-list {
   display: none;
   position: absolute;
@@ -1039,9 +1137,11 @@ input:checked + .slider:before {
   max-height: 220px;
   overflow-y: auto;
 }
+/* Dropdown list open */
 .custom-dropdown.open .dropdown-list {
   display: block;
 }
+/* Dropdown list item */
 .dropdown-list li {
   padding: 12px 18px;
   color: var(--text);
@@ -1049,21 +1149,25 @@ input:checked + .slider:before {
   font-size: 1rem;
   transition: background 0.15s, color 0.15s;
 }
+/* Dropdown list item hover and selected */
 .dropdown-list li:hover, .dropdown-list li.selected {
   background: #18191a;
   color: var(--accent);
 }
+/* Custom date picker */
 .custom-date-picker {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
+/* Custom date input */
 #custom-date-input,
 #custom-preset-date-input {
   width: 100%;
   padding: 11px 36px 11px 14px;
 }
+/* Custom date picker calendar icon */
 .custom-date-picker .calendar-icon {
   transition: color 0.18s, background 0.18s, box-shadow 0.18s, transform 0.13s;
   border-radius: 50%;
@@ -1074,14 +1178,17 @@ input:checked + .slider:before {
   transform: translateY(-50%);
   color: var(--text-muted);
 }
+/* Custom date picker calendar icon svg */
 .custom-date-picker .calendar-icon svg{
   transition: 0.2s ease;
 }
+/* Custom date picker calendar icon svg hover */
 .custom-date-picker .calendar-icon svg:hover {
   fill: var(--accent);
   cursor: pointer;
 }
 
+/* Calendar popup */
 .calendar-popup {
   display: none;
   position: absolute;
@@ -1099,10 +1206,12 @@ input:checked + .slider:before {
   font-family: 'Inter', Arial, sans-serif;
   flex-direction: column;
 }
+/* Calendar popup * */
 .calendar-popup * {
   color: var(--text) !important;
   font-family: inherit;
 }
+/* Calendar popup button prev and next */
 .calendar-popup button.cal-prev,
 .calendar-popup button.cal-next {
   background: #18191a;
@@ -1117,11 +1226,13 @@ input:checked + .slider:before {
   margin: 0 8px;
   outline: none;
 }
+/* Calendar popup button prev and next hover */
 .calendar-popup button.cal-prev:hover,
 .calendar-popup button.cal-next:hover {
   background: var(--accent);
   color: #fff;
 }
+/* Calendar popup span */
 .calendar-popup span[style*='font-weight:600'] {
   display: block;
   text-align: center;
@@ -1129,6 +1240,7 @@ input:checked + .slider:before {
   margin-bottom: 2px;
   letter-spacing: 0.01em;
 }
+/* Calendar popup cal day */
 .calendar-popup .cal-day {
   background: transparent;
   color: var(--text);
@@ -1144,18 +1256,22 @@ input:checked + .slider:before {
   width: 100%;
   height: 100%;
 }
+/* Calendar popup cal day hover */
 .calendar-popup .cal-day:hover {
   color: var(--accent) !important;
   outline: none;
 }
+/* Calendar popup cal day selected */
 .calendar-popup .cal-day.selected {
   background: var(--accent);
   color: #fff !important;
 }
+/* Custom date picker calendar popup open */
 .custom-date-picker.open .calendar-popup {
   display: flex;
 }
 
+/* Calendar grid days */
 .calendar-grid-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -1166,6 +1282,7 @@ input:checked + .slider:before {
   flex-grow: 1;
 }
 
+/* AI message container */
 .ai-message-container {
   padding: 12px 16px;
   max-width: 100%;
@@ -1180,6 +1297,7 @@ input:checked + .slider:before {
   border: 1px solid var(--border);
 }
 
+/* AI message container error */
 .ai-message-container.error {
   display: flex;
   background-color: #2a181a;
@@ -1187,6 +1305,7 @@ input:checked + .slider:before {
   border-color: #ff4d4f;
 }
 
+/* AI message container clarification */
 .ai-message-container.clarification {
   display: flex;
   background-color: #1c2a4d;
@@ -1201,6 +1320,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* Incorrect */
 .incorrect {
   border-color: #ff4d4f !important;
   background: #2a181a !important;
@@ -1208,6 +1328,7 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 0 0 2px rgba(255,77,79,0.13) !important;
 }
 
+/* Presets container */
 #presets-container {
   display: flex;
   flex-wrap: wrap;
@@ -1217,6 +1338,7 @@ input[type=number]::-webkit-outer-spin-button {
   border-bottom: 1px solid var(--border);
 }
 
+/* Preset chip */
 .preset-chip {
   background: #18191a;
   color: var(--text);
@@ -1230,6 +1352,7 @@ input[type=number]::-webkit-outer-spin-button {
   text-align: left;
 }
 
+/* Preset chip hover */
 .preset-chip:hover {
   background: #18191a;
   color: var(--text);
@@ -1237,11 +1360,13 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 0 0 2px rgba(35, 95, 214, 0.12);
 }
 
+/* Transaction menu cell */
 .transaction-menu-cell {
     position: relative;
     text-align: right;
 }
 
+/* Transaction menu btn */
 .transaction-menu-btn {
     background: none;
     border: none;
@@ -1254,14 +1379,17 @@ input[type=number]::-webkit-outer-spin-button {
     transition: 0.2s ease;
 }
 
+/* Transaction menu btn svg */
 .transaction-menu-btn svg{
   transition: 0.2s ease;
 }
 
+/* Transaction menu btn svg hover */
 .transaction-menu-btn svg:hover{
   fill: var(--text-muted);
 }
 
+/* Transaction menu dropdown */
 .transaction-menu-dropdown {
     display: none;
     position: fixed;
@@ -1275,10 +1403,12 @@ input[type=number]::-webkit-outer-spin-button {
     margin-top: 4px;
 }
 
+/* Transaction menu dropdown show */
 .transaction-menu-dropdown.show {
     display: block;
 }
 
+/* Transaction menu dropdown button */
 .transaction-menu-dropdown button {
     background: none;
     border: none;
@@ -1294,35 +1424,39 @@ input[type=number]::-webkit-outer-spin-button {
     gap: 8px;
 }
 
+/* Transaction menu dropdown button svg */
 .transaction-menu-dropdown button svg {
     width: 18px;
     height: 18px;
     transition: fill 0.18s;
 }
 
+/* Transaction menu dropdown button hover */
 .transaction-menu-dropdown button:hover {
     background-color: var(--accent);
     color: #fff;
 }
 
+/* Dashboard table editing dropdown list and calendar popup */
 .dashboard-table tr.editing .dropdown-list,
 .dashboard-table tr.editing .calendar-popup {
     position: fixed; /* Position relative to the viewport */
     z-index: 1011; /* Ensure it's on top */
 }
 
-/* In-row editing styles */
+/* Dashboard table editing */
 .dashboard-table tr.editing {
     background-color: #2a2d31 !important;
 }
 
+/* Dashboard table editing td */
 .dashboard-table tr.editing td {
     padding-top: 8px;
     padding-bottom: 8px;
     vertical-align: middle;
 }
 
-/* Unified styles for all inputs inside an editing row */
+/* Dashboard table editing edit input and dropdown selected */
 .dashboard-table tr.editing .edit-input,
 .dashboard-table tr.editing .dropdown-selected {
     width: 100%;
@@ -1337,14 +1471,14 @@ input[type=number]::-webkit-outer-spin-button {
     transition: border-color 0.18s, background-color 0.18s, box-shadow 0.18s;
 }
 
-/* On hover, show a subtle border to indicate interactivity */
+/* Dashboard table editing edit input and dropdown selected hover */
 .dashboard-table tr.editing .edit-input:hover,
 .dashboard-table tr.editing .dropdown-selected:hover {
     background-color: #1f2124; /* Lighter on hover */
     border-color: transparent;
 }
 
-/* On focus, make the field active and clear */
+/* Dashboard table editing edit input and dropdown selected focus */
 .dashboard-table tr.editing .edit-input:focus,
 .dashboard-table tr.editing .dropdown-selected:focus {
     background-color: #151617; /* Darker on focus */
@@ -1352,18 +1486,20 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: none;
 }
 
-/* Adjust padding for elements with icons/arrows */
+/* Dashboard table editing edit datepicker and dropdown selected */
 .dashboard-table tr.editing .edit-datepicker .edit-input,
 .dashboard-table tr.editing .edit-dropdown .dropdown-selected {
     padding-right: 32px;
 }
 
+/* Dashboard table editing calendar icon */
 .dashboard-table tr.editing .calendar-icon {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
 }
 
+/* AI search btn */
 .ai-search-btn {
     position: absolute;
     right: 12px;
@@ -1381,15 +1517,18 @@ input[type=number]::-webkit-outer-spin-button {
     transition: background-color 0.2s ease;
 }
 
+/* AI search btn hover */
 .ai-search-btn:hover {
     background-color: rgba(255, 255, 255, 0.07);
 }
 
+/* AI search btn svg */
 .ai-search-btn svg {
     width: 20px;
     height: 20px;
 }
 
+/* AI search btn loader */
 .ai-search-btn .loader {
     width: 20px;
     height: 20px;
@@ -1399,27 +1538,34 @@ input[type=number]::-webkit-outer-spin-button {
     animation: spin 0.8s linear infinite;
 }
 
+/* AI search btn loader animation */
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
+/* Dashboard table tbody tr selected */
 .dashboard-table tbody tr.selected {
   background-color: #2a3b5c !important; /* A distinct selection color */
 }e
+
+/* Dashboard table tbody tr selected hover */
 .dashboard-table tbody tr.selected:hover {
     background-color: #304369 !important;
 }
 
+/* Dashboard table tbody tr selected last child td first child */
 .dashboard-table tbody tr.selected:last-child td:first-child {
     border-bottom-left-radius: 18px;
 }
 
+/* Dashboard table tbody tr selected last child td last child */
 .dashboard-table tbody tr.selected:last-child td:last-child {
     border-bottom-right-radius: 18px;
 }
 
+/* Bulk actions container */
 .bulk-actions-container {
     display: flex;
     align-items: center;
@@ -1433,17 +1579,20 @@ input[type=number]::-webkit-outer-spin-button {
     margin-bottom: 8px;
 }
 
+/* Selection count */
 #selection-count {
     font-size: 1rem;
     font-weight: 500;
     color: var(--text);
 }
 
+/* Bulk actions buttons */
 .bulk-actions-buttons {
     display: flex;
     gap: 8px;
 }
 
+/* Bulk action btn */
 .bulk-action-btn {
     background-color: var(--main-bg);
     color: var(--text-muted);
@@ -1459,37 +1608,44 @@ input[type=number]::-webkit-outer-spin-button {
     gap: 6px;
 }
 
+/* Bulk action btn hover */
 .bulk-action-btn:hover {
     background-color: var(--card-bg);
     color: var(--text);
     border-color: var(--text-muted);
 }
 
+/* Bulk action btn svg */
 .bulk-action-btn svg {
     width: 20px;
     height: 20px;
 }
 
+/* Sort selected */
 #sort-selected {
     padding-top: 16px !important;
     padding-bottom: 16px !important;
 }
 
+/* Quick input container */
 .quick-input-container {
     position: relative;
     display: flex;
 }
 
+/* Quick transaction prompt */
 .quick-transaction-prompt {
     width: 100%;
 }
 
+/* Quick transaction prompt and preset prompt */
 .quick-transaction-prompt,
 .quick-preset-prompt {
     padding-right: 50px; /* Make space for the mic button */
     padding-bottom: 40px; /* Make space for the mic button */
 }
 
+/* Mic btn */
 .mic-btn {
     position: absolute;
     right: 12px;
@@ -1506,12 +1662,14 @@ input[type=number]::-webkit-outer-spin-button {
     transition: all 0.18s;
 }
 
+/* Mic btn hover */
 .mic-btn:hover {
     background-color: var(--accent);
     color: #fff;
     border-color: var(--accent);
 }
 
+/* Voice recognition ui */
 .voice-recognition-ui {
     position: fixed;
     top: 0;
@@ -1524,10 +1682,13 @@ input[type=number]::-webkit-outer-spin-button {
     align-items: center;
     justify-content: center;
 }
+
+/* Voice recognition ui active */
 .voice-recognition-ui.active {
     display: flex;
 }
 
+/* Voice recognition ui content */
 .voice-ui-content {
     background-color: #151617;
     border: 1px solid var(--border);
@@ -1539,6 +1700,7 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 
+/* Voice recognition ui waveform container */
 .waveform-container {
     height: 80px;
     display: flex;
@@ -1548,6 +1710,7 @@ input[type=number]::-webkit-outer-spin-button {
     margin-bottom: 24px;
 }
 
+/* Voice recognition ui waveform bar */
 .waveform-bar {
     width: 5px;
     background-color: #4a4a4a;
@@ -1556,6 +1719,7 @@ input[type=number]::-webkit-outer-spin-button {
     transition: height 0.1s ease;
 }
 
+/* Voice recognition ui controls */
 .voice-ui-controls {
     display: flex;
     align-items: center;
@@ -1564,6 +1728,7 @@ input[type=number]::-webkit-outer-spin-button {
     padding-top: 16px;
 }
 
+/* Voice recognition ui status */
 .voice-status {
     display: flex;
     align-items: center;
@@ -1572,6 +1737,7 @@ input[type=number]::-webkit-outer-spin-button {
     color: var(--text);
 }
 
+/* Voice recognition ui recording dot */
 .recording-dot {
     width: 10px;
     height: 10px;
@@ -1580,12 +1746,14 @@ input[type=number]::-webkit-outer-spin-button {
     animation: pulse 1.5s infinite;
 }
 
+/* Voice recognition ui recording dot animation */
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.7); }
     70% { box-shadow: 0 0 0 10px rgba(255, 77, 79, 0); }
     100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0); }
 }
 
+/* Voice recognition ui btn */
 .voice-ui-btn {
     background-color: #2a2d31;
     color: var(--text-muted);
@@ -1601,6 +1769,7 @@ input[type=number]::-webkit-outer-spin-button {
     gap: 8px;
 }
 
+/* Voice recognition ui btn kbd */
 .voice-ui-btn kbd {
     background-color: #18191a;
     padding: 2px 6px;
@@ -1609,18 +1778,21 @@ input[type=number]::-webkit-outer-spin-button {
     border: 1px solid #4a4a4a;
 }
 
+/* Voice recognition ui btn hover */
 .voice-ui-btn:hover {
     background-color: var(--accent);
     color: #fff;
     border-color: var(--accent);
 }
 
+/* Modal header */
 .modal-header {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
 
+/* Modal title */
 #modal-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -1629,12 +1801,14 @@ input[type=number]::-webkit-outer-spin-button {
   line-height: 1;
 }
 
+/* Modal body */
 .modal-body {
   display: grid;
   grid-template-columns: 280px 1fr;
   flex-grow: 1;
 }
 
+/* Modal tabs */
 .modal-tabs {
   display: flex;
   flex-direction: column;
@@ -1644,6 +1818,7 @@ input[type=number]::-webkit-outer-spin-button {
   background-color: #151617;
 }
 
+/* Modal tab btn */
 .modal-tab-btn {
   background: transparent;
   border: none;
@@ -1661,12 +1836,14 @@ input[type=number]::-webkit-outer-spin-button {
   color: var(--text-muted);
 }
 
+/* Modal tab btn option title */
 .modal-tab-btn .option-title {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
 }
 
+/* Modal tab btn option desc */
 .modal-tab-btn .option-desc {
   font-size: 0.85rem;
   font-weight: 400;
@@ -1674,35 +1851,42 @@ input[type=number]::-webkit-outer-spin-button {
   line-height: 1.4;
 }
 
+/* Modal tab btn hover */
 .modal-tab-btn:hover {
   background: #2a2d31;
 }
 
+/* Modal tab btn active */
 .modal-tab-btn.active {
   background: var(--accent);
 }
 
+/* Modal tab btn active option title and desc */
 .modal-tab-btn.active .option-title,
 .modal-tab-btn.active .option-desc {
   color: #fff;
 }
 
+/* Modal tab content */
 .modal-tab-content {
   padding: 24px;
   display: flex;
   flex-direction: column;
 }
 
+/* Tab pane */
 .tab-pane {
   display: none;
   flex-direction: column;
   flex-grow: 1;
 }
 
+/* Tab pane active */
 .tab-pane.active {
   display: flex;
 }
 
+/* Quick transaction content form and preset content form */
 .quick-transaction-content form,
 .quick-preset-content form {
   display: flex;
@@ -1711,11 +1895,13 @@ input[type=number]::-webkit-outer-spin-button {
   height: 100%;
 }
 
+/* Quick transaction content quick input container and preset content quick input container */
 .quick-transaction-content .quick-input-container,
 .quick-preset-content .quick-input-container {
   flex-grow: 1;
 }
 
+/* Filter bar */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -1726,12 +1912,16 @@ input[type=number]::-webkit-outer-spin-button {
   padding-left: 0;
   min-height: 48px;
 }
+
+/* Filter chips container */
 #filter-chips-container {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
+
+/* Filter chip and add filter btn */
 .filter-chip, .add-filter-btn {
   min-height: 48px;
   line-height: 1.2;
@@ -1740,12 +1930,18 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
   box-sizing: border-box;
 }
+
+/* Filter chip */
 .filter-chip {
   padding: 0 18px 0 16px;
 }
+
+/* Add filter btn */
 .add-filter-btn {
   padding: 0 30px;
 }
+
+/* Filter chip */
 .filter-chip {
   background: #23262a;
   color: var(--text);
@@ -1758,6 +1954,8 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
   transition: background 0.15s, border 0.15s;
 }
+
+/* Filter chip close */
 .filter-chip .chip-close {
   background: none;
   border: none;
@@ -1769,10 +1967,14 @@ input[type=number]::-webkit-outer-spin-button {
   padding: 2px 6px;
   transition: background 0.13s;
 }
+
+/* Filter chip close hover */
 .filter-chip .chip-close:hover {
   background: #2a2d31;
   color: #ff4d4f;
 }
+
+/* Add filter btn */
 .add-filter-btn {
   background: #23262a;
   color: var(--text);
@@ -1785,12 +1987,15 @@ input[type=number]::-webkit-outer-spin-button {
   transition: background 0.15s, border 0.15s, color 0.15s;
   margin-left: 0;
 }
+
+/* Add filter btn hover */
 .add-filter-btn:hover {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
 }
 
+/* Filter modal bg */
 .filter-modal-bg {
   display: none;
   position: fixed;
@@ -1801,9 +2006,13 @@ input[type=number]::-webkit-outer-spin-button {
   align-items: center;
   justify-content: center;
 }
+
+/* Filter modal bg active */
 .filter-modal-bg.active {
   display: flex;
 }
+
+/* Filter modal content */
 .filter-modal-content {
   background: var(--main-bg);
   border-radius: 12px;
@@ -1816,15 +2025,21 @@ input[type=number]::-webkit-outer-spin-button {
   position: relative;
   border: 1.5px solid var(--border);
 }
+
+/* Filter modal header */
 .filter-modal-header {
   padding: 30px 20px 0 30px;
 }
+
+/* Filter modal header h3 */
 .filter-modal-header h3 {
   color: var(--text);
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
 }
+
+/* Filter modal body */
 .filter-modal-body {
   padding: 32px 40px 32px 40px;
   display: flex;
@@ -1832,15 +2047,21 @@ input[type=number]::-webkit-outer-spin-button {
   gap: 0;
   width: 100%;
 }
+
+/* Filter form grid */
 .filter-form-grid {
   display: none;
 }
+
+/* Filter form vertical */
 .filter-form-vertical {
   display: flex;
   flex-direction: column;
   gap: 22px;
   width: 100%;
 }
+
+/* Filter inputs container */
 .filter-inputs-container {
   background: #18191a;
   border-radius: 12px;
@@ -1853,11 +2074,15 @@ input[type=number]::-webkit-outer-spin-button {
   gap: 8px;
   margin-bottom: 0;
 }
+
+/* Filter value group and inputs */
 #filter-value-group, #filter-value-inputs {
   width: 100%;
   margin: 0;
   padding: 0;
 }
+
+/* Filter modal content input text and number */
 .filter-modal-content input[type="text"],
 .filter-modal-content input[type="number"] {
   width: 100%;
@@ -1873,16 +2098,22 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
   box-shadow: none;
 }
+
+/* Filter modal content input text and number focus */
 .filter-modal-content input[type="text"]:focus,
 .filter-modal-content input[type="number"]:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(35,95,214,0.12);
 }
+
+/* Filter modal content input text and number placeholder */
 .filter-modal-content input[type="text"]::placeholder,
 .filter-modal-content input[type="number"]::placeholder {
   color: var(--text-muted);
   opacity: 0.7;
 }
+
+/* Filter modal close */
 .filter-modal-close {
   position: absolute;
   top: 18px;
@@ -1900,27 +2131,34 @@ input[type=number]::-webkit-outer-spin-button {
   justify-content: center;
   z-index: 10;
 }
+
+/* Filter modal close hover */
 .filter-modal-close:hover {
   color: #ff4d4f;
 }
 
+/* Filter inputs container custom dropdown and date picker */
 .filter-inputs-container .custom-dropdown + input,
 .filter-inputs-container .custom-dropdown + .custom-date-picker {
   margin-top: 8px;
 }
 
+/* Filter modal actions */
 .filter-modal-actions {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
 }
 
+/* Custom file upload */
 .custom-file-upload {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 0;
 }
+
+/* Custom file btn */
 #custom-file-btn.modal-action-btn {
   padding: 12px 24px;
   font-size: 1rem;
@@ -1931,11 +2169,14 @@ input[type=number]::-webkit-outer-spin-button {
   border: none;
   cursor: pointer;
   transition: background 0.18s;
-  
 }
+
+/* Custom file btn hover */
 #custom-file-btn.modal-action-btn:hover {
   background: #1c4daf;
 }
+
+/* File name */
 #file-name {
   color: var(--text-muted);
   font-size: 1em;
@@ -1944,17 +2185,21 @@ input[type=number]::-webkit-outer-spin-button {
   text-overflow: ellipsis;
   max-width: 220px;
 }
+
+/* Camera modal bg */
 #camera-modal.filter-modal-bg {
   display: none;
   z-index: 3000;
   align-items: center;
   justify-content: center;
 }
+
+/* Camera modal bg active */
 #camera-modal.active {
   display: flex;
 }
 
-/* --- Modern Receipt Scan Styles --- */
+/* Receipt scan modern form */
 .receipt-scan-modern-form {
   display: flex;
   justify-content: center;
@@ -1962,6 +2207,8 @@ input[type=number]::-webkit-outer-spin-button {
   width: 100%;
   min-height: 420px;
 }
+
+/* Receipt scan card */
 .receipt-scan-card {
   background: #23262a;
   border-radius: 8px;
@@ -1975,6 +2222,8 @@ input[type=number]::-webkit-outer-spin-button {
   max-width: 420px;
   margin: 0 auto;
 }
+
+/* Receipt upload row */
 .receipt-upload-row {
   display: flex;
   align-items: center;
@@ -1982,6 +2231,8 @@ input[type=number]::-webkit-outer-spin-button {
   width: 100%;
   margin-bottom: 0;
 }
+
+/* Receipt btn */
 .receipt-btn {
   background: var(--accent);
   color: #fff;
@@ -1997,13 +2248,19 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0 auto;
   display: block;
 }
+
+/* Receipt btn hover */
 .receipt-btn:hover {
   background: #1c4daf;
 }
+
+/* Camera btn */
 .camera-btn {
   margin-top: 0;
   margin-bottom: 18px;
 }
+
+/* File name modern */
 .file-name-modern {
   color: var(--text-muted);
   font-size: 1em;
@@ -2012,6 +2269,8 @@ input[type=number]::-webkit-outer-spin-button {
   text-overflow: ellipsis;
   max-width: 160px;
 }
+
+/* Receipt or */
 .receipt-or {
   color: var(--text-muted);
   font-size: 1.05em;
@@ -2021,6 +2280,8 @@ input[type=number]::-webkit-outer-spin-button {
   font-weight: 500;
   letter-spacing: 0.02em;
 }
+
+/* Receipt dropzone */
 .receipt-dropzone {
   min-height: 140px;
   width: 100%;
@@ -2037,6 +2298,8 @@ input[type=number]::-webkit-outer-spin-button {
   transition: border-color 0.18s, background 0.18s;
   box-sizing: border-box;
 }
+
+/* Receipt dropzone img */
 .receipt-dropzone img {
   max-width: 90%;
   max-height: 120px;
@@ -2044,10 +2307,14 @@ input[type=number]::-webkit-outer-spin-button {
   display: block;
   margin: 0 auto;
 }
+
+/* Receipt dropzone hover */
 .receipt-dropzone:hover {
   border-color: var(--accent);
   background: #23262a;
 }
+
+/* Receipt scan actions */
 .receipt-scan-actions {
   display: flex;
   gap: 12px;
@@ -2055,6 +2322,8 @@ input[type=number]::-webkit-outer-spin-button {
   margin-bottom: 0;
   margin-top: 0;
 }
+
+/* Receipt cancel btn and receipt ai btn */
 .receipt-cancel-btn, .receipt-ai-btn {
   flex: 1 1 0;
   min-width: 0;
@@ -2063,6 +2332,8 @@ input[type=number]::-webkit-outer-spin-button {
   font-size: 1rem;
   border-radius: 8px;
 }
+
+/* Receipt status message */
 .receipt-status-message {
   margin-top: 18px;
   width: 100%;
@@ -2071,6 +2342,8 @@ input[type=number]::-webkit-outer-spin-button {
   min-height: 24px;
   display: block;
 }
+
+/* Receipt scan card media */
 @media (max-width: 600px) {
   .receipt-scan-card {
     padding: 18px 6vw 18px 6vw;
@@ -2086,6 +2359,7 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
+/* Import export form */
 .import-export-form {
   background: #23262a;
   border-radius: 12px;
@@ -2100,15 +2374,21 @@ input[type=number]::-webkit-outer-spin-button {
   max-width: 540px;
   margin: 24px auto 0 auto;
 }
+
+/* Import export form form group */
 .import-export-form .form-group {
   width: 100%;
   margin-bottom: 16px;
 }
+
+/* Import export form form actions */
 .import-export-form .form-actions {
   margin-top: 18px;
   display: flex;
   gap: 12px;
 }
+
+/* Import status message and export status message */
 .import-status-message, .export-status-message {
   margin-top: 14px;
   font-size: 1.05em;
@@ -2116,6 +2396,8 @@ input[type=number]::-webkit-outer-spin-button {
   color: var(--text-muted);
   text-align: center;
 }
+
+/* Import export form media */
 @media (max-width: 700px) {
   .import-export-form {
     max-width: 100vw !important;
@@ -2130,6 +2412,7 @@ input[type=number]::-webkit-outer-spin-button {
   }
 }
 
+/* Export format row */
 .export-format-row {
   background: #18191a;
   border-radius: 12px;
@@ -2143,6 +2426,7 @@ input[type=number]::-webkit-outer-spin-button {
   width: auto;
 }
 
+/* Export format switch */
 .export-format-switch {
   display: flex;
   justify-content: center;
@@ -2150,6 +2434,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* Export format btn */
 .export-format-btn {
   min-width: 120px;
   height: 44px;
@@ -2171,6 +2456,7 @@ input[type=number]::-webkit-outer-spin-button {
   justify-content: center;
 }
 
+/* Export format btn active */
 .export-format-btn.active {
   background: #223e7c;
   color: #fff;
@@ -2179,31 +2465,37 @@ input[type=number]::-webkit-outer-spin-button {
   box-shadow: 0 2px 8px 0 rgba(35,95,214,0.08);
 }
 
+/* Export format btn not active hover */
 .export-format-btn:not(.active):hover {
   background: #232e4a;
   color: var(--accent);
   border-color: var(--accent);
 }
 
+/* Export format btn focus */
 .export-format-btn:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(35,95,214,0.10);
 }
 
+/* Import export form form group full width */
 .import-export-form .form-group.full-width {
   margin-bottom: 0;
 }
 
+/* Import export form form group full width label */
 .import-export-form .form-group.full-width label {
   margin-bottom: 0;
   font-size: 1.2em;
 }
 
+/* Export transactions form form actions */
 #export-transactions-form .form-actions {
   padding: 0;
   margin: 0;
 }
 
+/* Import modal card */
 .import-modal-card {
   background: #23262a;
   border-radius: 12px;
@@ -2216,6 +2508,7 @@ input[type=number]::-webkit-outer-spin-button {
   gap: 0;
 }
 
+/* Import modal title */
 .import-modal-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -2223,12 +2516,14 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0 0 6px 0;
 }
 
+/* Import modal desc */
 .import-modal-desc {
   color: #bfc6e0;
   font-size: 1.05rem;
   margin: 0 0 18px 0;
 }
 
+/* Import file row */
 .import-file-row {
   display: flex;
   align-items: center;
@@ -2239,6 +2534,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin-bottom: 18px;
 }
 
+/* Import file btn */
 .import-file-btn {
   background: #223e7c;
   color: #fff;
@@ -2257,16 +2553,21 @@ input[type=number]::-webkit-outer-spin-button {
   align-items: center;
   justify-content: center;
 }
+
+/* Import file btn hover and focus */
 .import-file-btn:hover, .import-file-btn:focus {
   background: #235FD6;
   color: #fff;
   border-color: #235FD6;
   outline: none;
 }
+
+/* Import file btn active */
 .import-file-btn:active {
   background: #1c4daf;
 }
 
+/* Import file name */
 .import-file-name {
   color: #bfc6e0;
   font-size: 1.08em;
@@ -2276,6 +2577,7 @@ input[type=number]::-webkit-outer-spin-button {
   max-width: 220px;
 }
 
+/* Import modal actions */
 .import-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -2283,6 +2585,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin-top: 0;
 }
 
+/* Export format desc */
 .export-format-desc {
   color: #bfc6e0;
   font-size: 1.02rem;
@@ -2290,6 +2593,7 @@ input[type=number]::-webkit-outer-spin-button {
   padding-left: 2px;
 }
 
+/* Export modal actions and export modal actions box */
 .export-modal-actions,
 .export-modal-actions-box {
   display: flex;
@@ -2301,7 +2605,7 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: 0;
 }
 
-/* Transactions Lock Modal Styles */
+/* Transactions lock modal overlay */
 #transactions-lock-overlay {
   display: none;
   position: fixed;
@@ -2316,6 +2620,7 @@ input[type=number]::-webkit-outer-spin-button {
   justify-content: center;
 }
 
+/* Transactions lock modal */
 .transactions-lock-modal {
   position: relative;
   z-index: 1010;
@@ -2332,6 +2637,8 @@ input[type=number]::-webkit-outer-spin-button {
   padding: 0;
   margin: 0 auto;
 }
+
+/* Transactions lock modal header */
 .transactions-lock-modal .modal-header {
   width: 100%;
   padding: 32px 32px 0 32px;
@@ -2341,6 +2648,8 @@ input[type=number]::-webkit-outer-spin-button {
   display: flex;
   justify-content: center;
 }
+
+/* Transactions lock modal body */
 .transactions-lock-modal .modal-body {
   width: 100%;
   padding: 0 32px 12px 32px;
@@ -2348,11 +2657,15 @@ input[type=number]::-webkit-outer-spin-button {
   flex-direction: column;
   align-items: center;
 }
+
+/* Transactions lock modal form group */
 .transactions-lock-modal .form-group {
   width: 100%;
   margin-bottom: 18px;
   position: relative;
 }
+
+/* Modal input */
 .modal-input {
   width: 100%;
   background: #23262a;
@@ -2366,10 +2679,14 @@ input[type=number]::-webkit-outer-spin-button {
   font-family: 'Inter', Arial, sans-serif;
   box-sizing: border-box;
 }
+
+/* Modal input focus */
 .modal-input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(35,95,214,0.12);
 }
+
+/* Input eye btn */
 .input-eye-btn {
   position: absolute;
   right: 12px;
@@ -2385,6 +2702,8 @@ input[type=number]::-webkit-outer-spin-button {
   height: 100%;
   z-index: 2;
 }
+
+/* Input eye btn svg */
 .input-eye-btn svg {
   width: 24px;
   height: 24px;
@@ -2392,10 +2711,14 @@ input[type=number]::-webkit-outer-spin-button {
   transition: fill 0.18s;
   pointer-events: none;
 }
+
+/* Input eye btn focus and hover svg */
 .input-eye-btn:focus svg,
 .input-eye-btn:hover svg {
   fill: var(--accent);
 }
+
+/* Transactions lock modal modal action btn */
 .transactions-lock-modal .modal-action-btn {
   width: 100%;
   margin-bottom: 10px;
@@ -2404,6 +2727,8 @@ input[type=number]::-webkit-outer-spin-button {
   border-radius: 8px;
   padding: 12px 0;
 }
+
+/* Unlock error msg */
 #unlock-error-msg {
   color: #ff4d4f;
   font-size: 1.05rem;
