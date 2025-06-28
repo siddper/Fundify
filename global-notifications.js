@@ -1,6 +1,7 @@
-// Global Notification System for Fundify
+// global-notifications.js - Global notification system for Fundify
 // This file should be included on all pages to handle reminder notifications
 
+// Set API base URL
 const API_BASE = 'http://127.0.0.1:8000';
 
 // Get user email from localStorage
@@ -14,6 +15,7 @@ async function fetchNotificationsSetting() {
     const userEmail = getUserEmail();
     if (!userEmail) return false; // Default to enabled if no user email
     
+    // Fetch user info from API
     const res = await fetch(`${API_BASE}/user-info?email=${encodeURIComponent(userEmail)}`);
     const data = await res.json();
     if (data.success && data.user && data.user.disable_reminder_notifications) {
@@ -76,10 +78,12 @@ function getNotifiedKeys() {
   } catch { return []; }
 }
 
+// Set notified keys
 function setNotifiedKeys(keys) {
   localStorage.setItem('fundify_reminders_notified', JSON.stringify(keys));
 }
 
+// Make reminder key
 function makeReminderKey(reminder) {
   return `${reminder.id}|${reminder.date}|${reminder.time}`;
 }
@@ -131,6 +135,7 @@ async function checkRemindersForNotification() {
     }
   });
 
+  // Check for new notifications
   let newNotifications = 0;
   reminders.forEach((reminder) => {
     const isDue = isReminderDue(reminder);

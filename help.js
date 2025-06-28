@@ -1,5 +1,6 @@
-// Add AI help logic for the help page
+// help.js - AI help logic for the help page
 
+// Set help context
 const HELP_CONTEXT = `
 You are a helpful assistant that can answer questions about Fundify.
 Users can navigate between pages with the sidebar to the left, or with the command bar.
@@ -46,11 +47,13 @@ When you answer questions, only answer the question referencing the context prov
 When answering, do NOT use any formatting, Markdown, bullet points, bold, italics, or HTML. Respond in plain, unstyled text only.
 `;
 
+// Add event listener to DOMContentLoaded (help.html)
 document.addEventListener('DOMContentLoaded', () => {
   const questionInput = document.getElementById('help-ai-question');
   const answerDiv = document.getElementById('help-ai-answer');
 
-  questionInput.addEventListener('keydown', async (e) => {
+  // Add event listener to question input
+    questionInput.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       const question = questionInput.value.trim();

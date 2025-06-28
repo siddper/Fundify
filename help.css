@@ -1,10 +1,15 @@
+/* help.css - Help page styles */
+
+/* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+/* Set box-sizing and font */
 * {
   box-sizing: border-box;
   font: 'Inter';
 }
 
+/* Set root variables */
 :root {
   --accent: #235FD6;
   --sidebar-bg: #000;
@@ -15,6 +20,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* Set body background */
 body.help-bg {
     font-family: 'Inter', Arial, sans-serif;
     margin: 0;
@@ -24,12 +30,14 @@ body.help-bg {
     scrollbar-width: none;
 }
 
+/* Set help layout */
 .help-layout {
     display: flex;
     min-height: 100vh;
     min-width: 0;
 }
 
+/* Set help main */
 .help-main {
     flex: 1;
     min-width: 0;
@@ -44,6 +52,7 @@ body.help-bg {
     margin-left: 300px;
 }
 
+/* Set help topbar */
 .help-topbar {
   display: flex;
   align-items: center;
@@ -58,11 +67,15 @@ body.help-bg {
   width: 100%;
   max-width: 100%;
 }
+
+/* Set topbar left */
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
+/* Set help title */
 .help-title {
     font-size: 1.3rem;
     font-weight: 400;
@@ -70,7 +83,7 @@ body.help-bg {
     letter-spacing: -0.5px;
 }
 
-/* FAQ Section Styles */
+/* Set FAQ section */
 .faq-section {
   width: 100%;
   max-width: none;
@@ -82,6 +95,8 @@ body.help-bg {
   align-items: center;
   justify-content: flex-start;
 }
+
+/* Set FAQ title */
 .faq-title {
   color: var(--text);
   font-size: 2.2rem;
@@ -90,6 +105,8 @@ body.help-bg {
   margin-bottom: 10px;
   text-align: center;
 }
+
+/* Set FAQ subtitle */
 .faq-subtitle {
   color: var(--text);
   font-size: 1.15rem;
@@ -97,6 +114,8 @@ body.help-bg {
   text-align: center;
   font-weight: 400;
 }
+
+/* Set FAQ grid */
 .faq-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -106,6 +125,8 @@ body.help-bg {
   padding: 0 32px 48px 32px;
   box-sizing: border-box;
 }
+
+/* FAQ card */
 .faq-card {
   background: var(--card-bg);
   border-radius: 16px;
@@ -120,12 +141,16 @@ body.help-bg {
   justify-content: flex-start;
   transition: background 0.18s, box-shadow 0.18s, transform 0.13s;
 }
+
+/* FAQ card hover */
 .faq-card:hover {
   background: #292b30;
   box-shadow: 0 4px 24px 0 rgba(35,95,214,0.10);
   transform: translateY(-2px);
   cursor: pointer;
 }
+
+/* FAQ card strong */
 .faq-card strong {
   color: var(--text);
   font-size: 1.18rem;
@@ -133,6 +158,8 @@ body.help-bg {
   margin-bottom: 12px;
   line-height: 1.5;
 }
+
+/* FAQ card p */
 .faq-card p {
   color: var(--text);
   margin-top: 10px;
@@ -141,6 +168,8 @@ body.help-bg {
   font-weight: 400;
   line-height: 1.5;
 }
+
+/* Set FAQ grid media queries */
 @media (max-width: 1200px) {
   .faq-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -148,23 +177,30 @@ body.help-bg {
     gap: 18px;
   }
 }
+
+/* Set FAQ grid media queries */
 @media (max-width: 800px) {
   .faq-grid {
     grid-template-columns: 1fr;
     padding: 0 8px 32px 8px;
     gap: 12px;
   }
+
+  /* Set FAQ card */
   .faq-card {
     padding: 14px 6px;
     font-size: 1rem;
     min-height: 120px;
   }
+
+  /* Set FAQ title */
   .faq-title {
     font-size: 1.3rem;
     margin-top: 24px;
   }
 }
 
+/* Set help AI question */
 #help-ai-question {
   resize: none;
   width: 100%;
@@ -180,11 +216,13 @@ body.help-bg {
   line-height: 1.5;
 }
 
+/* Set help AI question focus */
 #help-ai-question:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(35,95,214,0.15);
 }
 
+/* Set help AI answer */
 #help-ai-answer {
   margin-top: 0;
   display: none;
