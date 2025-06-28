@@ -1,5 +1,8 @@
+<!-- sign-in.html - Sign in page -->
 <!DOCTYPE html>
 <html lang="en">
+
+<!-- Set head -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,43 +10,69 @@
   <link rel="stylesheet" href="auth-styles.css">
   <link rel="icon" type="image/png" href="fundifyIcon.png">
 </head>
+
+<!-- Set body -->
 <body class="auth-bg">
+  <!-- Set auth container -->
   <div class="auth-container reverse">
+    <!-- Set auth form section -->
     <div class="auth-form-section reverse">
+      <!-- Set auth logo -->
       <div class="auth-logo"><span style="color:#4B61D1;font-weight:700;"><img src="fundifyIcon.png"></span></div>
+      <!-- Set auth title -->
       <h1 class="auth-title">Sign in</h1>
+      <!-- Set auth description -->
       <p class="auth-desc">Welcome back! Sign in to continue managing your finances and transactions with Fundify.</p>
+      <!-- Set height -->
       <div style="height:10px;"></div>
+      <!-- Set login success -->
       <div id="login-success" class="auth-success" style="display:none;"></div>
+      <!-- Set login error -->
       <div id="login-error" class="auth-error" style="display:none;"></div>
+      <!-- Set login form -->
       <form class="auth-form" id="login-form" novalidate>
+        <!-- Set email label -->
         <label for="email">Email</label>
+        <!-- Set email input -->
         <input type="text" id="email" placeholder="Your email" autocomplete="off">
+        <!-- Set password label -->
         <label for="password">Password</label>
+        <!-- Set password input wrapper -->
         <div class="password-input-wrapper">
+          <!-- Set password input -->
           <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
+          <!-- Set toggle password button -->
           <button type="button" id="toggle-password" class="toggle-password" tabindex="-1" aria-label="Show password">👁️</button>
         </div>
+        <!-- Set sign in button -->
         <button type="submit" class="auth-btn">Sign in</button>
       </form>
+      <!-- Set auth footer -->
       <div class="auth-footer">Don't have an account? <a href="create-account.html">Create one</a></div>
     </div>
   </div>
+  <!-- Set two-factor authentication modal -->
   <div id="twofa-modal" class="modal-bg">
     <div class="modal-content">
+      <!-- Set two-factor authentication close button -->
       <button class="modal-close" id="twofa-close">&times;</button>
+      <!-- Set two-factor authentication title -->
       <h2 class="twofa-title" style="color:#fff;">Two-Factor Authentication</h2>
       <p class="twofa-instructions">Enter the 4-digit code sent to your email.</p>
+      <!-- Set two-factor authentication inputs -->
       <div class="twofa-inputs">
         <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
         <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
         <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
         <input type="text" maxlength="1" class="twofa-digit" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
       </div>
+      <!-- Set two-factor authentication error -->
       <div id="twofa-error" class="auth-error" style="display:none;"></div>
+      <!-- Set two-factor authentication verify button -->
       <button id="twofa-submit" class="auth-btn">Verify</button>
     </div>
   </div>
+  <!-- Set scripts -->
   <script src="auth.js"></script>
 </body>
 </html> 

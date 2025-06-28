@@ -1,6 +1,8 @@
+/* summary.js - Summary page for Fundify */
 let summaryRange = 'week';
 let analyticsDoughnutChart, spendingLineChart, categoryBarChart, cashflowLineChart, methodDoughnutChart, topStoresBarChart, monthlyTrendsLineChart;
 
+// Get start date for range
 function getStartDateForRange(range) {
   const now = new Date();
   if (range === 'week') {
@@ -15,6 +17,7 @@ function getStartDateForRange(range) {
   return new Date(0);
 }
 
+// Filter transactions by range
 function filterTransactionsByRange(transactions, range) {
   const start = getStartDateForRange(range);
   return transactions.filter(t => {
@@ -26,21 +29,24 @@ function filterTransactionsByRange(transactions, range) {
   });
 }
 
+// Set active toggle button
 function setActiveToggleBtn(range) {
   document.querySelectorAll('.summary-toggle-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.range === range);
   });
 }
 
+// Fetch and render summary
 async function fetchAndRenderSummary() {
   const totalTxEl = document.getElementById('total-transactions');
   const totalSpentEl = document.getElementById('total-spent');
   const totalDepositedEl = document.getElementById('total-deposited');
-  // Always reset to neutral state
+  // Always reset to neutral state (no transactions)
   totalTxEl.textContent = '--';
   totalSpentEl.textContent = '--';
   totalDepositedEl.textContent = '--';
 
+  // Get user email
   const email = localStorage.getItem('fundify_user_email');
   if (!email) {
     totalTxEl.textContent = 'Login required';
@@ -49,6 +55,7 @@ async function fetchAndRenderSummary() {
     return;
   }
 
+  // Fetch transactions
   try {
     const res = await fetch(`http://127.0.0.1:8000/transactions?email=${encodeURIComponent(email)}`);
     const data = await res.json();
@@ -59,9 +66,11 @@ async function fetchAndRenderSummary() {
       totalDepositedEl.textContent = '--';
       return;
     }
+    // Filter transactions by range
     let transactions = data.transactions;
     transactions = filterTransactionsByRange(transactions, summaryRange);
-
+    
+    // If no transactions, render empty charts
     if (transactions.length === 0) {
       totalTxEl.textContent = '0';
       totalSpentEl.textContent = '$0.00';
@@ -92,7 +101,7 @@ async function fetchAndRenderSummary() {
       return;
     }
 
-    // Calculate summary stats
+    // Calculate summary stats (total transactions, total spent, total deposited)
     const totalTransactions = transactions.length;
     const totalSpent = transactions.filter(t => t.type === 'Withdrawal').reduce((sum, t) => sum + parseFloat(t.amount), 0);
     const totalDeposited = transactions.filter(t => t.type === 'Deposit').reduce((sum, t) => sum + parseFloat(t.amount), 0);
@@ -101,7 +110,7 @@ async function fetchAndRenderSummary() {
     totalSpentEl.textContent = `$${totalSpent.toFixed(2)}`;
     totalDepositedEl.textContent = `$${totalDeposited.toFixed(2)}`;
 
-    // Doughnut chart: Spending vs Deposits
+    // Doughnut chart: Spending vs Deposits (analytics-doughnut)
     const doughnutCtx = document.getElementById('analytics-doughnut').getContext('2d');
     if (analyticsDoughnutChart) analyticsDoughnutChart.destroy();
     analyticsDoughnutChart = new Chart(doughnutCtx, {
@@ -123,7 +132,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Line chart: Spending over time
+    // Line chart: Spending over time (spending-line-chart)
     // Group by date
     const dateMap = {};
     transactions.forEach(t => {
@@ -167,7 +176,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Bar chart: Category breakdown (use store as fallback if no category)
+    // Bar chart: Category breakdown (use store as fallback if no category) (category-bar-chart)
     const categoryMap = {};
     transactions.forEach(t => {
       const cat = t.category || t.store || 'Other';
@@ -209,7 +218,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Cash Flow Over Time (dual line: deposits and withdrawals)
+    // Cash Flow Over Time (dual line: deposits and withdrawals) (cashflow-line-chart)
     const cashflowDateMap = {};
     transactions.forEach(t => {
       if (!cashflowDateMap[t.date]) cashflowDateMap[t.date] = { deposit: 0, withdrawal: 0 };
@@ -260,7 +269,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Spending by Method (doughnut)
+    // Spending by Method (doughnut) (method-doughnut-chart)
     const methodMap = { Credit: 0, Debit: 0, Cash: 0, Check: 0 };
     transactions.forEach(t => {
       if (t.type === 'Withdrawal') {
@@ -293,7 +302,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Top Stores (horizontal bar)
+    // Top Stores (horizontal bar) (top-stores-bar-chart)
     const storeMap = {};
     transactions.forEach(t => {
       if (t.type === 'Withdrawal') {
@@ -333,7 +342,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // Weekly Trends (dual line: deposits and withdrawals per week)
+    // Weekly Trends (dual line: deposits and withdrawals per week) (weekly-trends-line-chart)
     const weekMap = {};
     transactions.forEach(t => {
       if (!t.date) return;
@@ -393,7 +402,7 @@ async function fetchAndRenderSummary() {
       }
     });
 
-    // --- Summary Statistics ---
+    // --- Summary Statistics --- (summary-stats)
     function calcStats(arr) {
       if (!arr.length) return { mean: '--', median: '--', min: '--', max: '--', std: '--' };
       const sorted = [...arr].sort((a, b) => a - b);
@@ -427,7 +436,7 @@ async function fetchAndRenderSummary() {
   }
 }
 
-// Add event listeners for toggle buttons
+// Add event listeners for toggle buttons (summary-toggle-btn)
 function setupSummaryToggle() {
   document.querySelectorAll('.summary-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -443,7 +452,7 @@ setupSummaryToggle();
 
 fetchAndRenderSummary();
 
-// Simulate a click on the month button, then the week button, to force correct chart sizing
+// Simulate a click on the month button, then the week button, to force correct chart sizing (summary-toggle-btn)
 window.addEventListener('DOMContentLoaded', () => {
   const monthBtn = document.querySelector('.summary-toggle-btn[data-range="month"]');
   const weekBtn = document.querySelector('.summary-toggle-btn[data-range="week"]');
@@ -455,7 +464,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- Export as Image/Email ---
+// --- Export as Image/Email --- (export-image-btn, export-email-btn)
 function loadHtml2Canvas(cb) {
   if (window.html2canvas) return cb();
   const script = document.createElement('script');
@@ -498,5 +507,7 @@ function exportSummaryAsImage(openInNewTab = true, sendToEmail = false) {
     });
   });
 }
+
+// Add event listeners for export buttons (export-image-btn, export-email-btn)
 document.getElementById('export-image-btn').addEventListener('click', () => exportSummaryAsImage(true, false));
 document.getElementById('export-email-btn').addEventListener('click', () => exportSummaryAsImage(false, true));

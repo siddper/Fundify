@@ -1,10 +1,13 @@
+/* summary.css - Summary page styles */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+/* Set * */
 * {
   box-sizing: border-box;
   font: 'Inter';
 }
 
+/* Set :root */
 :root {
   --accent: #235FD6;
   --sidebar-bg: #000;
@@ -15,6 +18,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* Set body.summary-bg */
 body.summary-bg {
     font-family: 'Inter', Arial, sans-serif;
     margin: 0;
@@ -24,12 +28,14 @@ body.summary-bg {
     scrollbar-width: none;
 }
 
+/* Set summary-layout */
 .summary-layout {
   display: flex;
   min-height: 100vh;
   min-width: 0;
 }
 
+/* Set summary-main */
 .summary-main {
     flex: 1;
     min-width: 0;
@@ -44,6 +50,7 @@ body.summary-bg {
     margin-left: 300px;
 }
 
+/* Set summary-content */
 .summary-content {
     padding: 30px;
     overflow-y: auto;
@@ -51,6 +58,7 @@ body.summary-bg {
     height: 100%;
 }
 
+/* Set summary-topbar */
 .summary-topbar {
   display: flex;
   align-items: center;
@@ -65,11 +73,15 @@ body.summary-bg {
   width: 100%;
   max-width: 100%;
 }
+
+/* Set topbar-left */
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
+/* Set summary-title */
 .summary-title {
     font-size: 1.3rem;
     font-weight: 600;
@@ -77,6 +89,7 @@ body.summary-bg {
     letter-spacing: -0.5px;
 }
 
+/* Set summary-widgets-row */
 .summary-widgets-row {
   display: flex;
   gap: 32px;
@@ -85,6 +98,7 @@ body.summary-bg {
   margin-bottom: 40px;
 }
 
+/* Set summary-widget */
 .summary-widget {
   background: var(--card-bg);
   border-radius: 16px;
@@ -105,6 +119,7 @@ body.summary-bg {
   overflow: scroll;
 }
 
+/* Set summary-widget-large */
 .summary-widget-large {
   flex: 1 1 0;
   width: 100%;
@@ -116,6 +131,7 @@ body.summary-bg {
   overflow: hidden;
 }
 
+/* Set summary-widget-title */
 .summary-widget-title {
   font-size: 1.12rem;
   font-weight: 700;
@@ -123,6 +139,7 @@ body.summary-bg {
   margin-bottom: 2px;
 }
 
+/* Set summary-widget-value */
 .summary-widget-value {
   font-size: 2.2rem;
   font-weight: 700;
@@ -132,12 +149,14 @@ body.summary-bg {
   letter-spacing: -1px;
 }
 
+/* Set summary-widget-desc */
 .summary-widget-desc {
   color: var(--text-muted);
   font-size: 1.01rem;
   margin-bottom: 0;
 }
 
+/* Set summary-widget canvas */
 .summary-widget canvas {
   margin-top: 8px;
   background: transparent;
@@ -149,12 +168,14 @@ body.summary-bg {
   margin-right: auto;
 }
 
+/* Set summary-widget-large canvas */
 .summary-widget-large canvas {
   width: 100%;
   height: 320px !important;
   max-width: 100%;
 }
 
+/* Set summary-toggle-switch */
 .summary-toggle-switch {
   display: flex;
   gap: 8px;
@@ -162,6 +183,8 @@ body.summary-bg {
   justify-content: flex-end;
   align-items: center;
 }
+
+/* Set summary-toggle-btn */
 .summary-toggle-btn {
   background: var(--card-bg);
   color: var(--text-muted);
@@ -174,12 +197,15 @@ body.summary-bg {
   transition: background 0.18s, color 0.18s, border 0.18s;
   outline: none;
 }
+
+/* Set summary-toggle-btn.active */
 .summary-toggle-btn.active {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
 }
 
+/* Set summary-export-btn */
 .summary-export-btn {
   background: var(--card-bg);
   color: var(--accent);
@@ -193,11 +219,14 @@ body.summary-bg {
   transition: background 0.18s, color 0.18s, border 0.18s;
   outline: none;
 }
+
+/* Set summary-export-btn:hover */
 .summary-export-btn:hover {
   background: var(--accent);
   color: #fff;
 }
 
+/* Set media query */
 @media (max-width: 1200px) {
   .summary-widgets-row {
     flex-direction: column;
@@ -213,6 +242,7 @@ body.summary-bg {
   }
 }
 
+/* Set cashflow-line-chart */
 #cashflow-line-chart {
   width: 100%;
   height: 320px !important;
@@ -222,7 +252,7 @@ body.summary-bg {
   max-width: none;
 }
 
-/* Spending by Method legend in one line and at the top */
+/* Set method-doughnut-chart + .chartjs-legend, summary-widget-large .chartjs-legend */
 #method-doughnut-chart + .chartjs-legend,
 .summary-widget-large .chartjs-legend {
   display: flex !important;
@@ -236,6 +266,7 @@ body.summary-bg {
   overflow-x: auto;
 }
 
+/* Set method-doughnut-chart */
 #method-doughnut-chart {
   display: block;
   margin: 16px auto 0 auto;
@@ -245,6 +276,7 @@ body.summary-bg {
   height: auto !important;
 }
 
+/* Set spending-line-chart, category-bar-chart, top-stores-bar-chart, weekly-trends-line-chart */
 #spending-line-chart, #category-bar-chart, #top-stores-bar-chart, #weekly-trends-line-chart {
   max-width: 540px;
   max-height: 290px;
@@ -255,16 +287,20 @@ body.summary-bg {
   display: block;
 }
 
-/* Make the Spending by Method widget wider for legend */
+/* Set summary-widget-large:has(#method-doughnut-chart) */
 .summary-widget-large:has(#method-doughnut-chart) {
   max-width: 700px;
   min-width: 400px;
 }
+
+/* Set method-doughnut-chart */
 #method-doughnut-chart {
   max-width: 420px;
   width: 100%;
   margin-top: 5px;
 }
+
+/* Set method-doughnut-chart + .chartjs-legend, summary-widget-large .chartjs-legend */
 #method-doughnut-chart + .chartjs-legend,
 .summary-widget-large .chartjs-legend {
   display: flex !important;
@@ -278,6 +314,8 @@ body.summary-bg {
   overflow-x: auto;
   min-width: 420px;
 }
+
+/* Set media query */
 @media (max-width: 900px) {
   .summary-widget-large:has(#method-doughnut-chart) {
     max-width: 98vw;
@@ -289,6 +327,7 @@ body.summary-bg {
   }
 }
 
+/* Set summary-stats-row */
 .summary-stats-row {
   margin-bottom: 10px;
   font-size: 1.01rem;
@@ -297,11 +336,15 @@ body.summary-bg {
   flex-direction: column;
   gap: 2px;
 }
+
+/* Set summary-stats-row > span */
 .summary-stats-row > span {
   font-weight: 600;
   color: var(--accent);
   margin-bottom: 2px;
 }
+
+/* Set summary-stats-list */
 .summary-stats-list {
   list-style: none;
   padding: 0;
@@ -310,6 +353,8 @@ body.summary-bg {
   flex-direction: column;
   gap: 1px;
 }
+
+/* Set summary-stats-list li */
 .summary-stats-list li {
   font-size: 0.98rem;
   color: var(--text-muted);
@@ -349,6 +394,7 @@ body.summary-bg {
   margin-bottom: 2px;
 }
 
+/* Set export-status-message */
 .export-status-message:empty {
   display: none;
 }
@@ -363,9 +409,13 @@ body.summary-bg {
   vertical-align: middle;
   transition: color 0.18s;
 }
+
+/* Set export-status-message.success */
 .export-status-message.success {
   color: var(--accent);
 }
+
+/* Set export-status-message.error */
 .export-status-message.error {
   color: #ff4d4f;
 }
