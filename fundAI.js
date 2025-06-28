@@ -1,11 +1,24 @@
+// fundAI.js - FundAI chat functionality
+
+// FundAIChat class
 class FundAIChat {
     constructor() {
+        // Get DOM elements
         this.chatMessages = document.getElementById('chatMessages');
         this.chatInput = document.getElementById('chatInput');
         this.sendButton = document.getElementById('sendButton');
+        this.clearChatButton = document.getElementById('clearChatButton');
+        
+        // Get user email from localStorage
         this.userEmail = this.getUserEmail();
+        
+        // Initialize variables
         this.transactions = [];
         this.chatHistory = [];
+        this.localStorageKey = this.userEmail ? `fundai_chat_${this.userEmail}` : null;
+        
+        // Initialize event listeners
+        this.initializeEventListeners();
         this.localStorageKey = this.userEmail ? `fundai_chat_${this.userEmail}` : null;
         
         this.initializeEventListeners();
@@ -49,6 +62,7 @@ class FundAIChat {
             return [list[idx1], list[idx2]];
         }
         
+        // Get example question buttons and randomly pick 2 unique questions
         const exampleBtns = document.querySelectorAll('.example-question-btn');
         const [q1, q2] = getTwoRandomQuestions(exampleQuestionsList);
         if (exampleBtns[0]) {
@@ -71,11 +85,13 @@ class FundAIChat {
         }
     }
 
+    // Get user email from localStorage
     getUserEmail() {
         // Get user email from localStorage (set during login)
         return localStorage.getItem('fundify_user_email');
     }
 
+    // Initialize event listeners
     initializeEventListeners() {
         // Send button click
         this.sendButton.addEventListener('click', () => this.sendMessage());
@@ -98,16 +114,19 @@ class FundAIChat {
         this.chatInput.focus();
     }
 
+    // Auto-resize textarea
     autoResizeTextarea() {
         this.chatInput.style.height = 'auto';
         this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 120) + 'px';
     }
 
+    // Update send button state
     updateSendButton() {
         const hasText = this.chatInput.value.trim().length > 0;
         this.sendButton.disabled = !hasText;
     }
 
+    // Load user transactions
     async loadUserTransactions() {
         if (!this.userEmail) {
             this.addMessage('Please log in to use FundAI.', 'ai');
@@ -128,6 +147,7 @@ class FundAIChat {
         }
     }
 
+    // Load chat history
     loadChatHistory() {
         if (!this.localStorageKey) {
             this.addMessage('Please log in to use FundAI.', 'ai');
@@ -154,12 +174,14 @@ class FundAIChat {
         }
     }
 
+    // Save chat history
     saveChatHistory() {
         if (this.localStorageKey) {
             localStorage.setItem(this.localStorageKey, JSON.stringify(this.chatHistory));
         }
     }
 
+    // Send message
     async sendMessage() {
         const message = this.chatInput.value.trim();
         if (!message) return;
@@ -186,6 +208,7 @@ class FundAIChat {
         }
     }
 
+    // Get AI response
     async getAIResponse(userMessage) {
         if (!this.userEmail) {
             return 'Please log in to use FundAI.';
@@ -212,6 +235,7 @@ class FundAIChat {
         }
     }
 
+    // Add message
     addMessage(content, sender) {
         // Save to chat history and localStorage
         this.chatHistory.push({ content, sender });
@@ -219,6 +243,7 @@ class FundAIChat {
         this.renderMessage(content, sender);
     }
 
+    // Render message
     renderMessage(content, sender) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
@@ -238,6 +263,7 @@ class FundAIChat {
         this.scrollToBottom();
     }
 
+    // Show typing indicator
     showTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message ai-message typing-message';
@@ -266,6 +292,7 @@ class FundAIChat {
         this.scrollToBottom();
     }
 
+    // Hide typing indicator
     hideTypingIndicator() {
         const typingIndicator = document.getElementById('typingIndicator');
         if (typingIndicator) {
@@ -273,16 +300,19 @@ class FundAIChat {
         }
     }
 
+    // Scroll to bottom
     scrollToBottom() {
         this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
     }
 
+    // Escape HTML
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
 
+    // Clear chat
     clearChat() {
         this.chatHistory = [];
         this.saveChatHistory();
@@ -290,7 +320,7 @@ class FundAIChat {
     }
 }
 
-// Initialize the chat when the page loads
+// Initialize the chat when the page loads (fundAI.html)
 document.addEventListener('DOMContentLoaded', () => {
     new FundAIChat();
 });

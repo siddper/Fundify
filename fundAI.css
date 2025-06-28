@@ -1,3 +1,6 @@
+/* fundAI.css - FundAI page styles */
+
+/* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 * {
@@ -5,6 +8,7 @@
   font: 'Inter';
 }
 
+/* Define colors */
 :root {
   --accent: #235FD6;
   --sidebar-bg: #000;
@@ -15,6 +19,7 @@
   --text-muted: #bfc6e0;
 }
 
+/* FundAI body styles */
 body.fundAI-bg {
     font-family: 'Inter', Arial, sans-serif;
     margin: 0;
@@ -23,12 +28,14 @@ body.fundAI-bg {
     overflow: hidden;
 }
 
+/* FundAI layout styles */
 .fundAI-layout {
     display: flex;
     min-height: 100vh;
     min-width: 0;
 }
 
+/* FundAI main styles */
 .fundAI-main {
     flex: 1;
     min-width: 0;
@@ -43,6 +50,7 @@ body.fundAI-bg {
     margin-left: 300px;
 }
 
+/* FundAI topbar styles */
 .fundAI-topbar {
   display: flex;
   align-items: center;
@@ -57,11 +65,15 @@ body.fundAI-bg {
   width: 100%;
   max-width: 100%;
 }
+
+/* FundAI topbar left styles */
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 24px;
 }
+
+/* FundAI title styles */
 .fundAI-title {
     font-size: 1.3rem;
     font-weight: 600;
@@ -69,7 +81,7 @@ body.fundAI-bg {
     letter-spacing: -0.5px;
 }
 
-/* Chat Container Styles */
+/* Chat container styles */
 .chat-container {
   display: flex;
   flex-direction: column;
@@ -79,6 +91,7 @@ body.fundAI-bg {
   width: 100%;
 }
 
+/* Chat messages styles */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -93,6 +106,7 @@ body.fundAI-bg {
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* Message styles */
 .message {
   display: flex;
   gap: 12px;
@@ -100,12 +114,14 @@ body.fundAI-bg {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+/* User message styles */
 .message.user-message {
   flex-direction: row-reverse;
   justify-content: flex-end;
   text-align: right;
 }
 
+/* Message avatar styles */
 .message-avatar {
   width: 32px;
   height: 32px;
@@ -118,20 +134,24 @@ body.fundAI-bg {
   border: 1px solid var(--border);
 }
 
+/* User message avatar styles */
 .user-message .message-avatar {
   background: var(--card-bg);
   border: 1px solid var(--border);
 }
 
+/* User message content styles */
 .user-message .message-content {
   align-items: flex-end;
 }
 
+/* Message content styles */
 .message-content {
   flex: 1;
   max-width: calc(100% - 44px);
 }
 
+/* Message content paragraph styles */
 .message-content p {
   margin: 0;
   line-height: 1.6;
@@ -139,6 +159,7 @@ body.fundAI-bg {
   font-size: 14px;
 }
 
+/* User message content paragraph styles */
 .user-message .message-content p {
   background: var(--accent);
   color: white;
@@ -153,6 +174,7 @@ body.fundAI-bg {
   margin-left: auto;
 }
 
+/* AI message content paragraph styles */
 .ai-message .message-content p {
   background: var(--card-bg);
   color: var(--text);
@@ -164,7 +186,7 @@ body.fundAI-bg {
   word-wrap: break-word;
 }
 
-/* Typing indicator */
+/* Typing indicator styles */
 .typing-indicator {
   display: flex;
   gap: 4px;
@@ -175,6 +197,7 @@ body.fundAI-bg {
   width: fit-content;
 }
 
+/* Typing dot styles */
 .typing-dot {
   width: 8px;
   height: 8px;
@@ -186,6 +209,7 @@ body.fundAI-bg {
 .typing-dot:nth-child(1) { animation-delay: -0.32s; }
 .typing-dot:nth-child(2) { animation-delay: -0.16s; }
 
+/* Typing animation */
 @keyframes typing {
   0%, 80%, 100% {
     transform: scale(0.8);
@@ -197,6 +221,7 @@ body.fundAI-bg {
   }
 }
 
+/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -208,13 +233,14 @@ body.fundAI-bg {
   }
 }
 
-/* Chat Input Styles */
+/* Chat input container styles */
 .chat-input-container {
   padding: 20px;
   padding-top: 10px;
   background: var(--main-bg);
 }
 
+/* Chat input wrapper styles */
 .chat-input-wrapper {
   display: flex;
   align-items: flex-end;
@@ -226,6 +252,7 @@ body.fundAI-bg {
   max-width: 100%;
 }
 
+/* Chat input styles */
 .chat-input {
   flex: 1;
   border: none;
@@ -241,10 +268,12 @@ body.fundAI-bg {
   padding: 8px 0;
 }
 
+/* Chat input placeholder styles */
 .chat-input::placeholder {
   color: var(--text-muted);
 }
 
+/* Send button styles */
 .send-button {
   background: var(--accent);
   border: none;
@@ -260,22 +289,25 @@ body.fundAI-bg {
   flex-shrink: 0;
 }
 
+/* Send button hover styles */
 .send-button:hover:not(:disabled) {
   background: #1a4bb8;
   transform: scale(1.05);
 }
 
+/* Send button disabled styles */
 .send-button:disabled {
   background: var(--border);
   color: var(--text-muted);
   cursor: not-allowed;
 }
 
+/* Send button disabled hover styles */
 .send-button:disabled:hover {
   transform: none;
 }
 
-/* Responsive Design */
+/* Responsive design */
 @media (max-width: 768px) {
   .chat-container {
     max-width: 100%;
@@ -298,6 +330,7 @@ body.fundAI-bg {
   }
 }
 
+/* Clear chat button styles */
 .clear-chat-btn {
     background: var(--card-bg);
     color: var(--accent);
@@ -312,12 +345,13 @@ body.fundAI-bg {
     outline: none;
 }
 
+/* Clear chat button hover styles */
 .clear-chat-btn:hover{
     background: var(--accent);
     color: #fff;
 }
 
-/* Example Questions Styles */
+/* Example questions styles */
 .example-questions {
   display: flex;
   flex-wrap: wrap;
@@ -328,6 +362,7 @@ body.fundAI-bg {
   border-top: 1px solid var(--border);
 }
 
+/* Example question button styles */
 .example-question-btn {
   background: var(--card-bg);
   color: var(--accent);
@@ -341,6 +376,7 @@ body.fundAI-bg {
   outline: none;
 }
 
+/* Example question button hover styles */
 .example-question-btn:hover {
   background: var(--accent);
   color: #fff;
