@@ -103,8 +103,8 @@ body.dashboard-bg {
   font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 50px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 10px 15px;
   cursor: pointer;
   box-shadow: 0 2px 8px 0 rgba(75, 133, 209, 0.08);
   transition: background 0.18s;
@@ -114,6 +114,9 @@ body.dashboard-bg {
 }
 .dashboard-add-btn:hover {
   background: #1c4daf;
+}
+.dashboard-add-btn svg {
+  margin-left: 4px;
 }
 
 .search-container {

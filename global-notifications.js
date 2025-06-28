@@ -56,11 +56,17 @@ function isReminderDue(reminder) {
   if (ampm === 'PM' && h !== 12) h += 12;
   if (ampm === 'AM' && h === 12) h = 0;
   const reminderDate = new Date(yyyy, mm - 1, dd, h, m);
+  
   // Only compare up to the minute
   reminderDate.setSeconds(0, 0);
   now.setSeconds(0, 0);
   
-  return reminderDate <= now;
+  // Only return true if the reminder is due within the current 10-second window
+  // This prevents notifications for reminders that have already passed
+  const timeDiff = Math.abs(reminderDate.getTime() - now.getTime());
+  const tenSeconds = 10 * 1000; // 10 seconds in milliseconds
+  
+  return reminderDate <= now && timeDiff <= tenSeconds;
 }
 
 // Track notified reminders to avoid duplicate notifications
@@ -125,6 +131,7 @@ async function checkRemindersForNotification() {
     }
   });
 
+  let newNotifications = 0;
   reminders.forEach((reminder) => {
     const isDue = isReminderDue(reminder);
     const key = makeReminderKey(reminder);
@@ -139,10 +146,14 @@ async function checkRemindersForNotification() {
         requireInteraction: false
       });
       notifiedKeys.push(key);
+      newNotifications++;
     }
   });
   
-  setNotifiedKeys(notifiedKeys);
+  if (newNotifications > 0) {
+    console.log(`Sent ${newNotifications} new reminder notification(s)`);
+    setNotifiedKeys(notifiedKeys);
+  }
 }
 
 // Initialize the notification system
