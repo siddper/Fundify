@@ -1,6 +1,6 @@
-// Command Bar Modal Implementation
+// command-bar.js - Command bar functionality for all pages
 document.addEventListener('DOMContentLoaded', function() {
-  // List of page commands (update as needed)
+  // List of commands for the command bar
   const commands = [
     {
       name: 'Dashboard',
@@ -333,9 +333,10 @@ document.addEventListener('DOMContentLoaded', function() {
     },
   ];
 
-  // Inject styles
+  // Inject styles for command bar modal
   const style = document.createElement('style');
   style.textContent = `
+    /* Modal background overlay */
     .cmd-modal-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -351,6 +352,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .cmd-modal-bg.cmd-visible {
       opacity: 1;
     }
+    
+    /* Main modal container */
     .cmd-modal {
       background: var(--main-bg, #18191a);
       border-radius: 16px;
@@ -373,6 +376,8 @@ document.addEventListener('DOMContentLoaded', function() {
       transform: translateY(0) scale(1);
       pointer-events: auto;
     }
+    
+    /* Input field styling */
     .cmd-modal input[type="text"], .cmd-modal input[type="number"] {
       background: var(--main-bg, #18191a);
       color: var(--text, #e3e3e3);
@@ -386,6 +391,8 @@ document.addEventListener('DOMContentLoaded', function() {
       font-family: inherit;
       transition: background 0.18s;
     }
+    
+    /* Remove number input spinners */
     .cmd-modal input[type="number"]::-webkit-outer-spin-button,
     .cmd-modal input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -394,6 +401,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .cmd-modal input[type="number"] {
       -moz-appearance: textfield;
     }
+    
+    /* Close button */
     .cmd-modal .cmd-close {
       position: absolute;
       right: 16px;
@@ -408,6 +417,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .cmd-modal .cmd-close:hover {
       color: var(--text, #e3e3e3);
     }
+    
+    /* Command list container */
     .cmd-list {
       margin-top: 8px;
       padding: 0 16px;
@@ -422,6 +433,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .cmd-list::-webkit-scrollbar {
       display: none; /* Chrome/Safari/Webkit */
     }
+    
+    /* Individual command items */
     .cmd-item {
       background: var(--main-bg, #18191a);
       color: var(--text, #e3e3e3);
@@ -439,6 +452,8 @@ document.addEventListener('DOMContentLoaded', function() {
       align-items: center;
       will-change: background, color, transform;
     }
+    
+    /* Selected/focused command item states */
     .cmd-item.selected, .cmd-item:focus {
       background: var(--sidebar-bg, #000000);
       color: var(--accent, #235FD6);
@@ -452,6 +467,8 @@ document.addEventListener('DOMContentLoaded', function() {
       color: var(--accent, #235FD6) !important;
       opacity: 1 !important;
     }
+    
+    /* Visual separator line */
     .cmd-separator {
       width: 100%;
       height: 2px;
@@ -460,6 +477,8 @@ document.addEventListener('DOMContentLoaded', function() {
       margin: 0 0 8px 0;
       border-radius: 1px;
     }
+    
+    /* Command icon container */
     .cmd-icon {
       margin-right: 2px;
       display: flex;
@@ -469,37 +488,44 @@ document.addEventListener('DOMContentLoaded', function() {
       height: 22px;
       flex-shrink: 0;
     }
+    
+    /* Mobile responsive adjustments */
     @media (max-width: 600px) {
       .cmd-modal { min-width: 90vw; }
     }
   `;
   document.head.appendChild(style);
 
-  // Create modal elements
+  // Create modal background overlay element
   const modalBg = document.createElement('div');
   modalBg.className = 'cmd-modal-bg';
   modalBg.style.display = 'none';
 
+  // Create main modal container
   const modal = document.createElement('div');
   modal.className = 'cmd-modal';
 
+  // Create search input field
   const input = document.createElement('input');
   input.type = 'text';
   input.placeholder = 'Search commands...';
   input.setAttribute('aria-label', 'Command search');
 
-  // Separator line
+  // Create visual separator line between input and list
   const separator = document.createElement('div');
   separator.className = 'cmd-separator';
 
+  // Create close button for modal
   const closeBtn = document.createElement('button');
   closeBtn.className = 'cmd-close';
   closeBtn.innerHTML = '&times;';
   closeBtn.title = 'Close (Esc)';
 
+  // Create container for command list items
   const list = document.createElement('div');
   list.className = 'cmd-list';
 
+  // Assemble modal structure by appending elements
   modal.appendChild(input);
   modal.appendChild(separator);
   modal.appendChild(closeBtn);
@@ -507,19 +533,26 @@ document.addEventListener('DOMContentLoaded', function() {
   modalBg.appendChild(modal);
   document.body.appendChild(modalBg);
 
-  let filtered = [...commands];
-  let selectedIdx = 0;
-  let promptMode = false;
-  let promptCallback = null;
+  // Initialize state variables for command filtering and selection
+  let filtered = [...commands]; // Copy of all commands for filtering
+  let selectedIdx = 0; // Currently selected command index
+  let promptMode = false; // Whether modal is in prompt mode vs search mode
+  let promptCallback = null; // Callback function for prompt mode
 
+  // Function to render the command list based on current state
   function renderList() {
+    // Clear existing list content
     list.innerHTML = '';
+
+    // If in prompt mode, hide the list
     if (promptMode) {
       list.style.display = 'none';
       return;
     } else {
       list.style.display = '';
     }
+    
+    // Render each command item
     filtered.forEach((cmd, i) => {
       const item = document.createElement('button');
       item.className = 'cmd-item' + (i === selectedIdx ? ' selected' : '');
@@ -527,7 +560,8 @@ document.addEventListener('DOMContentLoaded', function() {
       item.style.display = 'flex';
       item.style.alignItems = 'center';
       item.style.gap = '6px';
-      // SVG icon from command
+      
+      // Create SVG icon container for command
       const iconContainer = document.createElement('span');
       iconContainer.className = 'cmd-icon';
       iconContainer.style.display = 'flex';
@@ -537,12 +571,14 @@ document.addEventListener('DOMContentLoaded', function() {
       iconContainer.style.height = '22px';
       iconContainer.style.flexShrink = '0';
       iconContainer.innerHTML = cmd.icon || '';
-      // Text node
+      
+      // Create text node for command name
       const textNode = document.createElement('span');
       textNode.textContent = cmd.name;
       textNode.style.flex = '1';
       textNode.style.textAlign = 'left';
-      // Page name (if present)
+      
+      // Create page name (if present)
       let pageNode = null;
       if (cmd.page) {
         pageNode = document.createElement('span');
@@ -566,24 +602,31 @@ document.addEventListener('DOMContentLoaded', function() {
       item.appendChild(iconContainer);
       item.appendChild(textNode);
       if (pageNode) item.appendChild(pageNode);
+      
+      // Handle command item click
       item.onclick = () => {
         if (cmd.name === 'Add reminder') {
           hideModal();
           setTimeout(() => {
+            // Open reminder modal
             function openReminderModal() {
               const addBtn = document.getElementById('openAddModal');
               if (addBtn) addBtn.click();
             }
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html#add=reminder';
             } else {
+              // Open reminder modal
               openReminderModal();
             }
           }, 100);
         } else if (cmd.name === 'Quick preset') {
+          // Enter prompt mode for quick preset
           enterPromptMode('Describe your preset...', function(promptText) {
             hideModal();
             setTimeout(() => {
+              // Open add modal and set quick preset prompt
               function doQuickPreset() {
                 const addModal = document.getElementById('openAddModal');
                 if (addModal) addModal.click();
@@ -598,9 +641,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   }, 100);
                 }, 100);
               }
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#quick-preset=' + encodeURIComponent(promptText);
               } else {
+                // Open add modal and set quick preset prompt
                 doQuickPreset();
               }
             }, 100);
@@ -608,6 +653,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Scan receipt' || cmd.name === 'Import transactions' || cmd.name === 'Export transactions' || cmd.name === 'Add preset') {
           hideModal();
           setTimeout(() => {
+            // Open add modal and set tab
             function openTab(tabId) {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
@@ -616,14 +662,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (tabBtn) tabBtn.click();
               }, 100);
             }
+            // Set tab ID based on command name
             let tabId = '';
             if (cmd.name === 'Scan receipt') tabId = 'receipt-scan-content';
             if (cmd.name === 'Import transactions') tabId = 'import-transactions-content';
             if (cmd.name === 'Export transactions') tabId = 'export-transactions-content';
             if (cmd.name === 'Add preset') tabId = 'add-preset-content';
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = `dashboard.html#tab=${tabId}`;
             } else {
+              // Open add modal and set tab
               openTab(tabId);
             }
           }, 100);
@@ -631,6 +680,7 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Describe your transaction...', function(promptText) {
             hideModal();
             setTimeout(() => {
+              // Open add modal and set quick transaction prompt
               function doQuickTransaction() {
                 const addModal = document.getElementById('openAddModal');
                 if (addModal) addModal.click();
@@ -645,9 +695,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   }, 100);
                 }, 100);
               }
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#quick-transaction=' + encodeURIComponent(promptText);
               } else {
+                // Open add modal and set quick transaction prompt
                 doQuickTransaction();
               }
             }, 100);
@@ -655,9 +707,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Add transaction') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#add=transaction';
             } else {
+              // Open add modal
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
               // Ensure the 'Add Transaction' tab is active
@@ -672,9 +726,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Go to dashboard.html, set #search-input value, and trigger input event
             hideModal();
             setTimeout(() => {
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#search=' + encodeURIComponent(query);
               } else {
+                // Set search input value
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
                   searchInput.value = query;
@@ -687,14 +743,16 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Enter AI search query...', function(query) {
             hideModal();
             setTimeout(() => {
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#search=' + encodeURIComponent(query) + '&ai=1';
               } else {
+                // Set search input value
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
                   searchInput.value = query;
                   searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                  // Simulate click on AI search button
+                  // Simulate click on AI search button (if it exists)
                   const aiBtn = document.getElementById('ai-search-btn');
                   if (aiBtn) aiBtn.click();
                 }
@@ -705,9 +763,11 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Enter reminder search query...', function(query) {
             hideModal();
             setTimeout(() => {
+              // Navigate to reminders.html if not already there
               if (!window.location.pathname.endsWith('reminders.html')) {
                 window.location.href = 'reminders.html#search=' + encodeURIComponent(query);
               } else {
+                // Set search input value
                 const searchInput = document.getElementById('reminder-search');
                 if (searchInput) {
                   searchInput.value = query;
@@ -719,9 +779,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this week') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=week';
             } else {
+              // Click the week button
               const weekBtn = document.querySelector('.summary-toggle-btn[data-range="week"]');
               if (weekBtn) weekBtn.click();
             }
@@ -729,9 +791,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this month') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=month';
             } else {
+              // Click the month button
               const monthBtn = document.querySelector('.summary-toggle-btn[data-range="month"]');
               if (monthBtn) monthBtn.click();
             }
@@ -739,9 +803,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this year') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=year';
             } else {
+              // Click the year button
               const yearBtn = document.querySelector('.summary-toggle-btn[data-range="year"]');
               if (yearBtn) yearBtn.click();
             }
@@ -749,10 +815,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary as image') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=image';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click export image button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -768,10 +835,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary to email') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=email';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click export email button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -788,9 +856,11 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Ask FundAI anything...', function(query) {
             hideModal();
             setTimeout(() => {
+              // Navigate to fundAI.html if not already there
               if (!window.location.pathname.endsWith('fundAI.html')) {
                 window.location.href = 'fundAI.html#query=' + encodeURIComponent(query);
               } else {
+                // Set chat input value and click send button
                 const chatInput = document.getElementById('chatInput');
                 const sendButton = document.getElementById('sendButton');
                 if (chatInput && sendButton) {
@@ -805,9 +875,11 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Enter monthly budget amount...', function(amount) {
             hideModal();
             setTimeout(() => {
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#budget=' + encodeURIComponent(amount);
               } else {
+                // Set budget input value and click submit button
                 const budgetInput = document.getElementById('budget-input');
                 const budgetForm = document.getElementById('budget-form');
                 if (budgetInput && budgetForm) {
@@ -821,9 +893,11 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPromptMode('Enter monthly goal amount...', function(amount) {
             hideModal();
             setTimeout(() => {
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#goal=' + encodeURIComponent(amount);
               } else {
+                // Set goal input value and click submit button
                 const goalInput = document.getElementById('goal-input');
                 const goalForm = document.getElementById('goal-form');
                 if (goalInput && goalForm) {
@@ -836,9 +910,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Default') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=default';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Default';
@@ -853,9 +929,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Date: Oldest First') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=date_asc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Date: Oldest First';
@@ -870,9 +948,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Date: Newest First') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=date_desc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Date: Newest First';
@@ -887,9 +967,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Amount: Low to High') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=amount_asc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Amount: Low to High';
@@ -904,9 +986,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Amount: High to Low') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=amount_desc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Amount: High to Low';
@@ -921,9 +1005,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Reminders') {
           hideModal();
           setTimeout(() => {
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html';
             } else {
+              // Click the reminders button
               const remindersBtn = document.getElementById('reminders-btn');
               if (remindersBtn) remindersBtn.click();
             }
@@ -931,6 +1017,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Add reminder') {
           hideModal();
           setTimeout(() => {
+            // Open reminder modal
             function openReminderModal() {
               const addBtn = document.getElementById('openAddModal');
               if (addBtn) addBtn.click();
@@ -944,9 +1031,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Search reminders') {
           hideModal();
           setTimeout(() => {
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html#search=' + encodeURIComponent(input.value);
             } else {
+              // Set search input value
               const searchInput = document.getElementById('reminder-search');
               if (searchInput) {
                 searchInput.value = input.value;
@@ -957,9 +1046,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summary') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html';
             } else {
+              // Click the summary button
               const summaryBtn = document.getElementById('summary-btn');
               if (summaryBtn) summaryBtn.click();
             }
@@ -967,9 +1058,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this week') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=week';
             } else {
+              // Click the week button
               const weekBtn = document.querySelector('.summary-toggle-btn[data-range="week"]');
               if (weekBtn) weekBtn.click();
             }
@@ -977,9 +1070,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this month') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=month';
             } else {
+              // Click the month button
               const monthBtn = document.querySelector('.summary-toggle-btn[data-range="month"]');
               if (monthBtn) monthBtn.click();
             }
@@ -987,9 +1082,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this year') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=year';
             } else {
+              // Click the year button
               const yearBtn = document.querySelector('.summary-toggle-btn[data-range="year"]');
               if (yearBtn) yearBtn.click();
             }
@@ -997,10 +1094,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary as image') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=image';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click export image button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1016,10 +1114,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary to email') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=email';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click export email button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1035,9 +1134,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Plan') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html';
             } else {
+              // Click the plan button
               const planBtn = document.getElementById('plan-btn');
               if (planBtn) planBtn.click();
             }
@@ -1045,9 +1146,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Edit monthly budget') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html#edit-budget';
             } else {
+              // Click the budget button
               const budgetBtn = document.getElementById('budget-btn');
               if (budgetBtn) budgetBtn.click();
             }
@@ -1055,17 +1158,22 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Edit monthly goal') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html#edit-goal';
             } else {
+              // Click the goal button
               const goalBtn = document.getElementById('goal-btn');
               if (goalBtn) goalBtn.click();
             }
           }, 100);
         } else if (cmd.name === 'Simulate what-if spending') {
+          // Enter prompt mode for what-if spending
           enterPromptMode('Enter daily spend (1-500)', function(val) {
+            // Hide modal and set spend slider value
             hideModal();
             setTimeout(() => {
+              // Function to set the spend slider value
               function setSpendSlider() {
                 const spendSlider = document.getElementById('whatif-spend-slider');
                 if (spendSlider) {
@@ -1081,17 +1189,22 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
                 }
               }
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#whatif-spend=' + encodeURIComponent(val);
               } else {
+                // Set spend slider value
                 setSpendSlider();
               }
             }, 100);
           });
         } else if (cmd.name === 'Simulate what-if earnings') {
+          // Enter prompt mode for what-if earnings
           enterPromptMode('Enter daily earn (1-500)', function(val) {
+            // Hide modal and set earn slider value
             hideModal();
             setTimeout(() => {
+              // Function to set the earn slider value
               function setEarnSlider() {
                 const earnSlider = document.getElementById('whatif-earn-slider');
                 if (earnSlider) {
@@ -1107,9 +1220,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   }
                 }
               }
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#whatif-earn=' + encodeURIComponent(val);
               } else {
+                // Set earn slider value
                 setEarnSlider();
               }
             }, 100);
@@ -1117,19 +1232,23 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Explain my score') {
           hideModal();
           setTimeout(() => {
+            // Function to click the explain score button
             function clickExplainButton() {
               const explainBtn = document.getElementById('explain-score-btn');
               if (explainBtn) explainBtn.click();
             }
+            // Navigate to score.html if not already there
             if (!window.location.pathname.endsWith('score.html')) {
               window.location.href = 'score.html#explain=score';
             } else {
+              // Click the explain score button
               clickExplainButton();
             }
           }, 100);
         } else if (cmd.name === 'Add date filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the date filter
             function openDateFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
@@ -1144,15 +1263,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=date';
             } else {
+              // Open the date filter
               openDateFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add type filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the type filter
             function openTypeFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
@@ -1167,15 +1289,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=type';
             } else {
+              // Open the type filter
               openTypeFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add amount filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the amount filter
             function openAmountFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
@@ -1190,15 +1315,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=amount';
             } else {
+              // Open the amount filter
               openAmountFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add store/source filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the store filter
             function openStoreFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
@@ -1213,15 +1341,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=store_source';
             } else {
+              // Open the store filter
               openStoreFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add method filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the method filter
             function openMethodFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
@@ -1236,28 +1367,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=method';
             } else {
+              // Open the method filter
               openMethodFilter();
             }
           }, 100);
         } else if (cmd.name === 'Clear FundAI chat') {
           hideModal();
           setTimeout(() => {
+            // Function to click the clear chat button
             function clickClearChat() {
               const clearBtn = document.getElementById('clearChatButton');
               if (clearBtn) clearBtn.click();
             }
+            // Navigate to fundAI.html if not already there
             if (!window.location.pathname.endsWith('fundAI.html')) {
               window.location.href = 'fundAI.html#clear=fundai';
             } else {
+              // Click the clear chat button
               clickClearChat();
             }
           }, 100);
         } else if (cmd.name === 'Speak transaction') {
           hideModal();
           setTimeout(() => {
+            // Function to open the quick transaction and mic
             function openQuickTransactionAndMic() {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
@@ -1270,15 +1407,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 100);
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#speak-transaction=1';
             } else {
+              // Open the quick transaction and mic
               openQuickTransactionAndMic();
             }
           }, 100);
         } else if (cmd.name === 'Speak preset') {
           hideModal();
           setTimeout(() => {
+            // Function to open the quick preset and mic
             function openQuickPresetAndMic() {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
@@ -1291,19 +1431,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 100);
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#speak-preset=1';
             } else {
+              // Open the quick preset and mic
               openQuickPresetAndMic();
             }
           }, 100);
         } else if (cmd.name === 'Ask for help') {
+          // Enter prompt mode for help question
           enterPromptMode('What do you need help with?', function(question) {
+            // Hide modal and set help input value
             hideModal();
             setTimeout(() => {
+              // Navigate to help.html if not already there
               if (!window.location.pathname.endsWith('help.html')) {
                 window.location.href = 'help.html#question=' + encodeURIComponent(question);
               } else {
+                // Set help input value and trigger Enter keydown event
                 const helpInput = document.getElementById('help-ai-question');
                 if (helpInput) {
                   helpInput.value = question;
@@ -1315,9 +1461,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Account settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=account';
             } else {
+              // Click the account button
               const accountBtn = document.querySelector('.settings-section-item[data-section="account"]') || 
                                 document.querySelector('.settings-section-item:nth-child(1)');
               if (accountBtn) accountBtn.click();
@@ -1326,9 +1474,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Notification settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=notifications';
             } else {
+              // Click the notifications button
               const notificationsBtn = document.querySelector('.settings-section-item[data-section="notifications"]') || 
                                       document.querySelector('.settings-section-item:nth-child(2)');
               if (notificationsBtn) notificationsBtn.click();
@@ -1337,20 +1487,24 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Security settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=security';
             } else {
+              // Click the security button
               const securityBtn = document.querySelector('.settings-section-item[data-section="security"]') || 
                                  document.querySelector('.settings-section-item:nth-child(3)');
               if (securityBtn) securityBtn.click();
             }
           }, 100);
         } else if (cmd.href) {
+          // Navigate to the command's href and hide modal
           window.location.href = cmd.href;
           hideModal();
         }
       };
       item.onmouseenter = () => {
+        // Update the selected index and update the selection
         selectedIdx = i;
         updateSelection();
       };
@@ -1360,6 +1514,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateSelection() {
+    // Update the selected index and update the selection
     const items = list.querySelectorAll('.cmd-item');
     items.forEach((el, i) => {
       if (i === selectedIdx) {
@@ -1374,6 +1529,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function showModal() {
+    // Show the modal and set focus to the input
     modalBg.style.display = 'flex';
     setTimeout(() => {
       modalBg.classList.add('cmd-visible');
@@ -1386,6 +1542,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function hideModal() {
+    // Hide the modal and remove the visible class
     modalBg.classList.remove('cmd-visible');
     setTimeout(() => {
       modalBg.style.display = 'none';
@@ -1395,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Keyboard shortcuts
   let isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   document.addEventListener('keydown', function(e) {
-    // Cmd/Ctrl+K toggles modal visibility
+    // Cmd/Ctrl+K toggles modal visibility (for Mac and Windows)
     if ((isMac && e.metaKey && e.key.toLowerCase() === 'k') || (!isMac && e.ctrlKey && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
       if (modalBg.style.display === 'flex') {
@@ -1407,13 +1564,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Modal events
+  // Modal events (close button and background click)
   closeBtn.onclick = hideModal;
   modalBg.onclick = function(e) {
     if (e.target === modalBg) hideModal();
   };
 
   input.addEventListener('input', function() {
+    // Update the filtered list based on the input value
     const val = input.value.toLowerCase().trim();
     if (!val) {
       filtered = [...commands];
@@ -1422,7 +1580,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Split search terms and filter out empty strings
+    // Split search terms and filter out empty strings (for multiple search terms)
     const searchTerms = val.split(/\s+/).filter(term => term.length > 0);
     
     filtered = commands.filter(cmd => {
@@ -1431,25 +1589,25 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Check if all search terms match the command name or related terms
       return searchTerms.every(term => {
-        // 1. Direct substring match in command name
+        // 1. Direct substring match in command name (exact match)
         if (cmdName.includes(term)) return true;
         
-        // 2. Direct substring match in related terms
+        // 2. Direct substring match in related terms (exact match)
         if (relatedTerms.some(related => related.includes(term))) return true;
         
-        // 3. Acronym/initial letter matching for command name
+        // 3. Acronym/initial letter matching for command name (partial match)
         const words = cmdName.split(/\s+/);
         const initials = words.map(word => word.charAt(0)).join('');
         if (initials.includes(term)) return true;
         
-        // 4. Acronym/initial letter matching for related terms
+        // 4. Acronym/initial letter matching for related terms (partial match)
         for (const related of relatedTerms) {
           const relatedWords = related.split(/\s+/);
           const relatedInitials = relatedWords.map(word => word.charAt(0)).join('');
           if (relatedInitials.includes(term)) return true;
         }
         
-        // 5. Word order independence - check if all characters in term appear in order in command name
+        // 5. Word order independence - check if all characters in term appear in order in command name (partial match)
         let termIndex = 0;
         for (let i = 0; i < cmdName.length && termIndex < term.length; i++) {
           if (cmdName[i] === term[termIndex]) {
@@ -1458,7 +1616,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (termIndex === term.length) return true;
         
-        // 6. Word order independence - check if all characters in term appear in order in related terms
+        // 6. Word order independence - check if all characters in term appear in order in related terms (partial match)
         for (const related of relatedTerms) {
           termIndex = 0;
           for (let i = 0; i < related.length && termIndex < term.length; i++) {
@@ -1469,7 +1627,7 @@ document.addEventListener('DOMContentLoaded', function() {
           if (termIndex === term.length) return true;
         }
         
-        // 7. Fuzzy matching with word boundaries for command name
+        // 7. Fuzzy matching with word boundaries for command name (partial match)
         const cmdWords = cmdName.split(/\s+/);
         for (const cmdWord of cmdWords) {
           if (cmdWord.startsWith(term) || cmdWord.includes(term)) {
@@ -1477,7 +1635,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
         
-        // 8. Fuzzy matching with word boundaries for related terms
+        // 8. Fuzzy matching with word boundaries for related terms (partial match)
         for (const related of relatedTerms) {
           const relatedWords = related.split(/\s+/);
           for (const relatedWord of relatedWords) {
@@ -1496,6 +1654,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   input.addEventListener('keydown', function(e) {
+    // If in prompt mode and Enter key is pressed, execute the prompt callback
     if (promptMode && e.key === 'Enter') {
       e.preventDefault();
       if (promptCallback) {
@@ -1505,40 +1664,51 @@ document.addEventListener('DOMContentLoaded', function() {
       exitPromptMode();
       return;
     }
+    // If in prompt mode and Backspace key is pressed and input is empty, exit prompt mode
     if (promptMode && e.key === 'Backspace' && input.value.trim() === '') {
       e.preventDefault();
       exitPromptMode();
       return;
     }
+    // If ArrowDown or Tab key is pressed and not Shift key, move down the list
     if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey)) {
       e.preventDefault();
       if (filtered.length) selectedIdx = (selectedIdx + 1) % filtered.length;
       updateSelection();
+    // If ArrowUp or Tab key is pressed and Shift key, move up the list
     } else if (e.key === 'ArrowUp' || (e.key === 'Tab' && e.shiftKey)) {
       e.preventDefault();
       if (filtered.length) selectedIdx = (selectedIdx - 1 + filtered.length) % filtered.length;
       updateSelection();
+    // If Enter key is pressed, execute the selected command
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filtered[selectedIdx]) {
         const cmd = filtered[selectedIdx];
+        // If the selected command is 'Add reminder', open the reminder modal
         if (cmd.name === 'Add reminder') {
           hideModal();
           setTimeout(() => {
+            // Function to open the reminder modal
             function openReminderModal() {
               const addBtn = document.getElementById('openAddModal');
               if (addBtn) addBtn.click();
             }
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html#add=reminder';
             } else {
+              // Open the reminder modal
               openReminderModal();
             }
           }, 100);
         } else if (cmd.name === 'Quick preset') {
+          // Enter prompt mode for preset description
           enterPromptMode('Describe your preset...', function(promptText) {
+            // Hide modal and set preset input value
             hideModal();
             setTimeout(() => {
+              // Function to open the quick preset
               function doQuickPreset() {
                 const addModal = document.getElementById('openAddModal');
                 if (addModal) addModal.click();
@@ -1563,6 +1733,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Scan receipt' || cmd.name === 'Import transactions' || cmd.name === 'Export transactions' || cmd.name === 'Add preset') {
           hideModal();
           setTimeout(() => {
+            // Function to open the tab
             function openTab(tabId) {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
@@ -1571,21 +1742,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (tabBtn) tabBtn.click();
               }, 100);
             }
+            // Set the tab ID based on the command
             let tabId = '';
             if (cmd.name === 'Scan receipt') tabId = 'receipt-scan-content';
             if (cmd.name === 'Import transactions') tabId = 'import-transactions-content';
             if (cmd.name === 'Export transactions') tabId = 'export-transactions-content';
             if (cmd.name === 'Add preset') tabId = 'add-preset-content';
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = `dashboard.html#tab=${tabId}`;
             } else {
+              // Open the tab
               openTab(tabId);
             }
           }, 100);
         } else if (cmd.name === 'Quick transaction') {
+          // Enter prompt mode for transaction description
           enterPromptMode('Describe your transaction...', function(promptText) {
+            // Hide modal and set transaction input value
             hideModal();
             setTimeout(() => {
+              // Function to open the quick transaction
               function doQuickTransaction() {
                 const addModal = document.getElementById('openAddModal');
                 if (addModal) addModal.click();
@@ -1600,9 +1777,11 @@ document.addEventListener('DOMContentLoaded', function() {
                   }, 100);
                 }, 100);
               }
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#quick-transaction=' + encodeURIComponent(promptText);
               } else {
+                // Open the quick transaction
                 doQuickTransaction();
               }
             }, 100);
@@ -1610,9 +1789,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Add transaction') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#add=transaction';
             } else {
+              // Open the add transaction modal
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
               // Ensure the 'Add Transaction' tab is active
@@ -1623,13 +1804,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           }, 100);
         } else if (cmd.name === 'Search transactions') {
+          // Enter prompt mode for search query
           enterPromptMode('Enter search query...', function(query) {
-            // Go to dashboard.html, set #search-input value, and trigger input event
+            // Hide modal and set search input value
             hideModal();
             setTimeout(() => {
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#search=' + encodeURIComponent(query);
               } else {
+                // Set search input value and trigger input event
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
                   searchInput.value = query;
@@ -1639,17 +1823,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
           });
         } else if (cmd.name === 'AI search transactions') {
+          // Enter prompt mode for AI search query
           enterPromptMode('Enter AI search query...', function(query) {
+            // Hide modal and set search input value
             hideModal();
             setTimeout(() => {
+              // Navigate to dashboard.html if not already there
               if (!window.location.pathname.endsWith('dashboard.html')) {
                 window.location.href = 'dashboard.html#search=' + encodeURIComponent(query) + '&ai=1';
               } else {
+                // Set search input value and trigger input event
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) {
                   searchInput.value = query;
                   searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                  // Simulate click on AI search button
+                  // Simulate click on AI search button (if it exists)
                   const aiBtn = document.getElementById('ai-search-btn');
                   if (aiBtn) aiBtn.click();
                 }
@@ -1657,12 +1845,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
           });
         } else if (cmd.name === 'Search reminders') {
+          // Enter prompt mode for reminder search query
           enterPromptMode('Enter reminder search query...', function(query) {
+            // Hide modal and set search input value
             hideModal();
             setTimeout(() => {
+              // Navigate to reminders.html if not already there
               if (!window.location.pathname.endsWith('reminders.html')) {
                 window.location.href = 'reminders.html#search=' + encodeURIComponent(query);
               } else {
+                // Set search input value and trigger input event
                 const searchInput = document.getElementById('reminder-search');
                 if (searchInput) {
                   searchInput.value = query;
@@ -1674,9 +1866,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this week') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=week';
             } else {
+              // Click the week button
               const weekBtn = document.querySelector('.summary-toggle-btn[data-range="week"]');
               if (weekBtn) weekBtn.click();
             }
@@ -1684,9 +1878,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this month') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=month';
             } else {
+              // Click the month button
               const monthBtn = document.querySelector('.summary-toggle-btn[data-range="month"]');
               if (monthBtn) monthBtn.click();
             }
@@ -1694,9 +1890,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this year') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=year';
             } else {
+              // Click the year button
               const yearBtn = document.querySelector('.summary-toggle-btn[data-range="year"]');
               if (yearBtn) yearBtn.click();
             }
@@ -1704,10 +1902,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary as image') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=image';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click the export image button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1723,10 +1922,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary to email') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=email';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click the export email button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1740,12 +1940,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           }, 100);
         } else if (cmd.name === 'Ask FundAI') {
+          // Enter prompt mode for FundAI query
           enterPromptMode('Ask FundAI anything...', function(query) {
+            // Hide modal and set FundAI input value
             hideModal();
             setTimeout(() => {
+              // Navigate to fundAI.html if not already there
               if (!window.location.pathname.endsWith('fundAI.html')) {
                 window.location.href = 'fundAI.html#query=' + encodeURIComponent(query);
               } else {
+                // Set FundAI input value and trigger input event
                 const chatInput = document.getElementById('chatInput');
                 const sendButton = document.getElementById('sendButton');
                 if (chatInput && sendButton) {
@@ -1757,12 +1961,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
           });
         } else if (cmd.name === 'Edit monthly budget') {
+          // Enter prompt mode for monthly budget amount
           enterPromptMode('Enter monthly budget amount...', function(amount) {
+            // Hide modal and set monthly budget input value
             hideModal();
             setTimeout(() => {
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#budget=' + encodeURIComponent(amount);
               } else {
+                // Set monthly budget input value and trigger input event
                 const budgetInput = document.getElementById('budget-input');
                 const budgetForm = document.getElementById('budget-form');
                 if (budgetInput && budgetForm) {
@@ -1773,12 +1981,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
           });
         } else if (cmd.name === 'Edit monthly goal') {
+          // Enter prompt mode for monthly goal amount
           enterPromptMode('Enter monthly goal amount...', function(amount) {
+            // Hide modal and set monthly goal input value
             hideModal();
             setTimeout(() => {
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#goal=' + encodeURIComponent(amount);
               } else {
+                // Set monthly goal input value and trigger input event
                 const goalInput = document.getElementById('goal-input');
                 const goalForm = document.getElementById('goal-form');
                 if (goalInput && goalForm) {
@@ -1791,9 +2003,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Default') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=default';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Default';
@@ -1808,9 +2022,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Date: Oldest First') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=date_asc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Date: Oldest First';
@@ -1825,9 +2041,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Date: Newest First') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=date_desc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Date: Newest First';
@@ -1842,9 +2060,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Amount: Low to High') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=amount_asc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Amount: Low to High';
@@ -1859,9 +2079,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Sort by Amount: High to Low') {
           hideModal();
           setTimeout(() => {
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#sort=amount_desc';
             } else {
+              // Set sort dropdown value and trigger sort function
               const sortDropdown = document.getElementById('sort-selected');
               if (sortDropdown) {
                 sortDropdown.textContent = 'Sort by Amount: High to Low';
@@ -1876,9 +2098,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Reminders') {
           hideModal();
           setTimeout(() => {
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html';
             } else {
+              // Click the reminders button
               const remindersBtn = document.getElementById('reminders-btn');
               if (remindersBtn) remindersBtn.click();
             }
@@ -1886,24 +2110,29 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Add reminder') {
           hideModal();
           setTimeout(() => {
+            // Function to open the reminder modal
             function openReminderModal() {
               const addBtn = document.getElementById('openAddModal');
               if (addBtn) addBtn.click();
             }
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html#add=reminder';
             } else {
+              // Open the reminder modal
               openReminderModal();
             }
           }, 100);
         } else if (cmd.name === 'Search reminders') {
           hideModal();
           setTimeout(() => {
+            // Navigate to reminders.html if not already there
             if (!window.location.pathname.endsWith('reminders.html')) {
               window.location.href = 'reminders.html#search=' + encodeURIComponent(input.value);
             } else {
               const searchInput = document.getElementById('reminder-search');
               if (searchInput) {
+                // Set search input value and trigger input event
                 searchInput.value = input.value;
                 searchInput.dispatchEvent(new Event('input', { bubbles: true }));
               }
@@ -1912,9 +2141,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summary') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html';
             } else {
+              // Click the summary button
               const summaryBtn = document.getElementById('summary-btn');
               if (summaryBtn) summaryBtn.click();
             }
@@ -1922,9 +2153,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this week') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=week';
             } else {
+              // Click the week button
               const weekBtn = document.querySelector('.summary-toggle-btn[data-range="week"]');
               if (weekBtn) weekBtn.click();
             }
@@ -1932,9 +2165,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this month') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=month';
             } else {
+              // Click the month button
               const monthBtn = document.querySelector('.summary-toggle-btn[data-range="month"]');
               if (monthBtn) monthBtn.click();
             }
@@ -1942,9 +2177,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Summarize this year') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#range=year';
             } else {
+              // Click the year button
               const yearBtn = document.querySelector('.summary-toggle-btn[data-range="year"]');
               if (yearBtn) yearBtn.click();
             }
@@ -1952,10 +2189,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary as image') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=image';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click the export image button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1971,10 +2209,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Export summary to email') {
           hideModal();
           setTimeout(() => {
+            // Navigate to summary.html if not already there
             if (!window.location.pathname.endsWith('summary.html')) {
               window.location.href = 'summary.html#export=email';
             } else {
-              // Wait for summary content to load
+              // Wait for summary content to load and click the export email button
               const waitForSummary = () => {
                 const summaryContent = document.getElementById('summary-main-content');
                 if (summaryContent && summaryContent.children.length > 0) {
@@ -1990,9 +2229,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Plan') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html';
             } else {
+              // Click the plan button
               const planBtn = document.getElementById('plan-btn');
               if (planBtn) planBtn.click();
             }
@@ -2000,9 +2241,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Edit monthly budget') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html#edit-budget';
             } else {
+              // Click the budget button
               const budgetBtn = document.getElementById('budget-btn');
               if (budgetBtn) budgetBtn.click();
             }
@@ -2010,17 +2253,22 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Edit monthly goal') {
           hideModal();
           setTimeout(() => {
+            // Navigate to plan.html if not already there
             if (!window.location.pathname.endsWith('plan.html')) {
               window.location.href = 'plan.html#edit-goal';
             } else {
+              // Click the goal button
               const goalBtn = document.getElementById('goal-btn');
               if (goalBtn) goalBtn.click();
             }
           }, 100);
         } else if (cmd.name === 'Simulate what-if spending') {
+          // Enter prompt mode for daily spend
           enterPromptMode('Enter daily spend (1-500)', function(val) {
+            // Hide modal and set daily spend input value
             hideModal();
             setTimeout(() => {
+              // Function to set the spend slider value
               function setSpendSlider() {
                 const spendSlider = document.getElementById('whatif-spend-slider');
                 if (spendSlider) {
@@ -2029,24 +2277,29 @@ document.addEventListener('DOMContentLoaded', function() {
                   num = Math.max(1, Math.min(500, num));
                   spendSlider.value = num;
                   spendSlider.dispatchEvent(new Event('input', { bubbles: true }));
-                  // Scroll the what-if widget into view
+                  // Scroll the what-if widget into view if it exists
                   const whatIfWidget = document.getElementById('what-if-widget');
                   if (whatIfWidget) {
                     whatIfWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
                 }
               }
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#whatif-spend=' + encodeURIComponent(val);
               } else {
+                // Set the spend slider value
                 setSpendSlider();
               }
             }, 100);
           });
         } else if (cmd.name === 'Simulate what-if earnings') {
+          // Enter prompt mode for daily earnings
           enterPromptMode('Enter daily earn (1-500)', function(val) {
+            // Hide modal and set daily earnings input value
             hideModal();
             setTimeout(() => {
+              // Function to set the earnings slider value
               function setEarnSlider() {
                 const earnSlider = document.getElementById('whatif-earn-slider');
                 if (earnSlider) {
@@ -2055,16 +2308,18 @@ document.addEventListener('DOMContentLoaded', function() {
                   num = Math.max(1, Math.min(500, num));
                   earnSlider.value = num;
                   earnSlider.dispatchEvent(new Event('input', { bubbles: true }));
-                  // Scroll the what-if widget into view
+                  // Scroll the what-if widget into view if it exists
                   const whatIfWidget = document.getElementById('what-if-widget');
                   if (whatIfWidget) {
                     whatIfWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
                 }
               }
+              // Navigate to plan.html if not already there
               if (!window.location.pathname.endsWith('plan.html')) {
                 window.location.href = 'plan.html#whatif-earn=' + encodeURIComponent(val);
               } else {
+                // Set the earnings slider value
                 setEarnSlider();
               }
             }, 100);
@@ -2072,193 +2327,237 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Explain my score') {
           hideModal();
           setTimeout(() => {
+            // Function to click the explain score button
             function clickExplainButton() {
               const explainBtn = document.getElementById('explain-score-btn');
               if (explainBtn) explainBtn.click();
             }
+            // Navigate to score.html if not already there
             if (!window.location.pathname.endsWith('score.html')) {
               window.location.href = 'score.html#explain=score';
             } else {
+              // Click the explain score button
               clickExplainButton();
             }
           }, 100);
         } else if (cmd.name === 'Add date filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the date filter
             function openDateFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
               setTimeout(() => {
+                // Set the filter type dropdown value
                 const filterTypeDropdown = document.getElementById('filter-type-selected');
                 if (filterTypeDropdown) {
                   const filterTypeList = document.getElementById('filter-type-list');
                   if (filterTypeList) {
+                    // Set the filter type to date
                     const li = filterTypeList.querySelector('[data-value="date"]');
                     if (li) li.click();
                   }
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=date';
             } else {
+              // Open the date filter
               openDateFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add type filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the type filter
             function openTypeFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
               setTimeout(() => {
+                // Set the filter type dropdown value
                 const filterTypeDropdown = document.getElementById('filter-type-selected');
                 if (filterTypeDropdown) {
                   const filterTypeList = document.getElementById('filter-type-list');
                   if (filterTypeList) {
+                    // Set the filter type to type
                     const li = filterTypeList.querySelector('[data-value="type"]');
                     if (li) li.click();
                   }
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=type';
             } else {
+              // Open the type filter
               openTypeFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add amount filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the amount filter
             function openAmountFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
               setTimeout(() => {
+                // Set the filter type dropdown value
                 const filterTypeDropdown = document.getElementById('filter-type-selected');
                 if (filterTypeDropdown) {
                   const filterTypeList = document.getElementById('filter-type-list');
                   if (filterTypeList) {
+                    // Set the filter type to amount
                     const li = filterTypeList.querySelector('[data-value="amount"]');
                     if (li) li.click();
                   }
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=amount';
             } else {
+              // Open the amount filter
               openAmountFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add store/source filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the store filter
             function openStoreFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
               setTimeout(() => {
+                // Set the filter type dropdown value
                 const filterTypeDropdown = document.getElementById('filter-type-selected');
                 if (filterTypeDropdown) {
                   const filterTypeList = document.getElementById('filter-type-list');
                   if (filterTypeList) {
+                    // Set the filter type to store/source
                     const li = filterTypeList.querySelector('[data-value="store_source"]');
                     if (li) li.click();
                   }
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=store_source';
             } else {
+              // Open the store filter
               openStoreFilter();
             }
           }, 100);
         } else if (cmd.name === 'Add method filter') {
           hideModal();
           setTimeout(() => {
+            // Function to open the method filter
             function openMethodFilter() {
               const addFilterBtn = document.getElementById('add-filter-btn');
               if (addFilterBtn) addFilterBtn.click();
               setTimeout(() => {
+                // Set the filter type dropdown value
                 const filterTypeDropdown = document.getElementById('filter-type-selected');
                 if (filterTypeDropdown) {
                   const filterTypeList = document.getElementById('filter-type-list');
                   if (filterTypeList) {
+                    // Set the filter type to method
                     const li = filterTypeList.querySelector('[data-value="method"]');
                     if (li) li.click();
                   }
                 }
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#filter=method';
             } else {
+              // Open the method filter
               openMethodFilter();
             }
           }, 100);
         } else if (cmd.name === 'Clear FundAI chat') {
           hideModal();
           setTimeout(() => {
+            // Function to click the clear chat button
             function clickClearChat() {
               const clearBtn = document.getElementById('clearChatButton');
               if (clearBtn) clearBtn.click();
             }
+            // Navigate to fundAI.html if not already there
             if (!window.location.pathname.endsWith('fundAI.html')) {
               window.location.href = 'fundAI.html#clear=fundai';
             } else {
+              // Click the clear chat button
               clickClearChat();
             }
           }, 100);
         } else if (cmd.name === 'Speak transaction') {
           hideModal();
           setTimeout(() => {
+            // Function to open the quick transaction and mic
             function openQuickTransactionAndMic() {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
               setTimeout(() => {
+                // Set the quick tab button
                 const quickTabBtn = document.querySelector('.modal-tab-btn[data-content-id="quick-transaction-content"]');
                 if (quickTabBtn) quickTabBtn.click();
                 setTimeout(() => {
+                  // Set the mic button
                   const micBtn = document.getElementById('start-voice-recognition');
                   if (micBtn) micBtn.click();
                 }, 100);
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#speak-transaction=1';
             } else {
+              // Open the quick transaction and mic
               openQuickTransactionAndMic();
             }
           }, 100);
         } else if (cmd.name === 'Speak preset') {
           hideModal();
           setTimeout(() => {
+            // Function to open the quick preset and mic
             function openQuickPresetAndMic() {
               const addModal = document.getElementById('openAddModal');
               if (addModal) addModal.click();
               setTimeout(() => {
+                // Set the quick tab button
                 const quickTabBtn = document.querySelector('.modal-tab-btn[data-content-id="quick-preset-content"]');
                 if (quickTabBtn) quickTabBtn.click();
                 setTimeout(() => {
+                  // Set the mic button
                   const micBtn = document.getElementById('start-voice-recognition-preset');
                   if (micBtn) micBtn.click();
                 }, 100);
               }, 100);
             }
+            // Navigate to dashboard.html if not already there
             if (!window.location.pathname.endsWith('dashboard.html')) {
               window.location.href = 'dashboard.html#speak-preset=1';
             } else {
+              // Open the quick preset and mic
               openQuickPresetAndMic();
             }
           }, 100);
         } else if (cmd.name === 'Ask for help') {
+          // Enter prompt mode for help question
           enterPromptMode('What do you need help with?', function(question) {
             hideModal();
             setTimeout(() => {
+              // Navigate to help.html if not already there
               if (!window.location.pathname.endsWith('help.html')) {
                 window.location.href = 'help.html#question=' + encodeURIComponent(question);
               } else {
+                // Set the help input value and trigger input event
                 const helpInput = document.getElementById('help-ai-question');
                 if (helpInput) {
                   helpInput.value = question;
@@ -2270,9 +2569,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Account settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=account';
             } else {
+              // Click the account button
               const accountBtn = document.querySelector('.settings-section-item[data-section="account"]') || 
                                 document.querySelector('.settings-section-item:nth-child(1)');
               if (accountBtn) accountBtn.click();
@@ -2281,9 +2582,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Notification settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=notifications';
             } else {
+              // Click the notifications button
               const notificationsBtn = document.querySelector('.settings-section-item[data-section="notifications"]') || 
                                       document.querySelector('.settings-section-item:nth-child(2)');
               if (notificationsBtn) notificationsBtn.click();
@@ -2292,20 +2595,24 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (cmd.name === 'Security settings') {
           hideModal();
           setTimeout(() => {
+            // Navigate to settings.html if not already there
             if (!window.location.pathname.endsWith('settings.html')) {
               window.location.href = 'settings.html#section=security';
             } else {
+              // Click the security button
               const securityBtn = document.querySelector('.settings-section-item[data-section="security"]') || 
                                  document.querySelector('.settings-section-item:nth-child(3)');
               if (securityBtn) securityBtn.click();
             }
           }, 100);
         } else if (cmd.href) {
+          // Navigate to the command's href and hide the modal
           window.location.href = cmd.href;
           hideModal();
         }
       }
     } else if (e.key === 'Escape') {
+      // Prevent default behavior and stop propagation of the escape key
       e.preventDefault();
       e.stopPropagation();
       hideModal();
@@ -2313,7 +2620,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // Trap focus inside modal
+  // Trap focus inside modal for tabbing
   modalBg.addEventListener('keydown', function(e) {
     if (e.key === 'Tab') {
       const focusables = modalBg.querySelectorAll('input,button');
@@ -2321,11 +2628,13 @@ document.addEventListener('DOMContentLoaded', function() {
       const last = focusables[focusables.length - 1];
       if (e.shiftKey) {
         if (document.activeElement === first) {
+          // Prevent default behavior and focus the last focusable element
           e.preventDefault();
           last.focus();
         }
       } else {
         if (document.activeElement === last) {
+          // Prevent default behavior and focus the first focusable element
           e.preventDefault();
           first.focus();
         }
@@ -2333,6 +2642,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Enter prompt mode for budget, goal, daily spend, and daily earn commands
   function enterPromptMode(placeholder, callback) {
     promptMode = true;
     promptCallback = callback;
@@ -2356,6 +2666,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => input.focus(), 10);
   }
 
+  // Exit prompt mode
   function exitPromptMode() {
     promptMode = false;
     promptCallback = null;
@@ -2368,7 +2679,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => input.focus(), 10);
   }
 
-  // On page load, if #search= is in the hash, set the dashboard search input
+  // On page load, if #search= is in the hash, set the dashboard search input and trigger AI search if ai=1
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#search=')) {
     const hash = window.location.hash.replace('#search=', '');
     let query = hash;
@@ -2415,7 +2726,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #export= is in the hash, trigger the export action
+  // On page load, if #export= is in the hash, trigger the export action for image or email
   if (window.location.pathname.endsWith('summary.html') && window.location.hash.startsWith('#export=')) {
     const exportType = window.location.hash.replace('#export=', '');
     window.location.hash = '';
@@ -2445,7 +2756,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #query= is in the hash, set the FundAI query
+  // On page load, if #query= is in the hash, set the FundAI query and send it
   if (window.location.pathname.endsWith('fundAI.html') && window.location.hash.startsWith('#query=')) {
     const query = decodeURIComponent(window.location.hash.replace('#query=', ''));
     window.location.hash = '';
@@ -2463,7 +2774,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #budget= is in the hash, set the budget
+  // On page load, if #budget= is in the hash, set the budget and submit the form
   if (window.location.pathname.endsWith('plan.html') && window.location.hash.startsWith('#budget=')) {
     const amount = decodeURIComponent(window.location.hash.replace('#budget=', ''));
     window.location.hash = '';
@@ -2479,7 +2790,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #goal= is in the hash, set the goal
+  // On page load, if #goal= is in the hash, set the goal and submit the form
   if (window.location.pathname.endsWith('plan.html') && window.location.hash.startsWith('#goal=')) {
     const amount = decodeURIComponent(window.location.hash.replace('#goal=', ''));
     window.location.hash = '';
@@ -2495,7 +2806,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #sort= is in the hash, set the sort
+  // On page load, if #sort= is in the hash, set the sort and trigger the sort function
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#sort=')) {
     const sortType = window.location.hash.replace('#sort=', '');
     window.location.hash = '';
@@ -2541,7 +2852,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #add=transaction is in the hash, open the add transaction modal
+  // On page load, if #add=transaction is in the hash, open the add transaction modal and set the quick tab
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#add=transaction')) {
     window.location.hash = '';
     window.addEventListener('DOMContentLoaded', function() {
@@ -2556,7 +2867,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #quick-transaction= is in the hash, fill and submit the quick transaction form
+  // On page load, if #quick-transaction= is in the hash, fill and submit the quick transaction form and set the quick tab
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#quick-transaction=')) {
     const promptText = decodeURIComponent(window.location.hash.replace('#quick-transaction=', ''));
     window.location.hash = '';
@@ -2578,7 +2889,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #tab=... is in the hash, open the correct modal tab
+  // On page load, if #tab=... is in the hash, open the correct modal tab and set the tab
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#tab=')) {
     const tabId = window.location.hash.replace('#tab=', '');
     window.location.hash = '';
@@ -2594,7 +2905,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #quick-preset= is in the hash, fill and submit the quick preset form
+  // On page load, if #quick-preset= is in the hash, fill and submit the quick preset form and set the quick tab
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#quick-preset=')) {
     const promptText = decodeURIComponent(window.location.hash.replace('#quick-preset=', ''));
     window.location.hash = '';
@@ -2616,7 +2927,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #add=reminder is in the hash, open the add reminder modal
+  // On page load, if #add=reminder is in the hash, open the add reminder modal and set the quick tab
   if (window.location.pathname.endsWith('reminders.html') && window.location.hash.startsWith('#add=reminder')) {
     window.location.hash = '';
     window.addEventListener('DOMContentLoaded', function() {
@@ -2627,7 +2938,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #whatif-spend= is in the hash, set the spend slider
+  // On page load, if #whatif-spend= is in the hash, set the spend slider and scroll the what-if widget into view
   if (window.location.pathname.endsWith('plan.html') && window.location.hash.startsWith('#whatif-spend=')) {
     const val = decodeURIComponent(window.location.hash.replace('#whatif-spend=', ''));
     window.location.hash = '';
@@ -2650,7 +2961,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #whatif-earn= is in the hash, set the earn slider
+  // On page load, if #whatif-earn= is in the hash, set the earn slider and scroll the what-if widget into view
   if (window.location.pathname.endsWith('plan.html') && window.location.hash.startsWith('#whatif-earn=')) {
     const val = decodeURIComponent(window.location.hash.replace('#whatif-earn=', ''));
     window.location.hash = '';
@@ -2673,7 +2984,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #explain=score is in the hash, click the explain score button
+  // On page load, if #explain=score is in the hash, click the explain score button and open the explain score modal
   if (window.location.pathname.endsWith('score.html') && window.location.hash.startsWith('#explain=score')) {
     window.location.hash = '';
     window.addEventListener('DOMContentLoaded', function() {
@@ -2684,7 +2995,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #filter= is in the hash, open the filter modal with the specified type
+  // On page load, if #filter= is in the hash, open the filter modal with the specified type and set the filter type
   if (window.location.pathname.endsWith('dashboard.html') && window.location.hash.startsWith('#filter=')) {
     const filterType = window.location.hash.replace('#filter=', '');
     window.location.hash = '';
@@ -2733,7 +3044,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // On page load, if #clear=fundai is in the hash, click the clear chat button
+  // On page load, if #clear=fundai is in the hash, click the clear chat button and clear the chat
   if (window.location.pathname.endsWith('fundAI.html') && window.location.hash.startsWith('#clear=fundai')) {
     window.location.hash = '';
     window.addEventListener('DOMContentLoaded', function() {
