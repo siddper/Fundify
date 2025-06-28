@@ -1,11 +1,14 @@
+// plan.js - Plan page functionality for Fundify
 // --- Budget Widget Logic ---
 let planTransactions = [];
 
+// Get current month and year
 function getCurrentMonthYear() {
   const now = new Date();
   return { month: now.getMonth() + 1, year: now.getFullYear() };
 }
 
+// Get budget
 async function getBudget() {
   const { month, year } = getCurrentMonthYear();
   const email = localStorage.getItem('fundify_user_email');
@@ -23,6 +26,7 @@ async function getBudget() {
   return 0;
 }
 
+// Set budget
 async function setBudget(amount) {
   const { month, year } = getCurrentMonthYear();
   const email = localStorage.getItem('fundify_user_email');
@@ -47,6 +51,7 @@ async function setBudget(amount) {
   }
 }
 
+// Get spent this month
 function getSpentThisMonth() {
   const { month, year } = getCurrentMonthYear();
   return planTransactions
@@ -58,6 +63,7 @@ function getSpentThisMonth() {
     .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
 }
 
+// Update budget UI
 async function updateBudgetUI() {
   const spent = getSpentThisMonth();
   const budget = await getBudget();
@@ -85,6 +91,7 @@ async function updateBudgetUI() {
 }
 
 // --- Goal Widget Logic ---
+// Get goal
 async function getGoal() {
   const { month, year } = getCurrentMonthYear();
   const email = localStorage.getItem('fundify_user_email');
@@ -102,6 +109,7 @@ async function getGoal() {
   return 0;
 }
 
+// Set goal
 async function setGoal(amount) {
   const { month, year } = getCurrentMonthYear();
   const email = localStorage.getItem('fundify_user_email');
@@ -126,6 +134,7 @@ async function setGoal(amount) {
   }
 }
 
+// Get made this month
 function getMadeThisMonth() {
   const { month, year } = getCurrentMonthYear();
   return planTransactions
@@ -137,6 +146,7 @@ function getMadeThisMonth() {
     .reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
 }
 
+// Update goal UI
 async function updateGoalUI() {
   const made = getMadeThisMonth();
   const goal = await getGoal();
@@ -196,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// Update all widgets including AI prediction
+// Update all widgets including AI prediction (plan.html)
 async function updateAllPlanWidgets() {
   await updateBudgetUI();
   await updateGoalUI();
@@ -205,7 +215,7 @@ async function updateAllPlanWidgets() {
   updateWhatIfResults();
 }
 
-// Patch fetchPlanTransactions to call updateAllPlanWidgets
+// Patch fetchPlanTransactions to call updateAllPlanWidgets (plan.html)
 async function fetchPlanTransactions() {
   const email = localStorage.getItem('fundify_user_email');
   if (!email) return;
@@ -223,6 +233,7 @@ async function fetchPlanTransactions() {
   updateAllPlanWidgets();
 }
 
+// DOMContentLoaded additions for budget widget (plan.html)
 document.addEventListener('DOMContentLoaded', async () => {
   // Set initial budget input value
   const budgetValue = await getBudget();
@@ -264,6 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderSpendingHeatmap();
 });
 
+// Update AI predictive budget (plan.html)
 async function updateAIPredictiveBudget() {
   const spent = getSpentThisMonth();
   const budget = await getBudget();
@@ -337,6 +349,7 @@ async function updateAIPredictiveBudget() {
 }
 
 // --- What-If Sliders & Heatmap Logic ---
+// Update what-if results (plan.html)
 async function updateWhatIfResults() {
   const spent = getSpentThisMonth();
   const made = getMadeThisMonth();
@@ -366,6 +379,7 @@ async function updateWhatIfResults() {
   document.getElementById('whatif-results').innerHTML = html;
 }
 
+// Setup what-if sliders (plan.html)
 async function setupWhatIfSliders() {
   const spendSlider = document.getElementById('whatif-spend-slider');
   const earnSlider = document.getElementById('whatif-earn-slider');
@@ -380,6 +394,7 @@ async function setupWhatIfSliders() {
   await updateWhatIfResults();
 }
 
+// Render spending heatmap (plan.html)
 function renderSpendingHeatmap() {
   const calendar = document.getElementById('heatmap-calendar');
   if (!calendar) return;
@@ -398,6 +413,7 @@ function renderSpendingHeatmap() {
       }
     }
   });
+  
   // Find max spending for color scale
   const maxSpend = Math.max(1, ...Object.values(spendingByDay));
   // Render blank days for first week

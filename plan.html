@@ -1,5 +1,8 @@
+<!-- plan.html - Plan page for Fundify -->
 <!DOCTYPE html>
 <html lang="en">
+
+<!-- Set head -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,13 +15,17 @@
     <script type="text/javascript" src="mini-fundAI.js" defer></script>
     <script type="text/javascript" src="nav.js" defer></script>
 </head>
+
+<!-- Set body -->
 <body class="plan-bg">
   <div class="plan-layout">
+    <!-- Set sidebar -->
     <aside class="sidebar">
       <div class="sidebar-top">
         <img src="fundifyIcon.png" alt="Fundify Logo" class="sidebar-logo-img">
         <h3 style="margin:0;">Fundify</h3>
       </div>
+      <!-- Set sidebar nav -->
       <nav class="sidebar-nav">
         <ul>
           <a href="dashboard.html">
@@ -47,18 +54,22 @@
           </a>
         </ul>
       </nav>
+      <!-- Set sidebar footer -->
       <div class="sidebar-footer">
         <span>Fundify</span>
       </div>
     </aside>
+    <!-- Set main -->
     <main class="plan-main">
       <header class="plan-topbar">
         <div class="topbar-left">
           <span class="plan-title">Plan</span>
         </div>
       </header>
+      <!-- Set plan content -->
       <section class="plan-content">
         <div class="plan-widgets-row">
+          <!-- Set budget widget -->
           <div class="plan-widget" id="budget-widget">
             <div class="plan-widget-title">Monthly Budget</div>
             <form id="budget-form" class="budget-form">
@@ -73,6 +84,7 @@
               </div>
             </div>
           </div>
+          <!-- Set goal widget -->
           <div class="plan-widget" id="goal-widget">
             <div class="plan-widget-title">Monthly Goal</div>
             <form id="goal-form" class="budget-form">
@@ -87,6 +99,7 @@
               </div>
             </div>
           </div>
+          <!-- Set ai suggestions widget -->
           <div class="plan-widget" id="ai-suggestions-widget">
             <div class="plan-widget-title">Smart Suggestions</div>
             <div class="ai-suggestions-desc" style="color: #bfc6e0; font-size: 1.01rem; margin-bottom: 18px;">Predictive budgeting: based on your trends, you will be <span id="ai-predictive-budget" style="color: #ff4d4f; font-weight: 700;">$0.00 under budget</span></div>
@@ -106,6 +119,7 @@
               <li><span class="ai-suggestion-label">Average daily earning so far:</span> <span id="ai-avg-daily-earn" class="ai-suggestion-value">$0.00</span></li>
             </ul>
           </div>
+          <!-- Set what-if widget -->
           <div class="plan-widget" id="what-if-widget">
             <div class="plan-widget-title">What-If Scenarios</div>
             <div class="what-if-slider-row">
@@ -118,6 +132,7 @@
             </div>
             <div class="what-if-results" id="whatif-results"></div>
           </div>
+          <!-- Set heatmap widget -->
           <div class="plan-widget" id="heatmap-widget">
             <div class="plan-widget-title">Spending Heatmap</div>
             <div id="heatmap-calendar"></div>
@@ -132,6 +147,7 @@
           </div>
         </div>
       </section>
+      <!-- Import JavaScript files -->
       <script src="global-notifications.js"></script>
       <script src="plan.js"></script>
     </main>
