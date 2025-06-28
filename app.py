@@ -34,7 +34,7 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 
 # Configure CORS for cross-origin requests
 # More permissive CORS configuration for development
-CORS(app, origins=["http://127.0.0.1:5500"], supports_credentials=True)
+CORS(app, origins=["http://127.0.0.1:5501"], supports_credentials=True)
 
 # Configure Flask-Mail for email functionality
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
