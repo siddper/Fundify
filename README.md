@@ -1,9 +1,6 @@
 # Fundify – Personal Finance for Students
 
-Fundify is a powerful, all-in-one personal finance management app built specifically for students. With intelligent transaction tracking, AI-powered budgeting, smart reminders, and seamless syncing, Fundify helps you take control of your money with zero guesswork.
-
-Built by students, for students — because we were tired of not knowing where our sneaker money went.
-
+Fundify is a powerful all-in-one personal finance management app built specifically for students.
 ---
 
 ## Features
@@ -26,7 +23,7 @@ Built by students, for students — because we were tired of not knowing where o
 - Balance history visualization
 - Email summaries: week, month, year, or full report
 
-### FundAI (ChatGPT-Style Assistant)
+### FundAI
 - Ask questions about your finances
 - Get instant summaries, analysis, and insights
 - Navigate the app by asking
@@ -34,8 +31,6 @@ Built by students, for students — because we were tired of not knowing where o
 
 ### Smart Budgeting
 - Create budgets by category and timeframe
-- AI-generated budgets from uploaded documents
-- Predictive over-budget alerts using trends
 - Progress bars and category breakdowns
 - AI-generated feedback and suggestions
 
